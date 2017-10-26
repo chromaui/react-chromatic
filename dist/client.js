@@ -372,7 +372,7 @@ var _taggedTemplateLiteral2 = __webpack_require__(1);
 var _taggedTemplateLiteral3 = _interopRequireDefault(_taggedTemplateLiteral2);
 
 var _templateObject = (0, _taggedTemplateLiteral3.default)(['\n  display: inline-block;\n  transition: all 150ms ease-out;\n  text-decoration: none;\n\n  color: ', ';\n  > svg path { fill: ', '; }\n  &:hover, &:focus {\n    cursor: pointer;\n    transform: translate3d(0,-1px,0);\n    color: ', ';\n    > svg path { fill: ', ' }\n  }\n  &:active {\n    transform: translate3d(0,0,0);\n    color: ', ';\n    > svg path { fill: ', ' }\n  }\n\n  > svg {\n    display: inline-block;\n    height: .85em;\n    width: .85em;\n    vertical-align: text-top;\n    position: relative;\n    bottom: -.225em;\n    margin-right: .25em;\n  }\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n'], ['\n  display: inline-block;\n  transition: all 150ms ease-out;\n  text-decoration: none;\n\n  color: ', ';\n  > svg path { fill: ', '; }\n  &:hover, &:focus {\n    cursor: pointer;\n    transform: translate3d(0,-1px,0);\n    color: ', ';\n    > svg path { fill: ', ' }\n  }\n  &:active {\n    transform: translate3d(0,0,0);\n    color: ', ';\n    > svg path { fill: ', ' }\n  }\n\n  > svg {\n    display: inline-block;\n    height: .85em;\n    width: .85em;\n    vertical-align: text-top;\n    position: relative;\n    bottom: -.225em;\n    margin-right: .25em;\n  }\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n']),
-    _templateObject2 = (0, _taggedTemplateLiteral3.default)(['\n    svg {\n      height: 1em;\n      width: 1em;\n      vertical-align: top;\n      position: relative;\n      bottom: 0;\n      margin-right: 0;\n    }\n  '], ['\n    svg {\n      height: 1em;\n      width: 1em;\n      vertical-align: top;\n      position: relative;\n      bottom: 0;\n      margin-right: 0;\n    }\n  ']),
+    _templateObject2 = (0, _taggedTemplateLiteral3.default)(['\n    svg {\n      height: 1em;\n      width: 1em;\n      vertical-align: middle;\n      position: relative;\n      bottom: 0;\n      margin-right: 0;\n    }\n  '], ['\n    svg {\n      height: 1em;\n      width: 1em;\n      vertical-align: middle;\n      position: relative;\n      bottom: 0;\n      margin-right: 0;\n    }\n  ']),
     _templateObject3 = (0, _taggedTemplateLiteral3.default)(['\n    color: ', ';\n    > svg path { fill: ', '; }\n\n    &:hover {\n      color: ', ';\n      > svg path { fill: ', '; }\n    }\n\n    &:active {\n      color: ', ';\n      > svg path { fill: ', '; }\n    }\n\t'], ['\n    color: ', ';\n    > svg path { fill: ', '; }\n\n    &:hover {\n      color: ', ';\n      > svg path { fill: ', '; }\n    }\n\n    &:active {\n      color: ', ';\n      > svg path { fill: ', '; }\n    }\n\t']),
     _templateObject4 = (0, _taggedTemplateLiteral3.default)(['\n    color: inherit;\n\n    &:hover, &:active {\n      color: inherit;\n      text-decoration: underline;\n    }\n\t'], ['\n    color: inherit;\n\n    &:hover, &:active {\n      color: inherit;\n      text-decoration: underline;\n    }\n\t']),
     _templateObject5 = (0, _taggedTemplateLiteral3.default)(['\n    border: 0;\n    background: none;\n    padding: 0;\n    font-size: inherit;\n\n    &:focus {\n      border-bottom: 1px solid;\n    }\n  '], ['\n    border: 0;\n    background: none;\n    padding: 0;\n    font-size: inherit;\n\n    &:focus {\n      border-bottom: 1px solid;\n    }\n  ']);
@@ -2336,7 +2336,8 @@ var _taggedTemplateLiteral3 = _interopRequireDefault(_taggedTemplateLiteral2);
 var _templateObject = (0, _taggedTemplateLiteral3.default)(['\n  cursor: pointer;\n  font-size: ', 'px;\n  font-weight: ', ';\n  min-height: 1em;\n\tposition: relative;\n  display: block;\n'], ['\n  cursor: pointer;\n  font-size: ', 'px;\n  font-weight: ', ';\n  min-height: 1em;\n\tposition: relative;\n  display: block;\n']),
     _templateObject2 = (0, _taggedTemplateLiteral3.default)(['\n  font-weight: ', ';\n  color: ', ';\n  margin-left: 6px;\n'], ['\n  font-weight: ', ';\n  color: ', ';\n  margin-left: 6px;\n']),
     _templateObject3 = (0, _taggedTemplateLiteral3.default)([''], ['']),
-    _templateObject4 = (0, _taggedTemplateLiteral3.default)(['\n  float: left;\n  margin: 0 .6em 0 0;\n  visibility: hidden;\n\n  & + ', ' {\n    display: block;\n\n    line-height: 1;\n\n    &:before,\n    &:after {\n      transition: all 150ms ease-out;\n      position: absolute;\n      top: 0;\n      left: 0;\n      height: 14px;\n      width: 14px;\n      content: \'\';\n      display: block;\n      border-radius: 3em;\n    }\n  }\n\n  & + ', ':before { box-shadow: ', ' 0 0 0 1px inset; }\n\n  &:checked + ', ':before { box-shadow: ', ' 0 0 0 1px inset; }\n\n\t& + ', ':after {\n    transform: scale3d(0,0,1);\n\n    height: 10px;\n    margin-left: 2px;\n    margin-top: 2px;\n    width: 10px;\n\n    opacity: 0;\n  }\n\n\t&:checked + ', ':after {\n    transform: scale3d(1,1,1);\n    background: ', ';\n    opacity: 1;\n  }\n'], ['\n  float: left;\n  margin: 0 .6em 0 0;\n  visibility: hidden;\n\n  & + ', ' {\n    display: block;\n\n    line-height: 1;\n\n    &:before,\n    &:after {\n      transition: all 150ms ease-out;\n      position: absolute;\n      top: 0;\n      left: 0;\n      height: 14px;\n      width: 14px;\n      content: \'\';\n      display: block;\n      border-radius: 3em;\n    }\n  }\n\n  & + ', ':before { box-shadow: ', ' 0 0 0 1px inset; }\n\n  &:checked + ', ':before { box-shadow: ', ' 0 0 0 1px inset; }\n\n\t& + ', ':after {\n    transform: scale3d(0,0,1);\n\n    height: 10px;\n    margin-left: 2px;\n    margin-top: 2px;\n    width: 10px;\n\n    opacity: 0;\n  }\n\n\t&:checked + ', ':after {\n    transform: scale3d(1,1,1);\n    background: ', ';\n    opacity: 1;\n  }\n']);
+    _templateObject4 = (0, _taggedTemplateLiteral3.default)(['\n  font-size: ', 'px;\n  font-weight: ', ';\n  margin-top: 4px;\n  color: ', ';\n'], ['\n  font-size: ', 'px;\n  font-weight: ', ';\n  margin-top: 4px;\n  color: ', ';\n']),
+    _templateObject5 = (0, _taggedTemplateLiteral3.default)(['\n  float: left;\n  margin: 0 .6em 0 0;\n  visibility: hidden;\n\n  & + ', ' {\n    display: block;\n    line-height: 1;\n    overflow: hidden;\n\n    &:before,\n    &:after {\n      transition: all 150ms ease-out;\n      position: absolute;\n      top: 0;\n      left: 0;\n      height: 14px;\n      width: 14px;\n      content: \'\';\n      display: block;\n      border-radius: 3em;\n    }\n  }\n\n  & + ', ':before { box-shadow: ', ' 0 0 0 1px inset; }\n\n  &:checked + ', ':before { box-shadow: ', ' 0 0 0 1px inset; }\n\n\t& + ', ':after {\n    transform: scale3d(0,0,1);\n\n    height: 10px;\n    margin-left: 2px;\n    margin-top: 2px;\n    width: 10px;\n\n    opacity: 0;\n  }\n\n\t&:checked + ', ':after {\n    transform: scale3d(1,1,1);\n    background: ', ';\n    opacity: 1;\n  }\n'], ['\n  float: left;\n  margin: 0 .6em 0 0;\n  visibility: hidden;\n\n  & + ', ' {\n    display: block;\n    line-height: 1;\n    overflow: hidden;\n\n    &:before,\n    &:after {\n      transition: all 150ms ease-out;\n      position: absolute;\n      top: 0;\n      left: 0;\n      height: 14px;\n      width: 14px;\n      content: \'\';\n      display: block;\n      border-radius: 3em;\n    }\n  }\n\n  & + ', ':before { box-shadow: ', ' 0 0 0 1px inset; }\n\n  &:checked + ', ':before { box-shadow: ', ' 0 0 0 1px inset; }\n\n\t& + ', ':after {\n    transform: scale3d(0,0,1);\n\n    height: 10px;\n    margin-left: 2px;\n    margin-top: 2px;\n    width: 10px;\n\n    opacity: 0;\n  }\n\n\t&:checked + ', ':after {\n    transform: scale3d(1,1,1);\n    background: ', ';\n    opacity: 1;\n  }\n']);
 
 var _react = __webpack_require__(0);
 
@@ -2360,17 +2361,19 @@ var Label = _styledComponents2.default.label(_templateObject, _styles.typography
 // prettier-ignore
 var Error = _styledComponents2.default.span(_templateObject2, _styles.typography.weight.regular, _styles.color.negative);
 
-var LabelText = _styledComponents2.default.span(_templateObject3);
+var LabelText = _styledComponents2.default.div(_templateObject3);
+var SublabelText = _styledComponents2.default.div(_templateObject4, _styles.typography.size.s1, _styles.typography.weight.regular, _styles.color.mediumdark);
 
 // prettier-ignore
-var Input = _styledComponents2.default.input.attrs({ type: 'radio' })(_templateObject4, LabelText, LabelText, _styles.color.mediumdark, LabelText, _styles.color.primary, LabelText, LabelText, _styles.color.primary);
+var Input = _styledComponents2.default.input.attrs({ type: 'radio' })(_templateObject5, LabelText, LabelText, _styles.color.mediumdark, LabelText, _styles.color.primary, LabelText, LabelText, _styles.color.primary);
 
 function Radio(_ref) {
   var value = _ref.value,
       label = _ref.label,
+      sublabel = _ref.sublabel,
       error = _ref.error,
       className = _ref.className,
-      props = (0, _objectWithoutProperties3.default)(_ref, ['value', 'label', 'error', 'className']);
+      props = (0, _objectWithoutProperties3.default)(_ref, ['value', 'label', 'sublabel', 'error', 'className']);
 
   return _react2.default.createElement(
     Label,
@@ -2384,6 +2387,11 @@ function Radio(_ref) {
         Error,
         null,
         error
+      ),
+      sublabel && _react2.default.createElement(
+        SublabelText,
+        null,
+        sublabel
       )
     )
   );
@@ -2392,6 +2400,7 @@ function Radio(_ref) {
 Radio.propTypes = {
   value: _propTypes2.default.string,
   label: _propTypes2.default.string,
+  sublabel: _propTypes2.default.string,
   error: _propTypes2.default.string,
   className: _propTypes2.default.string
 };
@@ -2399,6 +2408,7 @@ Radio.propTypes = {
 Radio.defaultProps = {
   value: '',
   label: null,
+  sublabel: null,
   error: null,
   className: null
 };
@@ -6618,7 +6628,7 @@ var _templateObject = (0, _taggedTemplateLiteral3.default)(['\n  color: ', ';\n 
     _templateObject6 = (0, _taggedTemplateLiteral3.default)(['\n  opacity: 0;\n  color: ', ';\n  font-weight: ', ';\n\n  path {\n    transition: all 150ms ease-in-out;\n    fill: ', ';\n  }\n\n  &:hover {\n    color: ', ';\n    path { fill: ', '; }\n  }\n'], ['\n  opacity: 0;\n  color: ', ';\n  font-weight: ', ';\n\n  path {\n    transition: all 150ms ease-in-out;\n    fill: ', ';\n  }\n\n  &:hover {\n    color: ', ';\n    path { fill: ', '; }\n  }\n']),
     _templateObject7 = (0, _taggedTemplateLiteral3.default)(['\n  position: absolute;\n  right: 0;\n  top: 0;\n'], ['\n  position: absolute;\n  right: 0;\n  top: 0;\n']),
     _templateObject8 = (0, _taggedTemplateLiteral3.default)(['\n  position: relative;\n  padding: 7px 0;\n\n  ', '\n\n  &:hover ', ' {\n    opacity: 1;\n  }\n\n  ', '\n'], ['\n  position: relative;\n  padding: 7px 0;\n\n  ', '\n\n  &:hover ', ' {\n    opacity: 1;\n  }\n\n  ', '\n']),
-    _templateObject9 = (0, _taggedTemplateLiteral3.default)(['\n    ', ' > span {\n      ', ';\n      float: left;\n\n      &:before {\n        animation: ', ' 1.5s ease-in-out infinite;\n        box-shadow: none;\n        background: ', ';\n      }\n    }\n  '], ['\n    ', ' > span {\n      ', ';\n      float: left;\n\n      &:before {\n        animation: ', ' 1.5s ease-in-out infinite;\n        box-shadow: none;\n        background: ', ';\n      }\n    }\n  ']),
+    _templateObject9 = (0, _taggedTemplateLiteral3.default)(['\n    ', ' > div {\n      ', ';\n      float: left;\n\n      &:before {\n        animation: ', ' 1.5s ease-in-out infinite;\n        box-shadow: none;\n        background: ', ';\n      }\n    }\n  '], ['\n    ', ' > div {\n      ', ';\n      float: left;\n\n      &:before {\n        animation: ', ' 1.5s ease-in-out infinite;\n        box-shadow: none;\n        background: ', ';\n      }\n    }\n  ']),
     _templateObject10 = (0, _taggedTemplateLiteral3.default)(['\n    ', ' {\n      opacity: 1;\n    }\n  '], ['\n    ', ' {\n      opacity: 1;\n    }\n  ']),
     _templateObject11 = (0, _taggedTemplateLiteral3.default)(['margin-top: 0.75rem;'], ['margin-top: 0.75rem;']);
 
@@ -6714,7 +6724,8 @@ function SpecItem(_ref) {
   var id = spec.id,
       name = spec.name,
       number = spec.number,
-      status = spec.status;
+      status = spec.status,
+      ignoredSelectors = spec.ignoredSelectors;
 
   var saving = status === 'saving';
   var ourName = name || (status === 'saved' || status === 'deleted' ? 'Spec #' + number : 'Unsaved #' + (index + 1));
@@ -6787,7 +6798,14 @@ function SpecItem(_ref) {
   return _react2.default.createElement(
     Item,
     (0, _extends3.default)({ loading: loading, status: status, selected: selected }, props),
-    _react2.default.createElement(Spec, { label: ourName, name: 'spec', value: id, checked: selected, onChange: onSelect }),
+    _react2.default.createElement(Spec, {
+      label: ourName,
+      sublabel: ignoredSelectors && ignoredSelectors.length > 0 ? ignoredSelectors.length + ' ignored selectors' : null,
+      name: 'spec',
+      value: id,
+      checked: selected,
+      onChange: onSelect
+    }),
     !loading && _react2.default.createElement(
       Actions,
       null,
@@ -6810,7 +6828,8 @@ SpecItem.propTypes = {
     id: _propTypes2.default.string.isRequired,
     name: _propTypes2.default.string,
     number: _propTypes2.default.number,
-    status: _propTypes2.default.oneOf(['unsaved', 'saving', 'saved', 'deleted'])
+    status: _propTypes2.default.oneOf(['unsaved', 'saving', 'saved', 'deleted']),
+    ignoredSelectors: _propTypes2.default.arrayOf(_propTypes2.default.string.isRequired)
   }),
   index: _propTypes2.default.number.isRequired,
   selected: _propTypes2.default.bool,
@@ -6827,7 +6846,8 @@ SpecItem.defaultProps = {
   spec: {
     id: 'loading',
     name: 'Loading spec',
-    status: 'unsaved'
+    status: 'unsaved',
+    ignoredSelectors: []
   },
   selected: false,
   reviewLink: null,
