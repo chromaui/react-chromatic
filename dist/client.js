@@ -371,7 +371,7 @@ var _taggedTemplateLiteral2 = __webpack_require__(1);
 
 var _taggedTemplateLiteral3 = _interopRequireDefault(_taggedTemplateLiteral2);
 
-var _templateObject = (0, _taggedTemplateLiteral3.default)(['\n  display: inline-block;\n  transition: all 150ms ease-out;\n  text-decoration: none;\n\n  color: ', ';\n  > svg path { fill: ', '; }\n  &:hover, &:focus {\n    cursor: pointer;\n    transform: translate3d(0,-1px,0);\n    color: ', ';\n    > svg path { fill: ', ' }\n  }\n  &:active {\n    transform: translate3d(0,0,0);\n    color: ', ';\n    > svg path { fill: ', ' }\n  }\n\n  > svg {\n    display: inline-block;\n    height: .85em;\n    width: .85em;\n    vertical-align: text-top;\n    position: relative;\n    bottom: -.225em;\n    margin-right: .25em;\n  }\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n'], ['\n  display: inline-block;\n  transition: all 150ms ease-out;\n  text-decoration: none;\n\n  color: ', ';\n  > svg path { fill: ', '; }\n  &:hover, &:focus {\n    cursor: pointer;\n    transform: translate3d(0,-1px,0);\n    color: ', ';\n    > svg path { fill: ', ' }\n  }\n  &:active {\n    transform: translate3d(0,0,0);\n    color: ', ';\n    > svg path { fill: ', ' }\n  }\n\n  > svg {\n    display: inline-block;\n    height: .85em;\n    width: .85em;\n    vertical-align: text-top;\n    position: relative;\n    bottom: -.225em;\n    margin-right: .25em;\n  }\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n']),
+var _templateObject = (0, _taggedTemplateLiteral3.default)(['\n  display: inline-block;\n  transition: all 150ms ease-out;\n  text-decoration: none;\n\n  color: ', ';\n  > svg path { fill: ', '; }\n  &:hover, &:focus {\n    cursor: pointer;\n    transform: translate3d(0,-1px,0);\n    color: ', ';\n    > svg path { fill: ', ' }\n  }\n  &:active {\n    transform: translate3d(0,0,0);\n    color: ', ';\n    > svg path { fill: ', ' }\n  }\n\n  > svg {\n    display: inline-block;\n    height: .85em;\n    width: .85em;\n    vertical-align: text-top;\n    position: relative;\n    bottom: -.225em;\n    margin-right: .25em;  \n  }\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n'], ['\n  display: inline-block;\n  transition: all 150ms ease-out;\n  text-decoration: none;\n\n  color: ', ';\n  > svg path { fill: ', '; }\n  &:hover, &:focus {\n    cursor: pointer;\n    transform: translate3d(0,-1px,0);\n    color: ', ';\n    > svg path { fill: ', ' }\n  }\n  &:active {\n    transform: translate3d(0,0,0);\n    color: ', ';\n    > svg path { fill: ', ' }\n  }\n\n  > svg {\n    display: inline-block;\n    height: .85em;\n    width: .85em;\n    vertical-align: text-top;\n    position: relative;\n    bottom: -.225em;\n    margin-right: .25em;  \n  }\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n\n  ', '\n']),
     _templateObject2 = (0, _taggedTemplateLiteral3.default)(['\n    svg {\n      height: 1em;\n      width: 1em;\n      vertical-align: top;\n      position: relative;\n      bottom: 0;\n      margin-right: 0;\n    }\n  '], ['\n    svg {\n      height: 1em;\n      width: 1em;\n      vertical-align: top;\n      position: relative;\n      bottom: 0;\n      margin-right: 0;\n    }\n  ']),
     _templateObject3 = (0, _taggedTemplateLiteral3.default)(['\n    color: ', ';\n    > svg path { fill: ', '; }\n\n    &:hover {\n      color: ', ';\n      > svg path { fill: ', '; }\n    }\n\n    &:active {\n      color: ', ';\n      > svg path { fill: ', '; }\n    }\n\t'], ['\n    color: ', ';\n    > svg path { fill: ', '; }\n\n    &:hover {\n      color: ', ';\n      > svg path { fill: ', '; }\n    }\n\n    &:active {\n      color: ', ';\n      > svg path { fill: ', '; }\n    }\n\t']),
     _templateObject4 = (0, _taggedTemplateLiteral3.default)(['\n    color: inherit;\n\n    &:hover, &:active {\n      color: inherit;\n      text-decoration: underline;\n    }\n\t'], ['\n    color: inherit;\n\n    &:hover, &:active {\n      color: inherit;\n      text-decoration: underline;\n    }\n\t']),
@@ -389,7 +389,7 @@ var _styledComponents = __webpack_require__(2);
 
 var _styledComponents2 = _interopRequireDefault(_styledComponents);
 
-var _polished = __webpack_require__(22);
+var _polished = __webpack_require__(21);
 
 var _styles = __webpack_require__(5);
 
@@ -482,7 +482,7 @@ Object.defineProperty(exports, 'Breadcrumb', {
   }
 });
 
-var _Button = __webpack_require__(19);
+var _Button = __webpack_require__(22);
 
 Object.defineProperty(exports, 'Button', {
   enumerable: true,
@@ -831,6 +831,44 @@ module.exports = require("mobx");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.Callback = exports.parse = exports.stringify = undefined;
+
+var _ejson = __webpack_require__(56);
+
+var _Callback = __webpack_require__(46);
+
+var _Callback2 = _interopRequireDefault(_Callback);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.stringify = _ejson.stringify;
+exports.parse = _ejson.parse;
+exports.Callback = _Callback2.default;
+
+// Ensure this has been registered
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports) {
+
+module.exports = require("mobx-react");
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports) {
+
+module.exports = require("polished");
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _extends2 = __webpack_require__(6);
 
@@ -876,7 +914,7 @@ var _styledComponents = __webpack_require__(2);
 
 var _styledComponents2 = _interopRequireDefault(_styledComponents);
 
-var _polished = __webpack_require__(22);
+var _polished = __webpack_require__(21);
 
 var _styles = __webpack_require__(5);
 
@@ -981,44 +1019,6 @@ Button.defaultProps = {
 exports.default = Button;
 
 /***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Callback = exports.parse = exports.stringify = undefined;
-
-var _ejson = __webpack_require__(56);
-
-var _Callback = __webpack_require__(46);
-
-var _Callback2 = _interopRequireDefault(_Callback);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.stringify = _ejson.stringify;
-exports.parse = _ejson.parse;
-exports.Callback = _Callback2.default;
-
-// Ensure this has been registered
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports) {
-
-module.exports = require("mobx-react");
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports) {
-
-module.exports = require("polished");
-
-/***/ }),
 /* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1037,7 +1037,7 @@ exports.hashSpecInput = hashSpecInput;
 
 var _mobx = __webpack_require__(18);
 
-var _serialize = __webpack_require__(20);
+var _serialize = __webpack_require__(19);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3061,7 +3061,7 @@ var _graphqlTag2 = _interopRequireDefault(_graphqlTag);
 
 var _mobx = __webpack_require__(18);
 
-var _serialize = __webpack_require__(20);
+var _serialize = __webpack_require__(19);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3199,7 +3199,7 @@ var _styledComponents = __webpack_require__(2);
 
 var _styledComponents2 = _interopRequireDefault(_styledComponents);
 
-var _mobxReact = __webpack_require__(21);
+var _mobxReact = __webpack_require__(20);
 
 var _components = __webpack_require__(16);
 
@@ -4146,7 +4146,7 @@ var _renderSpec2 = _interopRequireDefault(_renderSpec);
 
 var _render = __webpack_require__(31);
 
-var _serialize = __webpack_require__(20);
+var _serialize = __webpack_require__(19);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4876,7 +4876,7 @@ var _styledComponents2 = _interopRequireDefault(_styledComponents);
 
 var _animation = __webpack_require__(7);
 
-var _Button = __webpack_require__(19);
+var _Button = __webpack_require__(22);
 
 var _Button2 = _interopRequireDefault(_Button);
 
@@ -4963,7 +4963,7 @@ var _styledComponents = __webpack_require__(2);
 
 var _styledComponents2 = _interopRequireDefault(_styledComponents);
 
-var _Button = __webpack_require__(19);
+var _Button = __webpack_require__(22);
 
 var _Button2 = _interopRequireDefault(_Button);
 
@@ -5055,7 +5055,7 @@ var _styledComponents = __webpack_require__(2);
 
 var _styledComponents2 = _interopRequireDefault(_styledComponents);
 
-var _polished = __webpack_require__(22);
+var _polished = __webpack_require__(21);
 
 var _styles = __webpack_require__(5);
 
@@ -5895,16 +5895,17 @@ var _taggedTemplateLiteral2 = __webpack_require__(1);
 var _taggedTemplateLiteral3 = _interopRequireDefault(_taggedTemplateLiteral2);
 
 var _templateObject = (0, _taggedTemplateLiteral3.default)(['\n  && {\n    font-weight: ', ';\n    font-size: ', 'px;\n    line-height: 1;\n    padding: 4px 28px 4px 0;\n    overflow-wrap: break-word;\n    hyphens: auto;\n  }\n'], ['\n  && {\n    font-weight: ', ';\n    font-size: ', 'px;\n    line-height: 1;\n    padding: 4px 28px 4px 0;\n    overflow-wrap: break-word;\n    hyphens: auto;\n  }\n']),
-    _templateObject2 = (0, _taggedTemplateLiteral3.default)(['\n  margin-left: 4px;\n  padding: 2px;\n\n  svg {\n    height: 12px;\n    width: 12px;\n  }\n'], ['\n  margin-left: 4px;\n  padding: 2px;\n\n  svg {\n    height: 12px;\n    width: 12px;\n  }\n']),
-    _templateObject3 = (0, _taggedTemplateLiteral3.default)(['\n  color: ', ';\n  font-weight: ', ';\n  font-size: ', 'px;\n  line-height: 1;\n  line-height: 18px;\n'], ['\n  color: ', ';\n  font-weight: ', ';\n  font-size: ', 'px;\n  line-height: 1;\n  line-height: 18px;\n']),
-    _templateObject4 = (0, _taggedTemplateLiteral3.default)(['\n  font-size: ', 'px;\n  margin-left: 12px;\n  display: inline-block;\n  line-height: 18px;\n'], ['\n  font-size: ', 'px;\n  margin-left: 12px;\n  display: inline-block;\n  line-height: 18px;\n']),
+    _templateObject2 = (0, _taggedTemplateLiteral3.default)(['\n  font-weight: ', ';\n  font-size: ', 'px;\n  line-height: 1;\n  line-height: 18px;\n  color: ', ';\n'], ['\n  font-weight: ', ';\n  font-size: ', 'px;\n  line-height: 1;\n  line-height: 18px;\n  color: ', ';\n']),
+    _templateObject3 = (0, _taggedTemplateLiteral3.default)(['', ';'], ['', ';']),
+    _templateObject4 = (0, _taggedTemplateLiteral3.default)(['\n  ', '\n\n  svg {\n    margin-right: 0;\n    margin-left: .25em;\n  }\n'], ['\n  ', '\n\n  svg {\n    margin-right: 0;\n    margin-left: .25em;\n  }\n']),
     _templateObject5 = (0, _taggedTemplateLiteral3.default)(['\n  display: inline-block;\n  vertical-align: top;\n'], ['\n  display: inline-block;\n  vertical-align: top;\n']),
-    _templateObject6 = (0, _taggedTemplateLiteral3.default)(['\n  font-size: 0;\n  margin-top: 2px;\n'], ['\n  font-size: 0;\n  margin-top: 2px;\n']),
-    _templateObject7 = (0, _taggedTemplateLiteral3.default)([''], ['']),
-    _templateObject8 = (0, _taggedTemplateLiteral3.default)(['\n  font-size: 0;\n\n  ', ' {\n    position: absolute;\n    right: 0;\n    top: 0;\n  }\n\n  ', '\n'], ['\n  font-size: 0;\n\n  ', ' {\n    position: absolute;\n    right: 0;\n    top: 0;\n  }\n\n  ', '\n']),
-    _templateObject9 = (0, _taggedTemplateLiteral3.default)(['\n    ', ' span, ', ' {\n      ', '\n    }\n  '], ['\n    ', ' span, ', ' {\n      ', '\n    }\n  ']),
-    _templateObject10 = (0, _taggedTemplateLiteral3.default)(['\n  border-top: 1px solid ', ';\n  margin: .75rem 0 .75rem;\n'], ['\n  border-top: 1px solid ', ';\n  margin: .75rem 0 .75rem;\n']),
-    _templateObject11 = (0, _taggedTemplateLiteral3.default)(['\n  position: relative;\n'], ['\n  position: relative;\n']);
+    _templateObject6 = (0, _taggedTemplateLiteral3.default)(['\n  display: inline-block;\n  vertical-align: top;\n  margin-left: 10px;\n  margin-right: 14px;\n  height: 18px;\n  border-right: 1px solid ', ';\n'], ['\n  display: inline-block;\n  vertical-align: top;\n  margin-left: 10px;\n  margin-right: 14px;\n  height: 18px;\n  border-right: 1px solid ', ';\n']),
+    _templateObject7 = (0, _taggedTemplateLiteral3.default)(['\n  font-size: 0;\n  margin-top: 2px;\n'], ['\n  font-size: 0;\n  margin-top: 2px;\n']),
+    _templateObject8 = (0, _taggedTemplateLiteral3.default)([''], ['']),
+    _templateObject9 = (0, _taggedTemplateLiteral3.default)(['\n  font-size: 0;\n\n  ', ' {\n    position: absolute;\n    right: 0;\n    top: 0;\n  }\n\n  ', '\n'], ['\n  font-size: 0;\n\n  ', ' {\n    position: absolute;\n    right: 0;\n    top: 0;\n  }\n\n  ', '\n']),
+    _templateObject10 = (0, _taggedTemplateLiteral3.default)(['\n    ', ' span, ', ' {\n      ', '\n    }\n  '], ['\n    ', ' span, ', ' {\n      ', '\n    }\n  ']),
+    _templateObject11 = (0, _taggedTemplateLiteral3.default)(['\n  border-top: 1px solid ', ';\n  margin: .75rem 0 .75rem;\n'], ['\n  border-top: 1px solid ', ';\n  margin: .75rem 0 .75rem;\n']),
+    _templateObject12 = (0, _taggedTemplateLiteral3.default)(['\n  position: relative;\n'], ['\n  position: relative;\n']);
 
 exports.default = ComponentHeader;
 
@@ -5924,10 +5925,6 @@ var _Link = __webpack_require__(15);
 
 var _Link2 = _interopRequireDefault(_Link);
 
-var _Button = __webpack_require__(19);
-
-var _Button2 = _interopRequireDefault(_Button);
-
 var _Icon = __webpack_require__(14);
 
 var _Icon2 = _interopRequireDefault(_Icon);
@@ -5945,41 +5942,43 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // prettier-ignore
 var Title = _styledComponents2.default.h1(_templateObject, _styles.typography.weight.extrabold, _styles.typography.size.m1);
 
-var BuildListButton = (0, _styledComponents2.default)(_Button2.default)(_templateObject2);
+var DetailStyle = (0, _styledComponents.css)(_templateObject2, _styles.typography.weight.bold, _styles.typography.size.s2 - 1, _styles.color.dark);
+
+var Detail = _styledComponents2.default.span(_templateObject3, DetailStyle);
 
 // prettier-ignore
-var Detail = (0, _styledComponents2.default)(_Link2.default)(_templateObject3, _styles.color.dark, _styles.typography.weight.bold, _styles.typography.size.s2 - 1);
-
-// prettier-ignore
-var CommitLink = (0, _styledComponents2.default)(_Link2.default)(_templateObject4, _styles.typography.size.s1 - 1);
+var DetailLink = (0, _styledComponents2.default)(_Link2.default)(_templateObject4, DetailStyle);
 
 var DetailTooltip = (0, _styledComponents2.default)(_WithTooltip2.default)(_templateObject5);
 
-var DetailWrapper = _styledComponents2.default.div(_templateObject6);
+var DetailSeparator = _styledComponents2.default.span(_templateObject6, _styles.color.mediumlight);
 
-var Action = _styledComponents2.default.div(_templateObject7);
+var DetailWrapper = _styledComponents2.default.div(_templateObject7);
+
+var Action = _styledComponents2.default.div(_templateObject8);
 
 // prettier-ignore
-var Meta = _styledComponents2.default.div(_templateObject8, Action, function (props) {
-  return props.loading && (0, _styledComponents.css)(_templateObject9, Title, Detail, _animation.inlineGlow);
+var Meta = _styledComponents2.default.div(_templateObject9, Action, function (props) {
+  return props.loading && (0, _styledComponents.css)(_templateObject10, Title, Detail, _animation.inlineGlow);
 });
 
 // prettier-ignore
-var Break = _styledComponents2.default.div(_templateObject10, _styles.color.mediumlight);
+var Break = _styledComponents2.default.div(_templateObject11, _styles.color.mediumlight);
 
 // prettier-ignore
-var Header = _styledComponents2.default.div(_templateObject11);
+var Header = _styledComponents2.default.div(_templateObject12);
 
 function ComponentHeader(_ref) {
   var loading = _ref.loading,
       build = _ref.build,
       name = _ref.component.name,
+      branchTooltip = _ref.branchTooltip,
       buildTooltip = _ref.buildTooltip,
       actionButton = _ref.actionButton,
-      LinkWrapper = _ref.LinkWrapper,
-      props = (0, _objectWithoutProperties3.default)(_ref, ['loading', 'build', 'component', 'buildTooltip', 'actionButton', 'LinkWrapper']);
+      props = (0, _objectWithoutProperties3.default)(_ref, ['loading', 'build', 'component', 'branchTooltip', 'buildTooltip', 'actionButton']);
 
   var detail = void 0;
+
   if (loading) {
     detail = _react2.default.createElement(
       Detail,
@@ -5987,40 +5986,47 @@ function ComponentHeader(_ref) {
       'Loading'
     );
   }
+
   if (!loading && build) {
     var number = build.number,
-        commit = build.commit,
-        commitUrl = build.commitUrl,
-        webUrl = build.webUrl;
+        branch = build.branch;
 
 
-    var detailInner = _react2.default.createElement(
+    var buildInner = _react2.default.createElement(
       Detail,
-      { tertiary: true, href: webUrl },
+      null,
       'Build ',
       number
     );
-    if (LinkWrapper) {
-      detailInner = _react2.default.createElement(
-        LinkWrapper,
-        { href: webUrl },
-        detailInner
+
+    if (buildTooltip) {
+      buildInner = _react2.default.createElement(
+        DetailTooltip,
+        { placement: 'bottom', mode: 'click', tooltip: buildTooltip },
+        _react2.default.createElement(
+          DetailLink,
+          { tertiary: true },
+          buildInner,
+          _react2.default.createElement(_Icon2.default, { icon: 'arrowdown' })
+        )
       );
     }
 
-    if (buildTooltip) {
-      detailInner = _react2.default.createElement(
-        'span',
-        null,
-        detailInner,
+    var branchInner = _react2.default.createElement(
+      Detail,
+      null,
+      branch
+    );
+
+    if (branchTooltip) {
+      branchInner = _react2.default.createElement(
+        DetailTooltip,
+        { placement: 'bottom', mode: 'click', tooltip: branchTooltip },
         _react2.default.createElement(
-          DetailTooltip,
-          { placement: 'bottom', mode: 'click', tooltip: buildTooltip },
-          _react2.default.createElement(
-            BuildListButton,
-            { small: true, icon: true, outline: true },
-            _react2.default.createElement(_Icon2.default, { icon: 'arrowdown' })
-          )
+          DetailLink,
+          { tertiary: true },
+          branchInner,
+          _react2.default.createElement(_Icon2.default, { icon: 'arrowdown' })
         )
       );
     }
@@ -6028,14 +6034,12 @@ function ComponentHeader(_ref) {
     detail = _react2.default.createElement(
       DetailWrapper,
       null,
-      detailInner,
-      commit && _react2.default.createElement(
-        CommitLink,
-        { href: commitUrl, tertiary: true, target: '_blank' },
-        commit.substring(0, 6)
-      )
+      branchInner,
+      _react2.default.createElement(DetailSeparator, null),
+      buildInner
     );
   }
+
   return _react2.default.createElement(
     Header,
     (0, _extends3.default)({ loading: loading }, props),
@@ -6066,17 +6070,15 @@ ComponentHeader.propTypes = {
   loading: _propTypes2.default.bool,
   build: _propTypes2.default.shape({
     id: _propTypes2.default.string.isRequired,
-    webUrl: _propTypes2.default.string.isRequired,
     number: _propTypes2.default.number.isRequired,
-    commit: _propTypes2.default.string,
-    commitUrl: _propTypes2.default.string
+    branch: _propTypes2.default.string.isRequired
   }),
   component: _propTypes2.default.shape({
     name: _propTypes2.default.string
   }),
   buildTooltip: _propTypes2.default.node,
-  actionButton: _propTypes2.default.node,
-  LinkWrapper: _propTypes2.default.func
+  branchTooltip: _propTypes2.default.node,
+  actionButton: _propTypes2.default.node
 };
 
 ComponentHeader.defaultProps = {
@@ -6088,8 +6090,8 @@ ComponentHeader.defaultProps = {
     builds: []
   },
   buildTooltip: false,
-  actionButton: null,
-  LinkWrapper: null
+  branchTooltip: false,
+  actionButton: null
 };
 
 /***/ }),
@@ -6139,7 +6141,7 @@ var _propTypes = __webpack_require__(3);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _serialize = __webpack_require__(20);
+var _serialize = __webpack_require__(19);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6356,7 +6358,7 @@ var _validatorjs = __webpack_require__(59);
 
 var _validatorjs2 = _interopRequireDefault(_validatorjs);
 
-var _mobxReact = __webpack_require__(21);
+var _mobxReact = __webpack_require__(20);
 
 var _FormState2 = __webpack_require__(40);
 
@@ -6644,7 +6646,7 @@ var _Badge = __webpack_require__(38);
 
 var _Badge2 = _interopRequireDefault(_Badge);
 
-var _Button = __webpack_require__(19);
+var _Button = __webpack_require__(22);
 
 var _Button2 = _interopRequireDefault(_Button);
 
@@ -8834,7 +8836,7 @@ var _styledComponents2 = _interopRequireDefault(_styledComponents);
 
 var _animateCssStyledComponents = __webpack_require__(124);
 
-var _mobxReact = __webpack_require__(21);
+var _mobxReact = __webpack_require__(20);
 
 var _components = __webpack_require__(16);
 
@@ -8999,7 +9001,7 @@ var _styledComponents = __webpack_require__(2);
 
 var _styledComponents2 = _interopRequireDefault(_styledComponents);
 
-var _polished = __webpack_require__(22);
+var _polished = __webpack_require__(21);
 
 var _components = __webpack_require__(16);
 
@@ -9141,7 +9143,7 @@ var _styledComponents = __webpack_require__(2);
 
 var _styledComponents2 = _interopRequireDefault(_styledComponents);
 
-var _polished = __webpack_require__(22);
+var _polished = __webpack_require__(21);
 
 var _components = __webpack_require__(16);
 
@@ -10234,7 +10236,7 @@ var _graphqlTag2 = _interopRequireDefault(_graphqlTag);
 
 var _recompose = __webpack_require__(17);
 
-var _serialize = __webpack_require__(20);
+var _serialize = __webpack_require__(19);
 
 var _Spec = __webpack_require__(23);
 
@@ -10678,7 +10680,7 @@ var _styledComponents = __webpack_require__(2);
 
 var _styledComponents2 = _interopRequireDefault(_styledComponents);
 
-var _mobxReact = __webpack_require__(21);
+var _mobxReact = __webpack_require__(20);
 
 var _recompose = __webpack_require__(17);
 
@@ -10822,7 +10824,7 @@ var _styledComponents = __webpack_require__(2);
 
 var _styledComponents2 = _interopRequireDefault(_styledComponents);
 
-var _mobxReact = __webpack_require__(21);
+var _mobxReact = __webpack_require__(20);
 
 var _components = __webpack_require__(16);
 
