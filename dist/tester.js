@@ -448,14 +448,14 @@ var getBaselinesFromCommits = function () {
               }
             });
 
-            console.log({ baselineCommits: baselineCommits, oldestCommittedAt: oldestCommittedAt });
+            // console.log({ baselineCommits, oldestCommittedAt });
 
             return _context2.abrupt('return', {
               baselineCommits: baselineCommits,
               oldestCommittedAt: oldestCommittedAt
             });
 
-          case 8:
+          case 7:
           case 'end':
             return _context2.stop();
         }
@@ -484,38 +484,47 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
 
           case 2:
             recentCommits = _context3.sent.app.buildCommits;
-            _context3.next = 5;
-            return getBaselinesFromCommits(recentCommits);
+
+            if (!(recentCommits.length === 0)) {
+              _context3.next = 5;
+              break;
+            }
+
+            return _context3.abrupt('return', []);
 
           case 5:
+            _context3.next = 7;
+            return getBaselinesFromCommits(recentCommits);
+
+          case 7:
             _ref4 = _context3.sent;
             recentBaselineCommits = _ref4.baselineCommits;
             oldestCommittedAt = _ref4.oldestCommittedAt;
 
             if (!(oldestCommittedAt === null || recentCommits.length < FETCH_N_INITAL_BUILD_COMMITS)) {
-              _context3.next = 10;
+              _context3.next = 12;
               break;
             }
 
             return _context3.abrupt('return', recentBaselineCommits);
 
-          case 10:
-            _context3.next = 12;
+          case 12:
+            _context3.next = 14;
             return client.runQuery(TesterGetAllPossibleBuildCommitsQuery, {
               oldestCommittedAt: oldestCommittedAt
             });
 
-          case 12:
+          case 14:
             allPossibleCommits = _context3.sent.app.buildCommits;
-            _context3.next = 15;
+            _context3.next = 17;
             return getBaselinesFromCommits([].concat((0, _toConsumableArray3.default)(recentCommits), (0, _toConsumableArray3.default)(allPossibleCommits)));
 
-          case 15:
+          case 17:
             _ref5 = _context3.sent;
             baselineCommits = _ref5.baselineCommits;
             return _context3.abrupt('return', baselineCommits);
 
-          case 18:
+          case 20:
           case 'end':
             return _context3.stop();
         }
@@ -1221,7 +1230,7 @@ exports.default = function () {
           case 29:
             baselineCommits = _context2.sent;
 
-            console.log(baselineCommits);
+            // console.log(baselineCommits);
 
             appPathWithSlash = appPath[0] === '/' ? appPath : '/' + appPath;
             url = 'http://localhost:' + port + appPathWithSlash;
@@ -1229,10 +1238,10 @@ exports.default = function () {
             if (scriptName !== 'none') {
               log('Starting app with `npm run ' + scriptName + '`');
             }
-            _context2.next = 36;
+            _context2.next = 35;
             return (0, _startApp2.default)({ scriptName: scriptName, url: url });
 
-          case 36:
+          case 35:
             child = _context2.sent;
 
             if (child) {
@@ -1241,32 +1250,32 @@ exports.default = function () {
               log('Detected app on port ' + port);
             }
 
-            _context2.next = 40;
+            _context2.next = 39;
             return (0, _runtimes2.default)(url);
 
-          case 40:
+          case 39:
             runtimeSpecs = _context2.sent;
             isolatorUrl = url;
             tunnel = void 0;
 
             if (!createTunnel) {
-              _context2.next = 49;
+              _context2.next = 48;
               break;
             }
 
-            _context2.next = 46;
+            _context2.next = 45;
             return (0, _tunnel2.default)({ port: port });
 
-          case 46:
+          case 45:
             tunnel = _context2.sent;
 
             log('Opened tunnel to ' + tunnel.url);
             isolatorUrl = '' + tunnel.url + appPathWithSlash;
 
-          case 49:
+          case 48:
             exitCode = 5;
-            _context2.prev = 50;
-            _context2.next = 53;
+            _context2.prev = 49;
+            _context2.next = 52;
             return client.runQuery(TesterCreateBuildMutation, {
               input: {
                 branch: branch,
@@ -1278,7 +1287,7 @@ exports.default = function () {
               isolatorUrl: isolatorUrl
             });
 
-          case 53:
+          case 52:
             _ref7 = _context2.sent;
             _ref7$createBuild = _ref7.createBuild;
             number = _ref7$createBuild.number;
@@ -1289,138 +1298,138 @@ exports.default = function () {
 
             log('Started Build ' + number + ' ' + ('(' + pluralize(componentCount, 'component') + ', ' + pluralize(specCount, 'spec') + ').\n\n' + onlineHint + '.'));
 
-            _context2.next = 63;
+            _context2.next = 62;
             return waitForBuild(client, {
               buildNumber: number
             });
 
-          case 63:
+          case 62:
             _ref8 = _context2.sent;
             status = _ref8.status;
             changeCount = _ref8.changeCount;
             errorCount = _ref8.errorCount;
             _context2.t1 = status;
-            _context2.next = _context2.t1 === 'BUILD_PASSED' ? 70 : _context2.t1 === 'BUILD_PENDING' ? 73 : _context2.t1 === 'BUILD_ACCEPTED' ? 73 : _context2.t1 === 'BUILD_DENIED' ? 73 : _context2.t1 === 'BUILD_FAILED' ? 76 : _context2.t1 === 'BUILD_TIMED_OUT' ? 79 : _context2.t1 === 'BUILD_ERROR' ? 82 : 85;
+            _context2.next = _context2.t1 === 'BUILD_PASSED' ? 69 : _context2.t1 === 'BUILD_PENDING' ? 72 : _context2.t1 === 'BUILD_ACCEPTED' ? 72 : _context2.t1 === 'BUILD_DENIED' ? 72 : _context2.t1 === 'BUILD_FAILED' ? 75 : _context2.t1 === 'BUILD_TIMED_OUT' ? 78 : _context2.t1 === 'BUILD_ERROR' ? 81 : 84;
             break;
 
-          case 70:
+          case 69:
             log('Build ' + number + ' passed! ' + onlineHint + '.');
             exitCode = 0;
-            return _context2.abrupt('break', 86);
+            return _context2.abrupt('break', 85);
 
-          case 73:
+          case 72:
             log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
             exitCode = 1;
-            return _context2.abrupt('break', 86);
+            return _context2.abrupt('break', 85);
 
-          case 76:
+          case 75:
             log('Build ' + number + ' has ' + pluralize(errorCount, 'error') + '. ' + onlineHint + '.');
             exitCode = 2;
-            return _context2.abrupt('break', 86);
+            return _context2.abrupt('break', 85);
 
-          case 79:
+          case 78:
             log('Build ' + number + ' has timed out. Ensure your machine is connected to the internet and please try again.');
             exitCode = 3;
-            return _context2.abrupt('break', 86);
+            return _context2.abrupt('break', 85);
 
-          case 82:
+          case 81:
             log('Build ' + number + ' has failed to run. Our apologies. Please try again.');
             exitCode = 4;
-            return _context2.abrupt('break', 86);
+            return _context2.abrupt('break', 85);
 
-          case 85:
+          case 84:
             throw new Error('Unexpected build status: ' + status);
 
-          case 86:
-            _context2.next = 96;
+          case 85:
+            _context2.next = 95;
             break;
 
-          case 88:
-            _context2.prev = 88;
-            _context2.t2 = _context2['catch'](50);
+          case 87:
+            _context2.prev = 87;
+            _context2.t2 = _context2['catch'](49);
 
             if (!(_context2.t2.length && _context2.t2[0] && _context2.t2[0].message.match(/Cannot run a build with no specs./))) {
-              _context2.next = 95;
+              _context2.next = 94;
               break;
             }
 
             log(_context2.t2[0].message);
             exitCode = 255;
-            _context2.next = 96;
+            _context2.next = 95;
             break;
 
-          case 95:
+          case 94:
             throw _context2.t2;
 
-          case 96:
-            _context2.prev = 96;
+          case 95:
+            _context2.prev = 95;
 
             if (tunnel) {
               tunnel.close();
             }
 
             if (!child) {
-              _context2.next = 101;
+              _context2.next = 100;
               break;
             }
 
-            _context2.next = 101;
+            _context2.next = 100;
             return (0, _denodeify2.default)(_treeKill2.default)(child.pid, 'SIGHUP');
 
-          case 101:
-            return _context2.finish(96);
+          case 100:
+            return _context2.finish(95);
 
-          case 102:
+          case 101:
             if ((0, _packageJson.checkPackageJson)()) {
-              _context2.next = 123;
+              _context2.next = 122;
               break;
             }
 
             scriptCommand = 'chromatic test --app-code \'' + appCode + '\' --port=' + port;
-            _context2.next = 106;
+            _context2.next = 105;
             return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
 
-          case 106:
+          case 105:
             confirmed = _context2.sent;
 
             if (!confirmed) {
-              _context2.next = 121;
+              _context2.next = 120;
               break;
             }
 
             fullScriptName = scriptName;
 
             if (!(fullScriptName === 'none')) {
-              _context2.next = 116;
+              _context2.next = 115;
               break;
             }
 
-            _context2.next = 112;
+            _context2.next = 111;
             return (0, _nodeAsk.prompt)('What npm script do you use to start your app? [start]');
 
-          case 112:
+          case 111:
             _context2.t3 = _context2.sent;
 
             if (_context2.t3) {
-              _context2.next = 115;
+              _context2.next = 114;
               break;
             }
 
             _context2.t3 = 'start';
 
-          case 115:
+          case 114:
             fullScriptName = _context2.t3;
 
-          case 116:
+          case 115:
 
             scriptCommand = scriptCommand + ' --script-name=\'' + fullScriptName + '\'';
 
             (0, _packageJson.addScriptToPackageJson)('chromatic', scriptCommand);
             console.log('\nAdded script `chromatic`. You can now run it here or in CI with `npm run chromatic` (or `yarn chromatic`)');
-            _context2.next = 123;
+            _context2.next = 122;
             break;
 
-          case 121:
+          case 120:
             message = '\nNo problem. You can add it later as: "' + scriptCommand;
 
 
@@ -1430,15 +1439,15 @@ exports.default = function () {
               console.log(message);
             }
 
-          case 123:
+          case 122:
             return _context2.abrupt('return', exitCode);
 
-          case 124:
+          case 123:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[6, 14], [50, 88, 96, 102]]);
+    }, _callee2, this, [[6, 14], [49, 87, 95, 101]]);
   }));
 
   function runTest(_x3) {
