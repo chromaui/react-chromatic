@@ -1110,7 +1110,7 @@ var waitForBuild = function () {
 
             _context.next = 10;
             return new _promise2.default(function (resolve) {
-              return setTimeout(resolve, 1000);
+              return setTimeout(resolve, BUILD_POLL_INTERVAL);
             });
 
           case 10:
@@ -1169,6 +1169,8 @@ var _GraphQLClient2 = _interopRequireDefault(_GraphQLClient);
 var _git = __webpack_require__(10);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var BUILD_POLL_INTERVAL = 1000;
 
 var TesterCreateAppTokenMutation = '\n  mutation TesterCreateAppTokenMutation($appCode: String!) {\n    createAppToken(code: $appCode)\n  }\n';
 
