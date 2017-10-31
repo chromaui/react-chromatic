@@ -9,6 +9,7 @@
     "build:bin": "babel -s -d ./dist ./src -D --only 'assets,bin'",
     "build:webpack": "webpack",
     "build": "npm-run-all --serial -l build:**",
+    "prepare": "npm run build",
     "dev": "npm-run-all --parallel -l 'build:** -- --watch'"
   },
   "bin": {
