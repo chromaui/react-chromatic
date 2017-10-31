@@ -144,7 +144,7 @@ var _asyncToGenerator2 = __webpack_require__(0);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _localtunnel = __webpack_require__(23);
+var _localtunnel = __webpack_require__(25);
 
 var _localtunnel2 = _interopRequireDefault(_localtunnel);
 
@@ -321,11 +321,11 @@ var _values2 = _interopRequireDefault(_values);
 exports.checkPackageJson = checkPackageJson;
 exports.addScriptToPackageJson = addScriptToPackageJson;
 
-var _path = __webpack_require__(24);
+var _path = __webpack_require__(26);
 
 var _path2 = _interopRequireDefault(_path);
 
-var _jsonfile = __webpack_require__(22);
+var _jsonfile = __webpack_require__(24);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -387,21 +387,100 @@ var _asyncToGenerator2 = __webpack_require__(0);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _jsdom = __webpack_require__(21);
+var _classCallCheck2 = __webpack_require__(20);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__(21);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _jsdom = __webpack_require__(23);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function addShimsToJSDOM(dom) {
-  // This is reasonably common
   Object.defineProperty(dom.window, 'matchMedia', {
     value: function value() {
-      return { matches: true };
+      return {
+        matches: true,
+        addListener: function addListener() {},
+        removeListener: function removeListener() {}
+      };
     }
   });
-} /* eslint-disable no-console */
+
+  var LocalStorageMock = function () {
+    function LocalStorageMock() {
+      (0, _classCallCheck3.default)(this, LocalStorageMock);
+
+      this.store = {};
+    }
+
+    (0, _createClass3.default)(LocalStorageMock, [{
+      key: 'getItem',
+      value: function getItem(key) {
+        return this.store[key];
+      }
+    }, {
+      key: 'removeItem',
+      value: function removeItem(key) {
+        delete this.store[key];
+      }
+    }, {
+      key: 'setItem',
+      value: function setItem(key, value) {
+        this.store[key] = value.toString();
+      }
+    }, {
+      key: 'clear',
+      value: function clear() {
+        this.store = {};
+      }
+    }]);
+    return LocalStorageMock;
+  }();
+
+  Object.defineProperty(dom.window, 'localStorage', {
+    value: new LocalStorageMock()
+  });
+
+  var WorkerMock = function () {
+    function WorkerMock() {
+      (0, _classCallCheck3.default)(this, WorkerMock);
+    }
+
+    (0, _createClass3.default)(WorkerMock, [{
+      key: 'addEventListener',
+      value: function addEventListener() {}
+    }, {
+      key: 'removeEventLister',
+      value: function removeEventLister() {}
+    }, {
+      key: 'postMessage',
+      value: function postMessage() {}
+    }, {
+      key: 'terminate',
+      value: function terminate() {}
+    }]);
+    return WorkerMock;
+  }();
+
+  Object.defineProperty(dom.window, 'Worker', WorkerMock);
+
+  Object.defineProperty(dom.window, 'crypto', {
+    getRandomValues: function getRandomValues() {
+      return 0;
+    }
+  });
+} /* eslint-disable no-console, class-methods-use-this */
 
 exports.default = function () {
   var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(url) {
+    var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref2$verbose = _ref2.verbose,
+        verbose = _ref2$verbose === undefined ? false : _ref2$verbose;
+
     var logs, virtualConsole, dom;
     return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
@@ -419,8 +498,13 @@ exports.default = function () {
               return logs.push({ logType: 'error', log: log });
             });
 
-            _context.next = 6;
+            if (verbose) {
+              virtualConsole.sendTo(console);
+            }
+
+            _context.next = 7;
             return _jsdom.JSDOM.fromURL(url, {
+              userAgent: 'Chromatic',
               // We need to execute the scripts on the page
               runScripts: 'dangerously',
               // We need to load scripts that are loaded via script tags
@@ -429,7 +513,7 @@ exports.default = function () {
               virtualConsole: virtualConsole
             });
 
-          case 6:
+          case 7:
             dom = _context.sent;
 
 
@@ -445,12 +529,12 @@ exports.default = function () {
                 if (!dom.window.__chromaticRuntimeSpecs__) {
                   console.error('Didn\'t find \'window.__chromaticRuntimeSpecs__\' at ' + url + '.\n' + 'Have you installed the Chromatic widget or addon correctly?\n');
 
-                  if (logs.length) {
+                  if (!verbose && logs.length) {
                     var separator = '=========================';
                     console.error('Your app\'s output:\n' + separator + '\n');
-                    logs.forEach(function (_ref2) {
-                      var logType = _ref2.logType,
-                          log = _ref2.log;
+                    logs.forEach(function (_ref3) {
+                      var logType = _ref3.logType,
+                          log = _ref3.log;
                       return console[logType](log);
                     });
                     console.error('\n' + separator + '\n');
@@ -463,7 +547,7 @@ exports.default = function () {
               });
             }));
 
-          case 9:
+          case 10:
           case 'end':
             return _context.stop();
         }
@@ -471,7 +555,7 @@ exports.default = function () {
     }, _callee, this);
   }));
 
-  function getRuntimeSpecs(_x) {
+  function getRuntimeSpecs(_x2) {
     return _ref.apply(this, arguments);
   }
 
@@ -626,7 +710,7 @@ var waitForResponse = function () {
 
 var _child_process = __webpack_require__(6);
 
-var _isomorphicFetch = __webpack_require__(20);
+var _isomorphicFetch = __webpack_require__(22);
 
 var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
@@ -893,6 +977,8 @@ exports.default = function () {
         port = _ref5.port,
         _ref5$appPath = _ref5.appPath,
         appPath = _ref5$appPath === undefined ? '/' : _ref5$appPath,
+        _ref5$verbose = _ref5.verbose,
+        verbose = _ref5$verbose === undefined ? false : _ref5$verbose,
         _ref5$indexUrl = _ref5.indexUrl,
         indexUrl = _ref5$indexUrl === undefined ? _environment.CHROMATIC_INDEX_URL : _ref5$indexUrl,
         _ref5$createTunnel = _ref5.createTunnel,
@@ -994,7 +1080,7 @@ exports.default = function () {
             }
 
             _context3.next = 36;
-            return (0, _runtimes2.default)(url);
+            return (0, _runtimes2.default)(url, { verbose: verbose });
 
           case 36:
             runtimeSpecs = _context3.sent;
@@ -1214,28 +1300,40 @@ module.exports = require("babel-runtime/core-js/object/values");
 /* 20 */
 /***/ (function(module, exports) {
 
-module.exports = require("isomorphic-fetch");
+module.exports = require("babel-runtime/helpers/classCallCheck");
 
 /***/ }),
 /* 21 */
 /***/ (function(module, exports) {
 
-module.exports = require("jsdom");
+module.exports = require("babel-runtime/helpers/createClass");
 
 /***/ }),
 /* 22 */
 /***/ (function(module, exports) {
 
-module.exports = require("jsonfile");
+module.exports = require("isomorphic-fetch");
 
 /***/ }),
 /* 23 */
 /***/ (function(module, exports) {
 
-module.exports = require("localtunnel");
+module.exports = require("jsdom");
 
 /***/ }),
 /* 24 */
+/***/ (function(module, exports) {
+
+module.exports = require("jsonfile");
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports) {
+
+module.exports = require("localtunnel");
+
+/***/ }),
+/* 26 */
 /***/ (function(module, exports) {
 
 module.exports = require("path");
