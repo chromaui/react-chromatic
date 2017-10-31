@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 'use strict';
 
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
 var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
@@ -24,7 +28,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // Ensure NODE_ENV is set
 process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
-_commander2.default.option('-a, --app-code [code]', 'the code for your app, get from chromaticqa.com').option('-s, --script-name [name]', 'How to start your app. Set to none if your app is already running.').option('-p, --port [port]', 'What port does your app serve?').option('--app-path [path]', "Do we need to access a different path (instead of '/')?", '/').option('--storybook-addon', 'Autodetect config for storybook addon setup', false).option('--create-tunnel [boolean]', 'tunnel the service over the internet (default true)', true).option('--index-url [url]', 'index to connect to').parse(process.argv);
+_commander2.default.option('-a, --app-code [code]', 'the code for your app, get from chromaticqa.com').option('-s, --script-name [name]', 'How to start your app. Set to none if your app is already running.').option('-p, --port [port]', 'What port does your app serve?').option('--app-path [path]', "Do we need to access a different path (instead of '/')?").option('--storybook-addon', 'Autodetect config for storybook addon setup', false).option('--create-tunnel [boolean]', 'tunnel the service over the internet (default true)', true).option('--index-url [url]', 'index to connect to').parse(process.argv);
 
 function findOption(storybookScript, shortName, longName) {
   var parts = storybookScript.split(/[\s+|=]/);
@@ -51,25 +55,13 @@ if (_commander2.default.storybookAddon) {
   if (storybookScript) {
     var port = findOption(storybookScript, '-p', '--port');
 
-    var configDir = './.storybook';
-    try {
-      configDir = findOption(storybookScript, '-c', '--config-dir');
-    } catch (e) {
-      if (e.message.match('find storybook option')) {
-        // eslint-disable-next-line no-console
-        console.log('Chromatic Tester: ' + e.message + ', using default (\'' + configDir + '\')');
-      } else {
-        throw e;
-      }
-    }
-
     storybookOptions = (0, _extends3.default)({}, storybookOptions, {
       scriptName: scriptName,
       port: port
     });
 
     // eslint-disable-next-line no-console
-    console.log('Chromatic Tester: Detected \'' + scriptName + '\' script, running on port ' + port + ' and with config dir \'' + configDir + '\'');
+    console.log('Chromatic Tester: Detected \'' + scriptName + '\' script, running with inferred options:\n  --script-name=' + scriptName + ' --port=' + port + ' --app-path=/iframe.html\nOverride any of the above if they were inferred incorrectly.\n');
   } else {
     // eslint-disable-next-line no-console
     console.error('Chromatic Tester: Didn\'t find a script called \'' + scriptName + '\' in your `package.json`.\n' + 'Make sure you set the `--script-name` option to the value of the npm script that starts your storybook');
@@ -77,7 +69,7 @@ if (_commander2.default.storybookAddon) {
   }
 }
 
-var commandLineOptions = (0, _extends3.default)({
+var commanderOptions = {
   config: _commander2.default.config,
   appCode: _commander2.default.appCode,
   scriptName: _commander2.default.scriptName,
@@ -85,7 +77,25 @@ var commandLineOptions = (0, _extends3.default)({
   appPath: _commander2.default.appPath,
   createTunnel: _commander2.default.createTunnel !== 'false',
   indexUrl: _commander2.default.indexUrl
-}, storybookOptions);
+};
+
+// We want the user's options to win, but not if they are undefined!
+//   (That's what Object.assign would do)
+function combine(obj1, obj2) {
+  var ret = {};
+
+  [obj1, obj2].forEach(function (obj) {
+    (0, _keys2.default)(obj).filter(function (key) {
+      return obj[key] !== undefined;
+    }).forEach(function (key) {
+      ret[key] = obj[key];
+    });
+  });
+
+  return ret;
+}
+
+var commandLineOptions = combine(storybookOptions, commanderOptions);
 
 (0, _tester2.default)(commandLineOptions).then(function (code) {
   return process.exit(code);
