@@ -64,7 +64,7 @@ module.exports =
 /******/ 	__webpack_require__.p = "dist";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 17);
+/******/ 	return __webpack_require__(__webpack_require__.s = 19);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -123,16 +123,28 @@ module.exports = require("debug");
 /* 6 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/helpers/extends");
+module.exports = require("babel-runtime/helpers/classCallCheck");
 
 /***/ }),
 /* 7 */
 /***/ (function(module, exports) {
 
-module.exports = require("child_process");
+module.exports = require("babel-runtime/helpers/createClass");
 
 /***/ }),
 /* 8 */
+/***/ (function(module, exports) {
+
+module.exports = require("babel-runtime/helpers/extends");
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+module.exports = require("child_process");
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -150,19 +162,19 @@ var _asyncToGenerator2 = __webpack_require__(0);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _extends2 = __webpack_require__(6);
+var _extends2 = __webpack_require__(8);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _classCallCheck2 = __webpack_require__(21);
+var _classCallCheck2 = __webpack_require__(6);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(22);
+var _createClass2 = __webpack_require__(7);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _apolloFetch = __webpack_require__(18);
+var _apolloFetch = __webpack_require__(20);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -271,7 +283,7 @@ var GraphQLClient = function () {
 exports.default = GraphQLClient;
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -337,7 +349,7 @@ exports.default = function () {
 }();
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -346,7 +358,7 @@ exports.default = function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getBaselineCommits = exports.getBranch = exports.getCommit = undefined;
+exports.getBaselineCommits = exports.getBranch = exports.getCommit = exports.FETCH_N_INITAL_BUILD_COMMITS = undefined;
 
 var _toConsumableArray2 = __webpack_require__(24);
 
@@ -642,7 +654,7 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
   };
 }();
 
-var _child_process = __webpack_require__(7);
+var _child_process = __webpack_require__(9);
 
 var _denodeify = __webpack_require__(3);
 
@@ -656,13 +668,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var debug = (0, _debug2.default)('react-chromatic:tester:git');
 
-var FETCH_N_INITAL_BUILD_COMMITS = 20;
-var TesterGetRecentBuildCommitsQuery = '\n  query TesterGetRecentBuildsQuery {\n    app {\n      buildCommits(limit: ' + FETCH_N_INITAL_BUILD_COMMITS + ')\n    }\n  }\n';
+var FETCH_N_INITAL_BUILD_COMMITS = exports.FETCH_N_INITAL_BUILD_COMMITS = 20;
+var TesterGetRecentBuildCommitsQuery = '\n  query TesterGetRecentBuildCommitsQuery {\n    app {\n      buildCommits(limit: ' + FETCH_N_INITAL_BUILD_COMMITS + ')\n    }\n  }\n';
 
-var TesterGetAllPossibleBuildCommitsQuery = '\n  query TesterGetAllPossibleBuildsQuery($oldestCommittedAt: Float!) {\n    app {\n      buildCommits(skip: ' + FETCH_N_INITAL_BUILD_COMMITS + ', oldestCommittedAt: $oldestCommittedAt)\n    }\n  }\n';
+var TesterGetAllPossibleBuildCommitsQuery = '\n  query TesterGetAllPossibleBuildCommitsQuery($oldestCommittedAt: Float!) {\n    app {\n      buildCommits(skip: ' + FETCH_N_INITAL_BUILD_COMMITS + ', oldestCommittedAt: $oldestCommittedAt)\n    }\n  }\n';
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -672,7 +684,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _values = __webpack_require__(20);
+var _values = __webpack_require__(22);
 
 var _values2 = _interopRequireDefault(_values);
 
@@ -719,7 +731,7 @@ function addScriptToPackageJson(scriptName, scriptCommand) {
 }
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -737,7 +749,7 @@ var _promise = __webpack_require__(2);
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _keys = __webpack_require__(19);
+var _keys = __webpack_require__(21);
 
 var _keys2 = _interopRequireDefault(_keys);
 
@@ -745,21 +757,100 @@ var _asyncToGenerator2 = __webpack_require__(0);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
+var _classCallCheck2 = __webpack_require__(6);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__(7);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
 var _jsdom = __webpack_require__(26);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function addShimsToJSDOM(dom) {
-  // This is reasonably common
   Object.defineProperty(dom.window, 'matchMedia', {
     value: function value() {
-      return { matches: true };
+      return {
+        matches: true,
+        addListener: function addListener() {},
+        removeListener: function removeListener() {}
+      };
     }
   });
-} /* eslint-disable no-console */
+
+  var LocalStorageMock = function () {
+    function LocalStorageMock() {
+      (0, _classCallCheck3.default)(this, LocalStorageMock);
+
+      this.store = {};
+    }
+
+    (0, _createClass3.default)(LocalStorageMock, [{
+      key: 'getItem',
+      value: function getItem(key) {
+        return this.store[key];
+      }
+    }, {
+      key: 'removeItem',
+      value: function removeItem(key) {
+        delete this.store[key];
+      }
+    }, {
+      key: 'setItem',
+      value: function setItem(key, value) {
+        this.store[key] = value.toString();
+      }
+    }, {
+      key: 'clear',
+      value: function clear() {
+        this.store = {};
+      }
+    }]);
+    return LocalStorageMock;
+  }();
+
+  Object.defineProperty(dom.window, 'localStorage', {
+    value: new LocalStorageMock()
+  });
+
+  var WorkerMock = function () {
+    function WorkerMock() {
+      (0, _classCallCheck3.default)(this, WorkerMock);
+    }
+
+    (0, _createClass3.default)(WorkerMock, [{
+      key: 'addEventListener',
+      value: function addEventListener() {}
+    }, {
+      key: 'removeEventLister',
+      value: function removeEventLister() {}
+    }, {
+      key: 'postMessage',
+      value: function postMessage() {}
+    }, {
+      key: 'terminate',
+      value: function terminate() {}
+    }]);
+    return WorkerMock;
+  }();
+
+  Object.defineProperty(dom.window, 'Worker', WorkerMock);
+
+  Object.defineProperty(dom.window, 'crypto', {
+    getRandomValues: function getRandomValues() {
+      return 0;
+    }
+  });
+} /* eslint-disable no-console, class-methods-use-this */
 
 exports.default = function () {
   var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(url) {
+    var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref2$verbose = _ref2.verbose,
+        verbose = _ref2$verbose === undefined ? false : _ref2$verbose;
+
     var logs, virtualConsole, dom;
     return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
@@ -777,8 +868,13 @@ exports.default = function () {
               return logs.push({ logType: 'error', log: log });
             });
 
-            _context.next = 6;
+            if (verbose) {
+              virtualConsole.sendTo(console);
+            }
+
+            _context.next = 7;
             return _jsdom.JSDOM.fromURL(url, {
+              userAgent: 'Chromatic',
               // We need to execute the scripts on the page
               runScripts: 'dangerously',
               // We need to load scripts that are loaded via script tags
@@ -787,7 +883,7 @@ exports.default = function () {
               virtualConsole: virtualConsole
             });
 
-          case 6:
+          case 7:
             dom = _context.sent;
 
 
@@ -803,12 +899,12 @@ exports.default = function () {
                 if (!dom.window.__chromaticRuntimeSpecs__) {
                   console.error('Didn\'t find \'window.__chromaticRuntimeSpecs__\' at ' + url + '.\n' + 'Have you installed the Chromatic widget or addon correctly?\n');
 
-                  if (logs.length) {
+                  if (!verbose && logs.length) {
                     var separator = '=========================';
                     console.error('Your app\'s output:\n' + separator + '\n');
-                    logs.forEach(function (_ref2) {
-                      var logType = _ref2.logType,
-                          log = _ref2.log;
+                    logs.forEach(function (_ref3) {
+                      var logType = _ref3.logType,
+                          log = _ref3.log;
                       return console[logType](log);
                     });
                     console.error('\n' + separator + '\n');
@@ -821,7 +917,7 @@ exports.default = function () {
               });
             }));
 
-          case 9:
+          case 10:
           case 'end':
             return _context.stop();
         }
@@ -829,7 +925,7 @@ exports.default = function () {
     }, _callee, this);
   }));
 
-  function getRuntimeSpecs(_x) {
+  function getRuntimeSpecs(_x2) {
     return _ref.apply(this, arguments);
   }
 
@@ -837,7 +933,7 @@ exports.default = function () {
 }();
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -847,7 +943,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends2 = __webpack_require__(6);
+var _extends2 = __webpack_require__(8);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
@@ -982,7 +1078,7 @@ var waitForResponse = function () {
   };
 }();
 
-var _child_process = __webpack_require__(7);
+var _child_process = __webpack_require__(9);
 
 var _isomorphicFetch = __webpack_require__(25);
 
@@ -1036,25 +1132,25 @@ exports.default = function () {
 }();
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = require("babel-runtime/core-js/json/stringify");
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports) {
 
 module.exports = require("node-ask");
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports) {
 
 module.exports = require("tree-kill");
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1072,7 +1168,7 @@ var _promise = __webpack_require__(2);
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _stringify = __webpack_require__(14);
+var _stringify = __webpack_require__(16);
 
 var _stringify2 = _interopRequireDefault(_stringify);
 
@@ -1110,7 +1206,7 @@ var waitForBuild = function () {
 
             _context.next = 10;
             return new _promise2.default(function (resolve) {
-              return setTimeout(resolve, 1000);
+              return setTimeout(resolve, BUILD_POLL_INTERVAL);
             });
 
           case 10:
@@ -1136,39 +1232,41 @@ var _denodeify = __webpack_require__(3);
 
 var _denodeify2 = _interopRequireDefault(_denodeify);
 
-var _nodeAsk = __webpack_require__(15);
+var _nodeAsk = __webpack_require__(17);
 
 var _debug = __webpack_require__(5);
 
 var _debug2 = _interopRequireDefault(_debug);
 
-var _treeKill = __webpack_require__(16);
+var _treeKill = __webpack_require__(18);
 
 var _treeKill2 = _interopRequireDefault(_treeKill);
 
 var _environment = __webpack_require__(4);
 
-var _runtimes = __webpack_require__(12);
+var _runtimes = __webpack_require__(14);
 
 var _runtimes2 = _interopRequireDefault(_runtimes);
 
-var _startApp = __webpack_require__(13);
+var _startApp = __webpack_require__(15);
 
 var _startApp2 = _interopRequireDefault(_startApp);
 
-var _tunnel = __webpack_require__(9);
+var _tunnel = __webpack_require__(11);
 
 var _tunnel2 = _interopRequireDefault(_tunnel);
 
-var _packageJson = __webpack_require__(11);
+var _packageJson = __webpack_require__(13);
 
-var _GraphQLClient = __webpack_require__(8);
+var _GraphQLClient = __webpack_require__(10);
 
 var _GraphQLClient2 = _interopRequireDefault(_GraphQLClient);
 
-var _git = __webpack_require__(10);
+var _git = __webpack_require__(12);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var BUILD_POLL_INTERVAL = 1000;
 
 var TesterCreateAppTokenMutation = '\n  mutation TesterCreateAppTokenMutation($appCode: String!) {\n    createAppToken(code: $appCode)\n  }\n';
 
@@ -1198,6 +1296,8 @@ exports.default = function () {
         port = _ref3.port,
         _ref3$appPath = _ref3.appPath,
         appPath = _ref3$appPath === undefined ? '/' : _ref3$appPath,
+        _ref3$verbose = _ref3.verbose,
+        verbose = _ref3$verbose === undefined ? false : _ref3$verbose,
         _ref3$indexUrl = _ref3.indexUrl,
         indexUrl = _ref3$indexUrl === undefined ? _environment.CHROMATIC_INDEX_URL : _ref3$indexUrl,
         _ref3$createTunnel = _ref3.createTunnel,
@@ -1299,7 +1399,7 @@ exports.default = function () {
             }
 
             _context2.next = 41;
-            return (0, _runtimes2.default)(url);
+            return (0, _runtimes2.default)(url, { verbose: verbose });
 
           case 41:
             runtimeSpecs = _context2.sent;
@@ -1506,34 +1606,22 @@ exports.default = function () {
 }();
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports) {
 
 module.exports = require("apollo-fetch");
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports) {
 
 module.exports = require("babel-runtime/core-js/object/keys");
 
 /***/ }),
-/* 20 */
-/***/ (function(module, exports) {
-
-module.exports = require("babel-runtime/core-js/object/values");
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports) {
-
-module.exports = require("babel-runtime/helpers/classCallCheck");
-
-/***/ }),
 /* 22 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/helpers/createClass");
+module.exports = require("babel-runtime/core-js/object/values");
 
 /***/ }),
 /* 23 */
