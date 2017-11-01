@@ -469,12 +469,10 @@ function addShimsToJSDOM(dom) {
   Object.defineProperty(dom.window, 'Worker', WorkerMock);
 
   Object.defineProperty(dom.window, 'crypto', {
-    value: function value() {
-      return {
-        getRandomValues: function getRandomValues() {
-          return 0;
-        }
-      };
+    value: {
+      getRandomValues: function getRandomValues() {
+        return 0;
+      }
     }
   });
 } /* eslint-disable no-console, class-methods-use-this */
