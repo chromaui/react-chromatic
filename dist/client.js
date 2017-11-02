@@ -1442,24 +1442,19 @@ var WithTooltip = function (_Component) {
     value: function events() {
       var mode = this.props.mode;
 
+      var events = void 0;
       if (mode === 'hover') {
-        var events = {
+        events = {
           onMouseOver: this.onShow,
           onMouseOut: this.onHide
         };
-        return {
-          targetEvents: events,
-          popperEvents: events
-        };
       } else if (mode === 'click' || mode === 'click-start-open') {
-        return {
-          targetEvents: {
-            onClick: this.onToggleHidden
-          },
-          popperEvents: {}
+        events = {
+          onClick: this.onToggleHidden
         };
       }
-      throw new Error('Tooltip mode ' + mode + ' not implemented');
+
+      return events;
     }
   }, {
     key: 'renderPopper',
@@ -1497,7 +1492,7 @@ var WithTooltip = function (_Component) {
               placement: placement,
               hidden: hidden,
               hasChrome: hasChrome
-            }, this.events().popperEvents),
+            }, this.events()),
             tooltip
           )
         );
@@ -1523,7 +1518,7 @@ var WithTooltip = function (_Component) {
 
       return _react2.default.createElement(
         TargetContainer,
-        (0, _extends3.default)({}, this.events().targetEvents, {
+        (0, _extends3.default)({}, this.events(), {
           innerRef: function innerRef(r) {
             _this4.targetElement = r;
           },
