@@ -5767,9 +5767,9 @@ function Canvas(_ref) {
       error = _ref.error,
       setError = _ref.setError,
       ignoredRegions = _ref.ignoredRegions,
-      ignoreMode = _ref.ignoreMode,
-      onSetIgnoreMode = _ref.onSetIgnoreMode,
-      props = (0, _objectWithoutProperties3.default)(_ref, ['loading', 'label', 'labelLinkText', 'labelLink', 'LinkWrapper', 'interactive', 'figure', 'spec', 'error', 'setError', 'ignoredRegions', 'ignoreMode', 'onSetIgnoreMode']);
+      showIgnoredRegions = _ref.showIgnoredRegions,
+      onSetShowIgnoredRegions = _ref.onSetShowIgnoredRegions,
+      props = (0, _objectWithoutProperties3.default)(_ref, ['loading', 'label', 'labelLinkText', 'labelLink', 'LinkWrapper', 'interactive', 'figure', 'spec', 'error', 'setError', 'ignoredRegions', 'showIgnoredRegions', 'onSetShowIgnoredRegions']);
 
   var onConnectionError = function onConnectionError() {
     var on = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
@@ -5868,17 +5868,19 @@ function Canvas(_ref) {
       ActionGroup,
       null,
       // Show the ignore button if this component is passed a function
-      onSetIgnoreMode && _react2.default.createElement(
+      ignoredRegions.length > 0 && onSetShowIgnoredRegions && _react2.default.createElement(
         Action,
-        { inverse: true, onClick: onSetIgnoreMode },
-        _react2.default.createElement(_Icon2.default, { icon: ignoreMode ? 'eyeclose' : 'eye' }),
-        ignoreMode ? 'Hide ignored' : 'Show ignored'
+        { inverse: true, onClick: function onClick() {
+            return onSetShowIgnoredRegions(!showIgnoredRegions);
+          } },
+        _react2.default.createElement(_Icon2.default, { icon: showIgnoredRegions ? 'eyeclose' : 'eye' }),
+        showIgnoredRegions ? 'Hide ignored' : 'Show ignored'
       )
     ),
     _react2.default.createElement(
       CanvasScroll,
       { withLabel: label },
-      ignoredRegions.length > 0 && ignoreMode &&
+      ignoredRegions.length > 0 && showIgnoredRegions &&
       // TODO: this needs to be the same dimensions as the image
       _react2.default.createElement(
         Svg,
@@ -5916,8 +5918,8 @@ Canvas.propTypes = {
       left: _propTypes2.default.number.isRequired
     }))
   })),
-  ignoreMode: _propTypes2.default.bool,
-  onSetIgnoreMode: _propTypes2.default.func
+  showIgnoredRegions: _propTypes2.default.bool,
+  onSetShowIgnoredRegions: _propTypes2.default.func
 };
 
 Canvas.defaultProps = {
@@ -5930,8 +5932,8 @@ Canvas.defaultProps = {
   figure: 'http://via.placeholder.com/350x150',
   spec: { input: {} },
   ignoredRegions: [],
-  ignoreMode: false,
-  onSetIgnoreMode: null
+  showIgnoredRegions: false,
+  onSetShowIgnoredRegions: null
 };
 
 exports.default = (0, _recompose.hoistStatics)((0, _recompose.withState)('error', 'setError', false))(Canvas);
