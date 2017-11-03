@@ -1447,19 +1447,24 @@ var WithTooltip = function (_Component) {
     value: function events() {
       var mode = this.props.mode;
 
-      var events = void 0;
       if (mode === 'hover') {
-        events = {
+        var events = {
           onMouseOver: this.onShow,
           onMouseOut: this.onHide
         };
+        return {
+          targetEvents: events,
+          popperEvents: events
+        };
       } else if (mode === 'click' || mode === 'click-start-open') {
-        events = {
-          onClick: this.onToggleHidden
+        return {
+          targetEvents: {
+            onClick: this.onToggleHidden
+          },
+          popperEvents: {}
         };
       }
-
-      return events;
+      throw new Error('Tooltip mode ' + mode + ' not implemented');
     }
   }, {
     key: 'renderPopper',
@@ -1497,7 +1502,7 @@ var WithTooltip = function (_Component) {
               placement: placement,
               hidden: hidden,
               hasChrome: hasChrome
-            }, this.events()),
+            }, this.events().popperEvents),
             tooltip
           )
         );
@@ -1525,7 +1530,7 @@ var WithTooltip = function (_Component) {
       var Container = svg ? TargetSvgContainer : TargetContainer;
       return _react2.default.createElement(
         Container,
-        (0, _extends3.default)({}, this.events(), {
+        (0, _extends3.default)({}, this.events().targetEvents, {
           innerRef: function innerRef(r) {
             _this4.targetElement = r;
           },

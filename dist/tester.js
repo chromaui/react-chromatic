@@ -387,7 +387,7 @@ var execGitCommand = function () {
             return (0, _denodeify2.default)(_child_process.exec)(command);
 
           case 3:
-            return _context.abrupt('return', _context.sent);
+            return _context.abrupt('return', _context.sent.trim());
 
           case 6:
             _context.prev = 6;
@@ -839,8 +839,10 @@ function addShimsToJSDOM(dom) {
   Object.defineProperty(dom.window, 'Worker', WorkerMock);
 
   Object.defineProperty(dom.window, 'crypto', {
-    getRandomValues: function getRandomValues() {
-      return 0;
+    value: {
+      getRandomValues: function getRandomValues() {
+        return 0;
+      }
     }
   });
 } /* eslint-disable no-console, class-methods-use-this */
