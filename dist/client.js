@@ -5690,7 +5690,8 @@ var _templateObject = (0, _taggedTemplateLiteral3.default)(['\n  margin-left: 6p
     _templateObject10 = (0, _taggedTemplateLiteral3.default)(['\n    ', ',\n    ', ' ', ' {\n      ', ';\n\n      svg { display: none; }\n    }\n\t'], ['\n    ', ',\n    ', ' ', ' {\n      ', ';\n\n      svg { display: none; }\n    }\n\t']),
     _templateObject11 = (0, _taggedTemplateLiteral3.default)(['\n  width: 100%;\n  height: 100%;\n  border: none;\n  outline: none;\n  margin: 0;\n  display: block;\n'], ['\n  width: 100%;\n  height: 100%;\n  border: none;\n  outline: none;\n  margin: 0;\n  display: block;\n']),
     _templateObject12 = (0, _taggedTemplateLiteral3.default)(['\n  display: block;\n  max-width: 100%;\n  height: auto;\n'], ['\n  display: block;\n  max-width: 100%;\n  height: auto;\n']),
-    _templateObject13 = (0, _taggedTemplateLiteral3.default)(['\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1;\n  background: rgba(255, 0, 0, 0.1);\n'], ['\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1;\n  background: rgba(255, 0, 0, 0.1);\n']);
+    _templateObject13 = (0, _taggedTemplateLiteral3.default)(['\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1;\n'], ['\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1;\n']),
+    _templateObject14 = (0, _taggedTemplateLiteral3.default)(['position: relative;'], ['position: relative;']);
 
 var _react = __webpack_require__(0);
 
@@ -5762,7 +5763,9 @@ var Iframe = (0, _styledComponents2.default)(_IsolatorFrame2.default)(_templateO
 // prettier-ignore
 var Img = _styledComponents2.default.img(_templateObject12);
 
-var PositionedIgnoredRegions = _styledComponents2.default.div(_templateObject13);
+var IgnoredRegionsOverlay = (0, _styledComponents2.default)(_IgnoredRegions2.default)(_templateObject13);
+
+var IgnoredRegionsWrapper = _styledComponents2.default.div(_templateObject14);
 
 function Canvas(_ref) {
   var loading = _ref.loading,
@@ -5890,12 +5893,12 @@ function Canvas(_ref) {
     _react2.default.createElement(
       CanvasScroll,
       { withLabel: label },
-      ignoredRegions.length > 0 && showIgnoredRegions && _react2.default.createElement(
-        PositionedIgnoredRegions,
+      ignoredRegions.length > 0 && showIgnoredRegions ? _react2.default.createElement(
+        IgnoredRegionsWrapper,
         null,
-        _react2.default.createElement(_IgnoredRegions2.default, { imageSize: imageSize, ignoredRegions: ignoredRegions })
-      ),
-      figure && visualization
+        _react2.default.createElement(IgnoredRegionsOverlay, { imageSize: imageSize, ignoredRegions: ignoredRegions }),
+        figure && visualization
+      ) : figure && visualization
     )
   );
 }
@@ -7207,7 +7210,7 @@ var _templateObject = (0, _taggedTemplateLiteral3.default)(['\n  font-weight: ',
     _templateObject2 = (0, _taggedTemplateLiteral3.default)(['\n  float: right;\n  svg {\n    vertical-align: middle;\n  }\n'], ['\n  float: right;\n  svg {\n    vertical-align: middle;\n  }\n']),
     _templateObject3 = (0, _taggedTemplateLiteral3.default)(['\n  width: 100%;\n  margin: 0.5rem 0 0;\n'], ['\n  width: 100%;\n  margin: 0.5rem 0 0;\n']),
     _templateObject4 = (0, _taggedTemplateLiteral3.default)(['\n  color: ', ';\n  line-height: 18px;\n'], ['\n  color: ', ';\n  line-height: 18px;\n']),
-    _templateObject5 = (0, _taggedTemplateLiteral3.default)(['\n  padding: 15px;\n  width: 200px;\n\n  box-sizing: border-box;\n'], ['\n  padding: 15px;\n  width: 200px;\n\n  box-sizing: border-box;\n']);
+    _templateObject5 = (0, _taggedTemplateLiteral3.default)(['\n  box-sizing: border-box;\n  padding: 15px;\n  width: 200px;\n'], ['\n  box-sizing: border-box;\n  padding: 15px;\n  width: 200px;\n']);
 
 var _react = __webpack_require__(0);
 
@@ -7270,7 +7273,7 @@ function TooltipIgnore(_ref) {
           _react2.default.createElement(_Icon2.default, { icon: 'question' })
         )
       ),
-      _react2.default.createElement(CodeInput, { value: selector, appearance: 'code' })
+      _react2.default.createElement(CodeInput, { value: selector, appearance: 'code', readOnly: true })
     )
   );
 }
