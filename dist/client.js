@@ -2919,7 +2919,12 @@ var UnserializeableInputError = function (_ExtendableError) {
   (0, _createClass3.default)(UnserializeableInputError, [{
     key: 'toString',
     value: function toString() {
-      return 'found node with unserializable input ' + this.data;
+      try {
+        return 'found node with unserializable input ' + this.data;
+      } catch (e) {
+        // If we cannot even call `.toString()` on `this.data`
+        return 'found node with unserializable input';
+      }
     }
   }]);
   return UnserializeableInputError;
