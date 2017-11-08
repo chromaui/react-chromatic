@@ -5903,8 +5903,8 @@ function Canvas(_ref) {
         IgnoredRegionsWrapper,
         null,
         _react2.default.createElement(IgnoredRegionsOverlay, { imageSize: imageSize, ignoredRegions: ignoredRegions }),
-        figure && visualization
-      ) : figure && visualization
+        visualization
+      ) : visualization
     )
   );
 }
