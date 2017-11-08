@@ -500,7 +500,7 @@ var getBaselinesFromCommits = function () {
         switch (_context4.prev = _context4.next) {
           case 0:
             _context4.next = 2;
-            return execGitCommand('git rev-list HEAD --boundary --format=\'%m%H %ct\'       --not ' + commits.map(function (c) {
+            return execGitCommand('git rev-list HEAD --boundary --format=\'%m%H %ct\' --ignore-missing       --not ' + commits.map(function (c) {
               return c.trim();
             }).join(' '));
 
