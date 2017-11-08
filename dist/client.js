@@ -1210,12 +1210,13 @@ var WithTooltip = function (_Component) {
       var _this3 = this;
 
       var _props = this.props,
+          svg = _props.svg,
           mode = _props.mode,
           placement = _props.placement,
           children = _props.children,
           hasChrome = _props.hasChrome,
           tooltip = _props.tooltip,
-          props = (0, _objectWithoutProperties3.default)(_props, ['mode', 'placement', 'children', 'hasChrome', 'tooltip']);
+          props = (0, _objectWithoutProperties3.default)(_props, ['svg', 'mode', 'placement', 'children', 'hasChrome', 'tooltip']);
       var hidden = this.state.hidden;
 
 
