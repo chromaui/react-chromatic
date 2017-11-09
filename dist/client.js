@@ -5930,9 +5930,9 @@ Canvas.propTypes = {
     selector: _propTypes2.default.string.isRequired,
     regions: _propTypes2.default.arrayOf(_propTypes2.default.shape({
       top: _propTypes2.default.number.isRequired,
-      right: _propTypes2.default.number.isRequired,
-      bottom: _propTypes2.default.number.isRequired,
-      left: _propTypes2.default.number.isRequired
+      left: _propTypes2.default.number.isRequired,
+      width: _propTypes2.default.number.isRequired,
+      height: _propTypes2.default.number.isRequired
     }))
   })),
   showIgnoredRegions: _propTypes2.default.bool,
@@ -6224,8 +6224,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function IgnoredRegions(_ref) {
   var _ref$imageSize = _ref.imageSize,
-      width = _ref$imageSize.width,
-      height = _ref$imageSize.height,
+      imageWidth = _ref$imageSize.width,
+      imageHeight = _ref$imageSize.height,
       ignoredRegions = _ref.ignoredRegions,
       props = (0, _objectWithoutProperties3.default)(_ref, ['imageSize', 'ignoredRegions']);
 
@@ -6235,25 +6235,18 @@ function IgnoredRegions(_ref) {
     return regions.map(function (_ref3) {
       var top = _ref3.top,
           left = _ref3.left,
-          bottom = _ref3.bottom,
-          right = _ref3.right;
+          width = _ref3.width,
+          height = _ref3.height;
       return _react2.default.createElement(
         _WithTooltip2.default,
         {
           svg: true,
-          key: selector + '-' + top + '-' + left + '-' + bottom + '-' + right,
+          key: selector + '-' + top + '-' + left + '-' + width + '-' + height,
           placement: 'top',
           mode: 'click',
           tooltip: _react2.default.createElement(_TooltipIgnore2.default, { selector: selector })
         },
-        _react2.default.createElement('rect', {
-          x: left,
-          y: top,
-          width: right - left,
-          height: bottom - top,
-          fill: '#FFFF00',
-          fillOpacity: '0.4'
-        })
+        _react2.default.createElement('rect', { x: left, y: top, width: width, height: height, fill: '#FFFF00', fillOpacity: '0.4' })
       );
     });
   }).reduce(function (a, b) {
@@ -6262,7 +6255,11 @@ function IgnoredRegions(_ref) {
 
   return _react2.default.createElement(
     'svg',
-    (0, _extends3.default)({ viewBox: '0 0 ' + width + ' ' + height, width: width, height: height }, props),
+    (0, _extends3.default)({
+      viewBox: '0 0 ' + imageWidth + ' ' + imageHeight,
+      width: imageWidth,
+      height: imageHeight
+    }, props),
     rects
   );
 }
@@ -6277,8 +6274,8 @@ IgnoredRegions.propTypes = {
     regions: _propTypes2.default.arrayOf(_propTypes2.default.shape({
       top: _propTypes2.default.number.isRequired,
       left: _propTypes2.default.number.isRequired,
-      bottom: _propTypes2.default.number.isRequired,
-      right: _propTypes2.default.number.isRequired
+      width: _propTypes2.default.number.isRequired,
+      height: _propTypes2.default.number.isRequired
     }).isRequired)
   })).isRequired
 };
