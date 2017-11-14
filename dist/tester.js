@@ -1298,6 +1298,8 @@ exports.default = function () {
         port = _ref3.port,
         _ref3$appPath = _ref3.appPath,
         appPath = _ref3$appPath === undefined ? '/' : _ref3$appPath,
+        _ref3$exitZeroOnChang = _ref3.exitZeroOnChanges,
+        exitZeroOnChanges = _ref3$exitZeroOnChang === undefined ? false : _ref3$exitZeroOnChang,
         _ref3$verbose = _ref3.verbose,
         verbose = _ref3$verbose === undefined ? false : _ref3$verbose,
         _ref3$indexUrl = _ref3.indexUrl,
@@ -1471,7 +1473,7 @@ exports.default = function () {
 
           case 74:
             log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
-            exitCode = 1;
+            exitCode = exitZeroOnChanges ? 0 : 1;
             return _context2.abrupt('break', 87);
 
           case 77:
