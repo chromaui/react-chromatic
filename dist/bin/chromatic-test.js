@@ -36,7 +36,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // Ensure NODE_ENV is set
 process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
-_commander2.default.option('-a, --app-code [code]', 'the code for your app, get from chromaticqa.com').option('-s, --script-name [name]', 'How to start your app. Set to none if your app is already running.').option('-p, --port [port]', 'What port does your app serve?').option('--app-path [path]', "Do we need to access a different path (instead of '/')?").option('--storybook-addon', 'Autodetect config for storybook addon setup', false).option('--debug', 'Output more debugging information', false).option('--create-tunnel [boolean]', 'tunnel the service over the internet (default true)', true).option('--index-url [url]', 'index to connect to').parse(process.argv);
+_commander2.default.option('-a, --app-code [code]', 'the code for your app, get from chromaticqa.com').option('-s, --script-name [name]', 'How to start your app. Set to none if your app is already running.').option('-p, --port [port]', 'What port does your app serve?').option('--app-path [path]', 'URI path component to access Chromatic within the target app').option('--storybook-addon', 'Autodetect config for storybook addon setup', false).option('--exit-zero-on-changes', "Use a 0 exit code if changes are detected (i.e. don't stop the build)", false).option('--debug', 'Output more debugging information', false).option('--create-tunnel [boolean]', 'tunnel the service over the internet (default true)', true).option('--index-url [url]', 'index to connect to').parse(process.argv);
 
 function findOption(storybookScript, shortName, longName) {
   var parts = storybookScript.split(/[\s+|=]/);
@@ -69,7 +69,7 @@ if (_commander2.default.storybookAddon) {
     });
 
     // eslint-disable-next-line no-console
-    console.log('Chromatic Tester: Detected \'' + scriptName + '\' script, running with inferred options:\n  --script-name=' + scriptName + ' --port=' + port + ' --app-path=/iframe.html\nOverride any of the above if they were inferred incorrectly.\n');
+    console.log('Chromatic Tester: Detected \'' + scriptName + '\' script, running with inferred options:\n  --script-name=' + scriptName + ' --port=' + port + '\nOverride any of the above if they were inferred incorrectly.\n');
   } else {
     // eslint-disable-next-line no-console
     console.error('Chromatic Tester: Didn\'t find a script called \'' + scriptName + '\' in your `package.json`.\n' + 'Make sure you set the `--script-name` option to the value of the npm script that starts your storybook');
@@ -83,6 +83,7 @@ var commanderOptions = {
   scriptName: _commander2.default.scriptName,
   port: _commander2.default.port,
   appPath: _commander2.default.appPath,
+  exitZeroOnChanges: _commander2.default.exitZeroOnChanges,
   verbose: _commander2.default.debug,
   createTunnel: _commander2.default.createTunnel !== 'false',
   indexUrl: _commander2.default.indexUrl,
