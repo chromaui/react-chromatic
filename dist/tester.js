@@ -1298,14 +1298,18 @@ exports.default = function () {
         port = _ref3.port,
         _ref3$appPath = _ref3.appPath,
         appPath = _ref3$appPath === undefined ? '/' : _ref3$appPath,
+        _ref3$exitZeroOnChang = _ref3.exitZeroOnChanges,
+        exitZeroOnChanges = _ref3$exitZeroOnChang === undefined ? false : _ref3$exitZeroOnChang,
         _ref3$verbose = _ref3.verbose,
         verbose = _ref3$verbose === undefined ? false : _ref3$verbose,
         _ref3$indexUrl = _ref3.indexUrl,
         indexUrl = _ref3$indexUrl === undefined ? _environment.CHROMATIC_INDEX_URL : _ref3$indexUrl,
         _ref3$createTunnel = _ref3.createTunnel,
-        createTunnel = _ref3$createTunnel === undefined ? true : _ref3$createTunnel;
+        createTunnel = _ref3$createTunnel === undefined ? true : _ref3$createTunnel,
+        _ref3$originalArgv = _ref3.originalArgv,
+        originalArgv = _ref3$originalArgv === undefined ? false : _ref3$originalArgv;
 
-    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, branch, baselineCommits, appPathWithSlash, url, child, runtimeSpecs, isolatorUrl, tunnel, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed, fullScriptName, message;
+    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, branch, baselineCommits, appPathWithSlash, url, child, runtimeSpecs, isolatorUrl, tunnel, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
 
     return _regenerator2.default.wrap(function _callee2$(_context2) {
       while (1) {
@@ -1469,7 +1473,7 @@ exports.default = function () {
 
           case 74:
             log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
-            exitCode = 1;
+            exitCode = exitZeroOnChanges ? 0 : 1;
             return _context2.abrupt('break', 87);
 
           case 77:
@@ -1530,69 +1534,31 @@ exports.default = function () {
             return _context2.finish(97);
 
           case 103:
-            if ((0, _packageJson.checkPackageJson)()) {
-              _context2.next = 124;
+            if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
+              _context2.next = 109;
               break;
             }
 
-            scriptCommand = 'chromatic test --app-code \'' + appCode + '\' --port=' + port;
+            scriptCommand = 'chromatic test ' + originalArgv.slice(2).join(' ');
             _context2.next = 107;
             return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
 
           case 107:
             confirmed = _context2.sent;
 
-            if (!confirmed) {
-              _context2.next = 122;
-              break;
-            }
-
-            fullScriptName = scriptName;
-
-            if (!(fullScriptName === 'none')) {
-              _context2.next = 117;
-              break;
-            }
-
-            _context2.next = 113;
-            return (0, _nodeAsk.prompt)('What npm script do you use to start your app? [start]');
-
-          case 113:
-            _context2.t3 = _context2.sent;
-
-            if (_context2.t3) {
-              _context2.next = 116;
-              break;
-            }
-
-            _context2.t3 = 'start';
-
-          case 116:
-            fullScriptName = _context2.t3;
-
-          case 117:
-
-            scriptCommand = scriptCommand + ' --script-name=\'' + fullScriptName + '\'';
-
-            (0, _packageJson.addScriptToPackageJson)('chromatic', scriptCommand);
-            console.log('\nAdded script `chromatic`. You can now run it here or in CI with `npm run chromatic` (or `yarn chromatic`)');
-            _context2.next = 124;
-            break;
-
-          case 122:
-            message = '\nNo problem. You can add it later as: "' + scriptCommand;
-
-
-            if (scriptName === 'none') {
-              console.log(message + ' --script-name=<script-name>\n  (<script-name> is the name of the npm script you use to start your app)');
+            if (confirmed) {
+              (0, _packageJson.addScriptToPackageJson)('chromatic', scriptCommand);
+              // eslint-disable-next-line no-console
+              console.log('\nAdded script `chromatic`. You can now run it here or in CI with `npm run chromatic` (or `yarn chromatic`)');
             } else {
-              console.log(message);
+              // eslint-disable-next-line no-console
+              console.log('\nNo problem. You can add it later with:\n{\n  "scripts": {\n    "chromatic": "' + scriptCommand + '"\n  }\n}');
             }
 
-          case 124:
+          case 109:
             return _context2.abrupt('return', exitCode);
 
-          case 125:
+          case 110:
           case 'end':
             return _context2.stop();
         }
