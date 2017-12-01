@@ -451,6 +451,7 @@ var getCommit = exports.getCommit = function () {
 
 var getBranch = exports.getBranch = function () {
   var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
+    var branch;
     return _regenerator2.default.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -459,9 +460,19 @@ var getBranch = exports.getBranch = function () {
             return execGitCommand('git rev-parse --abbrev-ref HEAD');
 
           case 2:
-            return _context3.abrupt('return', _context3.sent.trim());
+            branch = _context3.sent.trim();
 
-          case 3:
+            if (!(branch === 'HEAD')) {
+              _context3.next = 5;
+              break;
+            }
+
+            return _context3.abrupt('return', process.env.CI_BRANCH || branch);
+
+          case 5:
+            return _context3.abrupt('return', branch);
+
+          case 6:
           case 'end':
             return _context3.stop();
         }
