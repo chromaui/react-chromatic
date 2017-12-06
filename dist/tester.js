@@ -569,25 +569,16 @@ var getBaselinesFromCommits = function () {
 
 var getBaselineCommits = exports.getBaselineCommits = function () {
   var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(client) {
-    var _ref6, currentCommit, committedAt, recentCommits, _ref7, recentBaselineCommits, oldestCommittedAt, allPossibleCommits, _ref8, baselineCommits;
+    var recentCommits, _ref6, currentCommit, _ref7, recentBaselineCommits, oldestCommittedAt, allPossibleCommits, _ref8, baselineCommits;
 
     return _regenerator2.default.wrap(function _callee5$(_context5) {
       while (1) {
         switch (_context5.prev = _context5.next) {
           case 0:
             _context5.next = 2;
-            return getCommit();
+            return client.runQuery(TesterGetRecentBuildCommitsQuery);
 
           case 2:
-            _ref6 = _context5.sent;
-            currentCommit = _ref6.commit;
-            committedAt = _ref6.committedAt;
-            _context5.next = 7;
-            return client.runQuery(TesterGetRecentBuildCommitsQuery, {
-              newestCommittedAt: committedAt
-            });
-
-          case 7:
             recentCommits = _context5.sent.app.buildCommits;
 
             debug('First ' + FETCH_N_INITAL_BUILD_COMMITS + ' commits: ' + recentCommits);
@@ -595,27 +586,34 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
             // Short-circuit: on first run, there's definitely no baseline!
 
             if (!(recentCommits.length === 0)) {
-              _context5.next = 11;
+              _context5.next = 6;
               break;
             }
 
             return _context5.abrupt('return', []);
 
-          case 11:
+          case 6:
+            _context5.next = 8;
+            return getCommit();
+
+          case 8:
+            _ref6 = _context5.sent;
+            currentCommit = _ref6.commit;
+
             if (!recentCommits.find(function (c) {
               return c === currentCommit;
             })) {
-              _context5.next = 13;
+              _context5.next = 12;
               break;
             }
 
             return _context5.abrupt('return', [currentCommit]);
 
-          case 13:
-            _context5.next = 15;
+          case 12:
+            _context5.next = 14;
             return getBaselinesFromCommits(recentCommits);
 
-          case 15:
+          case 14:
             _ref7 = _context5.sent;
             recentBaselineCommits = _ref7.baselineCommits;
             oldestCommittedAt = _ref7.oldestCommittedAt;
@@ -627,35 +625,34 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
             // builds, we can avoid an extra query
 
             if (!(oldestCommittedAt === null || recentCommits.length < FETCH_N_INITAL_BUILD_COMMITS)) {
-              _context5.next = 21;
+              _context5.next = 20;
               break;
             }
 
             return _context5.abrupt('return', recentBaselineCommits);
 
-          case 21:
-            _context5.next = 23;
+          case 20:
+            _context5.next = 22;
             return client.runQuery(TesterGetAllPossibleBuildCommitsQuery, {
-              newestCommittedAt: committedAt,
               oldestCommittedAt: oldestCommittedAt
             });
 
-          case 23:
+          case 22:
             allPossibleCommits = _context5.sent.app.buildCommits;
 
             debug('allPossibleCommits: ' + allPossibleCommits);
 
-            _context5.next = 27;
+            _context5.next = 26;
             return getBaselinesFromCommits([].concat((0, _toConsumableArray3.default)(recentCommits), (0, _toConsumableArray3.default)(allPossibleCommits)));
 
-          case 27:
+          case 26:
             _ref8 = _context5.sent;
             baselineCommits = _ref8.baselineCommits;
 
             debug('allPossible baselineCommits: ' + baselineCommits);
             return _context5.abrupt('return', baselineCommits);
 
-          case 31:
+          case 30:
           case 'end':
             return _context5.stop();
         }
@@ -683,9 +680,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var debug = (0, _debug2.default)('react-chromatic:tester:git');
 
 var FETCH_N_INITAL_BUILD_COMMITS = exports.FETCH_N_INITAL_BUILD_COMMITS = 20;
-var TesterGetRecentBuildCommitsQuery = '\n  query TesterGetRecentBuildCommitsQuery($newestCommittedAt: Float!) {\n    app {\n      buildCommits(limit: ' + FETCH_N_INITAL_BUILD_COMMITS + ', newestCommittedAt: $newestCommittedAt)\n    }\n  }\n';
+var TesterGetRecentBuildCommitsQuery = '\n  query TesterGetRecentBuildCommitsQuery {\n    app {\n      buildCommits(limit: ' + FETCH_N_INITAL_BUILD_COMMITS + ')\n    }\n  }\n';
 
-var TesterGetAllPossibleBuildCommitsQuery = '\n  query TesterGetAllPossibleBuildCommitsQuery($newestCommittedAt: Float!, $oldestCommittedAt: Float!) {\n    app {\n      buildCommits(skip: ' + FETCH_N_INITAL_BUILD_COMMITS + ', newestCommittedAt: $newestCommittedAt, oldestCommittedAt: $oldestCommittedAt)\n    }\n  }\n';
+var TesterGetAllPossibleBuildCommitsQuery = '\n  query TesterGetAllPossibleBuildCommitsQuery($oldestCommittedAt: Float!) {\n    app {\n      buildCommits(skip: ' + FETCH_N_INITAL_BUILD_COMMITS + ', oldestCommittedAt: $oldestCommittedAt)\n    }\n  }\n';
 
 /***/ }),
 /* 13 */
@@ -1323,7 +1320,7 @@ exports.default = function () {
         _ref3$originalArgv = _ref3.originalArgv,
         originalArgv = _ref3$originalArgv === undefined ? false : _ref3$originalArgv;
 
-    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, branch, baselineCommits, appPathWithSlash, url, child, runtimeSpecs, isolatorUrl, tunnel, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
+    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, branch, baselineCommits, appPathWithSlash, url, child, isolatorUrl, tunnel, runtimeSpecs, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
 
     return _regenerator2.default.wrap(function _callee2$(_context2) {
       while (1) {
@@ -1418,32 +1415,37 @@ exports.default = function () {
               log('Detected app on port ' + port);
             }
 
-            _context2.next = 41;
-            return (0, _runtimes2.default)(url, { verbose: verbose });
-
-          case 41:
-            runtimeSpecs = _context2.sent;
             isolatorUrl = url;
             tunnel = void 0;
 
             if (!createTunnel) {
-              _context2.next = 50;
+              _context2.next = 47;
               break;
             }
 
-            _context2.next = 47;
+            _context2.next = 44;
             return (0, _tunnel2.default)({ port: port });
 
-          case 47:
+          case 44:
             tunnel = _context2.sent;
 
             log('Opened tunnel to ' + tunnel.url);
             isolatorUrl = '' + tunnel.url + appPathWithSlash;
 
+          case 47:
+
+            log('Navigating to ' + isolatorUrl + ' to gather specs and warm cache');
+            _context2.next = 50;
+            return (0, _runtimes2.default)(isolatorUrl, { verbose: verbose });
+
           case 50:
+            runtimeSpecs = _context2.sent;
+
+            log('Found ' + runtimeSpecs.length + ' specs');
+
             exitCode = 5;
-            _context2.prev = 51;
-            _context2.next = 54;
+            _context2.prev = 53;
+            _context2.next = 56;
             return client.runQuery(TesterCreateBuildMutation, {
               input: {
                 branch: branch,
@@ -1455,7 +1457,7 @@ exports.default = function () {
               isolatorUrl: isolatorUrl
             });
 
-          case 54:
+          case 56:
             _ref7 = _context2.sent;
             _ref7$createBuild = _ref7.createBuild;
             number = _ref7$createBuild.number;
@@ -1466,101 +1468,98 @@ exports.default = function () {
 
             log('Started Build ' + number + ' ' + ('(' + pluralize(componentCount, 'component') + ', ' + pluralize(specCount, 'spec') + ').\n\n' + onlineHint + '.'));
 
-            _context2.next = 64;
+            _context2.next = 66;
             return waitForBuild(client, {
               buildNumber: number
             });
 
-          case 64:
+          case 66:
             _ref8 = _context2.sent;
             status = _ref8.status;
             changeCount = _ref8.changeCount;
             errorCount = _ref8.errorCount;
             _context2.t1 = status;
-            _context2.next = _context2.t1 === 'BUILD_PASSED' ? 71 : _context2.t1 === 'BUILD_PENDING' ? 74 : _context2.t1 === 'BUILD_ACCEPTED' ? 74 : _context2.t1 === 'BUILD_DENIED' ? 74 : _context2.t1 === 'BUILD_FAILED' ? 78 : _context2.t1 === 'BUILD_TIMED_OUT' ? 81 : _context2.t1 === 'BUILD_ERROR' ? 84 : 87;
+            _context2.next = _context2.t1 === 'BUILD_PASSED' ? 73 : _context2.t1 === 'BUILD_PENDING' ? 76 : _context2.t1 === 'BUILD_ACCEPTED' ? 76 : _context2.t1 === 'BUILD_DENIED' ? 76 : _context2.t1 === 'BUILD_FAILED' ? 79 : _context2.t1 === 'BUILD_TIMED_OUT' ? 82 : _context2.t1 === 'BUILD_ERROR' ? 85 : 88;
             break;
 
-          case 71:
+          case 73:
             log('Build ' + number + ' passed! ' + onlineHint + '.');
             exitCode = 0;
-            return _context2.abrupt('break', 88);
+            return _context2.abrupt('break', 89);
 
-          case 74:
+          case 76:
             log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
-            if (!exitZeroOnChanges) {
-              log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case. Read more: http://docs.chromaticqa.com/setup_ci');
-            }
             exitCode = exitZeroOnChanges ? 0 : 1;
-            return _context2.abrupt('break', 88);
+            return _context2.abrupt('break', 89);
 
-          case 78:
+          case 79:
             log('Build ' + number + ' has ' + pluralize(errorCount, 'error') + '. ' + onlineHint + '.');
             exitCode = 2;
-            return _context2.abrupt('break', 88);
+            return _context2.abrupt('break', 89);
 
-          case 81:
+          case 82:
             log('Build ' + number + ' has timed out. Ensure your machine is connected to the internet and please try again.');
             exitCode = 3;
-            return _context2.abrupt('break', 88);
+            return _context2.abrupt('break', 89);
 
-          case 84:
+          case 85:
             log('Build ' + number + ' has failed to run. Our apologies. Please try again.');
             exitCode = 4;
-            return _context2.abrupt('break', 88);
-
-          case 87:
-            throw new Error('Unexpected build status: ' + status);
+            return _context2.abrupt('break', 89);
 
           case 88:
-            _context2.next = 98;
+            throw new Error('Unexpected build status: ' + status);
+
+          case 89:
+            _context2.next = 99;
             break;
 
-          case 90:
-            _context2.prev = 90;
-            _context2.t2 = _context2['catch'](51);
+          case 91:
+            _context2.prev = 91;
+            _context2.t2 = _context2['catch'](53);
 
             if (!(_context2.t2.length && _context2.t2[0] && _context2.t2[0].message.match(/Cannot run a build with no specs./))) {
-              _context2.next = 97;
+              _context2.next = 98;
               break;
             }
 
             log(_context2.t2[0].message);
             exitCode = 255;
-            _context2.next = 98;
+            _context2.next = 99;
             break;
 
-          case 97:
+          case 98:
             throw _context2.t2;
 
-          case 98:
-            _context2.prev = 98;
+          case 99:
+            _context2.prev = 99;
 
             if (tunnel) {
               tunnel.close();
             }
 
             if (!child) {
-              _context2.next = 103;
+              _context2.next = 104;
               break;
             }
 
-            _context2.next = 103;
+            _context2.next = 104;
             return (0, _denodeify2.default)(_treeKill2.default)(child.pid, 'SIGHUP');
 
-          case 103:
-            return _context2.finish(98);
-
           case 104:
+            return _context2.finish(99);
+
+          case 105:
             if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
-              _context2.next = 110;
+              _context2.next = 111;
               break;
             }
 
             scriptCommand = 'chromatic test ' + originalArgv.slice(2).join(' ');
-            _context2.next = 108;
+            _context2.next = 109;
             return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
 
-          case 108:
+          case 109:
             confirmed = _context2.sent;
 
             if (confirmed) {
@@ -1572,15 +1571,15 @@ exports.default = function () {
               console.log('\nNo problem. You can add it later with:\n{\n  "scripts": {\n    "chromatic": "' + scriptCommand + '"\n  }\n}');
             }
 
-          case 110:
+          case 111:
             return _context2.abrupt('return', exitCode);
 
-          case 111:
+          case 112:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[6, 14], [51, 90, 98, 104]]);
+    }, _callee2, this, [[6, 14], [53, 91, 99, 105]]);
   }));
 
   function runTest(_x3) {

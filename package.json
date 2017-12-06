@@ -1,6 +1,6 @@
 {
   "name": "react-chromatic",
-  "version": "0.7.2",
+  "version": "0.7.0",
   "description": "Visual Testing for React Components",
   "browser": "./dist/client.js",
   "main": "./dist/assets/null-server.js",
