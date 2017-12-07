@@ -1422,33 +1422,35 @@ exports.default = function () {
             tunnel = void 0;
 
             if (!createTunnel) {
-              _context2.next = 47;
+              _context2.next = 48;
               break;
             }
 
-            _context2.next = 44;
+            log('Opening tunnel to Chromatic cloud\'s server');
+            _context2.next = 45;
             return (0, _tunnel2.default)({ port: port });
 
-          case 44:
+          case 45:
             tunnel = _context2.sent;
 
-            log('Opened tunnel to ' + tunnel.url);
+            debug('Opened tunnel to ' + tunnel.url);
             isolatorUrl = '' + tunnel.url + appPathWithSlash;
 
-          case 47:
+          case 48:
 
-            log('Navigating to ' + isolatorUrl + ' to gather specs and warm cache');
-            _context2.next = 50;
+            debug('Connecting to ' + isolatorUrl);
+            log('Uploading and verifying build (this may take a few minutes depending on your connection)');
+            _context2.next = 52;
             return (0, _runtimes2.default)(isolatorUrl, { verbose: verbose });
 
-          case 50:
+          case 52:
             runtimeSpecs = _context2.sent;
 
             log('Found ' + runtimeSpecs.length + ' specs');
 
             exitCode = 5;
-            _context2.prev = 53;
-            _context2.next = 56;
+            _context2.prev = 55;
+            _context2.next = 58;
             return client.runQuery(TesterCreateBuildMutation, {
               input: {
                 branch: branch,
@@ -1460,7 +1462,7 @@ exports.default = function () {
               isolatorUrl: isolatorUrl
             });
 
-          case 56:
+          case 58:
             _ref7 = _context2.sent;
             _ref7$createBuild = _ref7.createBuild;
             number = _ref7$createBuild.number;
@@ -1471,101 +1473,101 @@ exports.default = function () {
 
             log('Started Build ' + number + ' ' + ('(' + pluralize(componentCount, 'component') + ', ' + pluralize(specCount, 'spec') + ').\n\n' + onlineHint + '.'));
 
-            _context2.next = 66;
+            _context2.next = 68;
             return waitForBuild(client, {
               buildNumber: number
             });
 
-          case 66:
+          case 68:
             _ref8 = _context2.sent;
             status = _ref8.status;
             changeCount = _ref8.changeCount;
             errorCount = _ref8.errorCount;
             _context2.t1 = status;
-            _context2.next = _context2.t1 === 'BUILD_PASSED' ? 73 : _context2.t1 === 'BUILD_PENDING' ? 76 : _context2.t1 === 'BUILD_ACCEPTED' ? 76 : _context2.t1 === 'BUILD_DENIED' ? 76 : _context2.t1 === 'BUILD_FAILED' ? 80 : _context2.t1 === 'BUILD_TIMED_OUT' ? 83 : _context2.t1 === 'BUILD_ERROR' ? 86 : 89;
+            _context2.next = _context2.t1 === 'BUILD_PASSED' ? 75 : _context2.t1 === 'BUILD_PENDING' ? 78 : _context2.t1 === 'BUILD_ACCEPTED' ? 78 : _context2.t1 === 'BUILD_DENIED' ? 78 : _context2.t1 === 'BUILD_FAILED' ? 82 : _context2.t1 === 'BUILD_TIMED_OUT' ? 85 : _context2.t1 === 'BUILD_ERROR' ? 88 : 91;
             break;
 
-          case 73:
+          case 75:
             log('Build ' + number + ' passed! ' + onlineHint + '.');
             exitCode = 0;
-            return _context2.abrupt('break', 90);
+            return _context2.abrupt('break', 92);
 
-          case 76:
+          case 78:
             log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
             if (!exitZeroOnChanges) {
               log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case. Read more: http://docs.chromaticqa.com/setup_ci');
             }
             exitCode = exitZeroOnChanges ? 0 : 1;
-            return _context2.abrupt('break', 90);
+            return _context2.abrupt('break', 92);
 
-          case 80:
+          case 82:
             log('Build ' + number + ' has ' + pluralize(errorCount, 'error') + '. ' + onlineHint + '.');
             exitCode = 2;
-            return _context2.abrupt('break', 90);
+            return _context2.abrupt('break', 92);
 
-          case 83:
+          case 85:
             log('Build ' + number + ' has timed out. Ensure your machine is connected to the internet and please try again.');
             exitCode = 3;
-            return _context2.abrupt('break', 90);
+            return _context2.abrupt('break', 92);
 
-          case 86:
+          case 88:
             log('Build ' + number + ' has failed to run. Our apologies. Please try again.');
             exitCode = 4;
-            return _context2.abrupt('break', 90);
+            return _context2.abrupt('break', 92);
 
-          case 89:
+          case 91:
             throw new Error('Unexpected build status: ' + status);
 
-          case 90:
-            _context2.next = 100;
+          case 92:
+            _context2.next = 102;
             break;
 
-          case 92:
-            _context2.prev = 92;
-            _context2.t2 = _context2['catch'](53);
+          case 94:
+            _context2.prev = 94;
+            _context2.t2 = _context2['catch'](55);
 
             if (!(_context2.t2.length && _context2.t2[0] && _context2.t2[0].message.match(/Cannot run a build with no specs./))) {
-              _context2.next = 99;
+              _context2.next = 101;
               break;
             }
 
             log(_context2.t2[0].message);
             exitCode = 255;
-            _context2.next = 100;
+            _context2.next = 102;
             break;
 
-          case 99:
+          case 101:
             throw _context2.t2;
 
-          case 100:
-            _context2.prev = 100;
+          case 102:
+            _context2.prev = 102;
 
             if (tunnel) {
               tunnel.close();
             }
 
             if (!child) {
-              _context2.next = 105;
+              _context2.next = 107;
               break;
             }
 
-            _context2.next = 105;
+            _context2.next = 107;
             return (0, _denodeify2.default)(_treeKill2.default)(child.pid, 'SIGHUP');
 
-          case 105:
-            return _context2.finish(100);
+          case 107:
+            return _context2.finish(102);
 
-          case 106:
+          case 108:
             if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
-              _context2.next = 112;
+              _context2.next = 114;
               break;
             }
 
             scriptCommand = 'chromatic test ' + originalArgv.slice(2).join(' ');
-            _context2.next = 110;
+            _context2.next = 112;
             return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
 
-          case 110:
+          case 112:
             confirmed = _context2.sent;
 
             if (confirmed) {
@@ -1577,15 +1579,15 @@ exports.default = function () {
               console.log('\nNo problem. You can add it later with:\n{\n  "scripts": {\n    "chromatic": "' + scriptCommand + '"\n  }\n}');
             }
 
-          case 112:
+          case 114:
             return _context2.abrupt('return', exitCode);
 
-          case 113:
+          case 115:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[6, 14], [53, 92, 100, 106]]);
+    }, _callee2, this, [[6, 14], [55, 94, 102, 108]]);
   }));
 
   function runTest(_x3) {
