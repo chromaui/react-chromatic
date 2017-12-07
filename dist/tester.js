@@ -1117,22 +1117,39 @@ exports.default = function () {
           case 0:
             child = void 0;
 
-            if (scriptName !== 'none') {
-              child = (0, _child_process.spawn)('npm', ['run', scriptName], {
-                env: (0, _extends3.default)({}, process.env, {
-                  NODE_ENV: 'development',
-                  BROWSER: 'none'
-                })
-              });
+            if (!(scriptName !== 'none')) {
+              _context4.next = 7;
+              break;
             }
 
             _context4.next = 4;
-            return waitForResponse(child, url);
+            return checkResponse(url);
 
           case 4:
+            if (!_context4.sent) {
+              _context4.next = 6;
+              break;
+            }
+
+            throw new Error('Detected process already running at ' + url);
+
+          case 6:
+
+            child = (0, _child_process.spawn)('npm', ['run', scriptName], {
+              env: (0, _extends3.default)({}, process.env, {
+                NODE_ENV: 'development',
+                BROWSER: 'none'
+              })
+            });
+
+          case 7:
+            _context4.next = 9;
+            return waitForResponse(child, url);
+
+          case 9:
             return _context4.abrupt('return', child);
 
-          case 5:
+          case 10:
           case 'end':
             return _context4.stop();
         }
