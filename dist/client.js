@@ -490,8 +490,7 @@ function configure() {
 
   // If we are rendered in an iframe, (by ourself), then we need to clear
   // the screen right away, rather than waiting for a spec
-  var isIsolator = document.location.hash.match('__chromatic_isolator__');
-
+  var isIsolator = window.frameElement && window.frameElement.dataset.chromaticIsolator;
   (0, _isolator2.default)({
     runtimes: [].concat(runtimes), // allow passing a single runtime
     clearScreen: isIsolator
