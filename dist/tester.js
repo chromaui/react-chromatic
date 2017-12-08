@@ -1426,7 +1426,7 @@ exports.default = function () {
               break;
             }
 
-            log('Opening tunnel to Chromatic cloud\'s server');
+            log('Opening tunnel to Chromatic capture servers');
             _context2.next = 45;
             return (0, _tunnel2.default)({ port: port });
 
