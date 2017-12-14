@@ -79,7 +79,7 @@ if (_commander2.default.storybookAddon) {
 
 var commanderOptions = {
   config: _commander2.default.config,
-  appCode: _commander2.default.appCode,
+  appCode: _commander2.default.appCode || process.env.CHROMATIC_APP_CODE,
   scriptName: _commander2.default.scriptName,
   port: _commander2.default.port,
   appPath: _commander2.default.appPath,
