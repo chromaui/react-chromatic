@@ -1559,11 +1559,11 @@ exports.default = function () {
 
           case 108:
             if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
-              _context2.next = 114;
+              _context2.next = 115;
               break;
             }
 
-            scriptCommand = 'chromatic test ' + originalArgv.slice(2).join(' ');
+            scriptCommand = ('chromatic test ' + originalArgv.slice(2).join(' ')).replace(/--app-code[= ]\S+/, '--app-code $CHROMATIC_APP_CODE');
             _context2.next = 112;
             return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
 
@@ -1579,10 +1579,13 @@ exports.default = function () {
               console.log('\nNo problem. You can add it later with:\n{\n  "scripts": {\n    "chromatic": "' + scriptCommand + '"\n  }\n}');
             }
 
-          case 114:
-            return _context2.abrupt('return', exitCode);
+            // eslint-disable-next-line no-console
+            console.log('\nMake sure you set the CHROMATIC_APP_CODE environment variable when running builds (in particular on your CI server).');
 
           case 115:
+            return _context2.abrupt('return', exitCode);
+
+          case 116:
           case 'end':
             return _context2.stop();
         }
