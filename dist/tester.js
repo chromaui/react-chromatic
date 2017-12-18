@@ -174,7 +174,7 @@ var _createClass2 = __webpack_require__(7);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _apolloFetch = __webpack_require__(20);
+var _apolloFetch = __webpack_require__(21);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -301,7 +301,7 @@ var _asyncToGenerator2 = __webpack_require__(0);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _localtunnel = __webpack_require__(28);
+var _localtunnel = __webpack_require__(34);
 
 var _localtunnel2 = _interopRequireDefault(_localtunnel);
 
@@ -360,11 +360,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getBaselineCommits = exports.getBranch = exports.getCommit = exports.FETCH_N_INITAL_BUILD_COMMITS = undefined;
 
-var _toConsumableArray2 = __webpack_require__(24);
+var _toConsumableArray2 = __webpack_require__(26);
 
 var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
-var _slicedToArray2 = __webpack_require__(23);
+var _slicedToArray2 = __webpack_require__(25);
 
 var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
 
@@ -698,18 +698,18 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _values = __webpack_require__(22);
+var _values = __webpack_require__(24);
 
 var _values2 = _interopRequireDefault(_values);
 
 exports.checkPackageJson = checkPackageJson;
 exports.addScriptToPackageJson = addScriptToPackageJson;
 
-var _path = __webpack_require__(29);
+var _path = __webpack_require__(35);
 
 var _path2 = _interopRequireDefault(_path);
 
-var _jsonfile = __webpack_require__(27);
+var _jsonfile = __webpack_require__(33);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -763,7 +763,7 @@ var _promise = __webpack_require__(2);
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _keys = __webpack_require__(21);
+var _keys = __webpack_require__(23);
 
 var _keys2 = _interopRequireDefault(_keys);
 
@@ -779,12 +779,21 @@ var _createClass2 = __webpack_require__(7);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _jsdom = __webpack_require__(26);
+var _jsdom = __webpack_require__(30);
+
+var _oldApi = __webpack_require__(32);
+
+var _util = __webpack_require__(38);
+
+var _resourceLoader = __webpack_require__(20);
+
+var _resourceLoader2 = _interopRequireDefault(_resourceLoader);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function addShimsToJSDOM(dom) {
-  Object.defineProperty(dom.window, 'matchMedia', {
+/* eslint-disable no-console, class-methods-use-this */
+function addShimsToJSDOM(window) {
+  Object.defineProperty(window, 'matchMedia', {
     value: function value() {
       return {
         matches: true,
@@ -825,7 +834,7 @@ function addShimsToJSDOM(dom) {
     return LocalStorageMock;
   }();
 
-  Object.defineProperty(dom.window, 'localStorage', {
+  Object.defineProperty(window, 'localStorage', {
     value: new LocalStorageMock()
   });
 
@@ -850,16 +859,16 @@ function addShimsToJSDOM(dom) {
     return WorkerMock;
   }();
 
-  Object.defineProperty(dom.window, 'Worker', WorkerMock);
+  Object.defineProperty(window, 'Worker', WorkerMock);
 
-  Object.defineProperty(dom.window, 'crypto', {
+  Object.defineProperty(window, 'crypto', {
     value: {
       getRandomValues: function getRandomValues() {
         return 0;
       }
     }
   });
-} /* eslint-disable no-console, class-methods-use-this */
+}
 
 exports.default = function () {
   var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(url) {
@@ -867,7 +876,7 @@ exports.default = function () {
         _ref2$verbose = _ref2.verbose,
         verbose = _ref2$verbose === undefined ? false : _ref2$verbose;
 
-    var logs, virtualConsole, dom;
+    var logs, virtualConsole, window;
     return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -889,30 +898,29 @@ exports.default = function () {
             }
 
             _context.next = 7;
-            return _jsdom.JSDOM.fromURL(url, {
-              userAgent: 'Chromatic',
-              // We need to execute the scripts on the page
-              runScripts: 'dangerously',
-              // We need to load scripts that are loaded via script tags
-              resources: 'usable',
-              // Send console.logs -> /dev/null (so to speak)
-              virtualConsole: virtualConsole
-            });
+            return (0, _util.promisify)(function (created) {
+              (0, _oldApi.env)({
+                url: url,
+                virtualConsole: virtualConsole,
+                resourceLoader: _resourceLoader2.default,
+                features: {
+                  FetchExternalResources: ['script'],
+                  ProcessExternalResources: ['script'],
+                  SkipExternalResources: false
+                },
+                created: created
+              });
+            })();
 
           case 7:
-            dom = _context.sent;
+            window = _context.sent;
 
 
-            // NOTE: this line runs immediately after the HTML for the page has been loaded
-            // it's not possible that any external script tags have been executed.
-            // It is possible that they have a <script> tag that need these shims, but
-            // I highly doubt it. If we run into this we can always use JSDOM's old API
-            // to inject our own scripts at 'create' time
-            addShimsToJSDOM(dom);
+            addShimsToJSDOM(window);
 
             return _context.abrupt('return', new _promise2.default(function (resolve, reject) {
-              return dom.window.document.addEventListener('DOMContentLoaded', function () {
-                if (!dom.window.__chromaticRuntimeSpecs__) {
+              return window.document.addEventListener('DOMContentLoaded', function () {
+                if (!window.__chromaticRuntimeSpecs__) {
                   console.error('Didn\'t find \'window.__chromaticRuntimeSpecs__\' at ' + url + '.\n' + 'Have you installed the Chromatic widget or addon correctly?\n');
 
                   if (!verbose && logs.length) {
@@ -927,8 +935,8 @@ exports.default = function () {
                   }
                   reject(new Error('Didn\'t find \'window.__chromaticRuntimeSpecs__\' at ' + url + '.'));
                 }
-                var specs = dom.window.__chromaticRuntimeSpecs__();
-                dom.window.close();
+                var specs = window.__chromaticRuntimeSpecs__();
+                window.close();
                 resolve(specs);
               });
             }));
@@ -1097,7 +1105,7 @@ var waitForResponse = function () {
 
 var _child_process = __webpack_require__(9);
 
-var _isomorphicFetch = __webpack_require__(25);
+var _isomorphicFetch = __webpack_require__(29);
 
 var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
@@ -1640,63 +1648,282 @@ exports.default = function () {
 
 /***/ }),
 /* 20 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = require("apollo-fetch");
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _assign = __webpack_require__(22);
+
+var _assign2 = _interopRequireDefault(_assign);
+
+exports.default = resourceLoader;
+
+var _contentTypeParser = __webpack_require__(27);
+
+var _contentTypeParser2 = _interopRequireDefault(_contentTypeParser);
+
+var _htmlEncodingSniffer = __webpack_require__(28);
+
+var _htmlEncodingSniffer2 = _interopRequireDefault(_htmlEncodingSniffer);
+
+var _whatwgEncoding = __webpack_require__(39);
+
+var _whatwgEncoding2 = _interopRequireDefault(_whatwgEncoding);
+
+var _request = __webpack_require__(37);
+
+var _request2 = _interopRequireDefault(_request);
+
+var _progress = __webpack_require__(36);
+
+var _progress2 = _interopRequireDefault(_progress);
+
+var _resourceLoader = __webpack_require__(31);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/* eslint-disable no-underscore-dangle */
+
+var IS_BROWSER = Object.prototype.toString.call(process) !== '[object process]';
+
+function logRequest(req) {
+  req.on('response', function (res) {
+    var len = parseInt(res.headers['content-length'], 10);
+
+    console.log();
+    var bar = new _progress2.default(' downloading ' + req.uri.path + ' [:bar] :percent :etas', {
+      complete: '=',
+      incomplete: ' ',
+      width: 20,
+      total: len
+    });
+
+    res.on('data', function (chunk) {
+      bar.tick(chunk.length);
+    });
+
+    res.on('end', function () {
+      console.log('\n');
+    });
+  });
+}
+
+function resourceLoader(_ref, callback) {
+  var element = _ref.element,
+      url = _ref.url;
+
+  // Copied and adapted from
+  // https://github.com/tmeasday/jsdom/blob/fd2cccfeb3eb28d59b79d17821c5ceabd3077083/lib/jsdom/browser/resource-loader.js#L223-L247
+  var document = element._ownerDocument;
+
+  var cookieJar = document._cookieJar;
+
+  // NOTE: this should be passed into `resourceLoader.load` and extended, but
+  // we do not have access to the original object. See below:
+  var options = {};
+  options.accept = element._accept;
+  options.cookieJar = cookieJar;
+  options.referrer = document.URL;
+  options.pool = document._pool;
+  options.agentOptions = document._agentOptions;
+  options.strictSSL = document._strictSSL;
+  options.proxy = document._proxy;
+  options.userAgent = document._defaultView.navigator.userAgent;
+
+  // Copied and adapted from
+  // https://github.com/tmeasday/jsdom/blob/fd2cccfeb3eb28d59b79d17821c5ceabd3077083/lib/jsdom/browser/resource-loader.js#L158-L219
+  // *NOTE*: we do not have access to the following options that may be passed
+  // into `resourceLoader.load`, that are used below:
+  //  - options.headers
+  //  - options.agent
+  //  - options.agentClass
+  //  - options.defaultEncoding
+  //  - options.detectMetaCharset
+  var requestOptions = {
+    pool: options.pool,
+    agent: options.agent,
+    agentOptions: options.agentOptions,
+    agentClass: options.agentClass,
+    strictSSL: options.strictSSL,
+    gzip: true,
+    jar: (0, _resourceLoader.wrapCookieJarForRequest)(options.cookieJar),
+    encoding: null,
+    headers: {
+      'User-Agent': options.userAgent,
+      'Accept-Language': 'en',
+      Accept: options.accept || '*/*'
+    }
+  };
+  if (options.referrer && !IS_BROWSER) {
+    requestOptions.headers.referer = options.referrer;
+  }
+  if (options.proxy) {
+    requestOptions.proxy = options.proxy;
+  }
+  (0, _assign2.default)(requestOptions.headers, options.headers);
+
+  // NOTE: added 'UTF-8' as a default encoding
+  var _options$defaultEncod = options.defaultEncoding,
+      defaultEncoding = _options$defaultEncod === undefined ? 'UTF-8' : _options$defaultEncod,
+      detectMetaCharset = options.detectMetaCharset;
+
+
+  var req = (0, _request2.default)(url, requestOptions, function (error, response, bufferData) {
+    if (!error) {
+      // If default encoding does not exist, pass on binary data.
+      if (defaultEncoding) {
+        var contentType = (0, _contentTypeParser2.default)(response.headers['content-type']) || (0, _contentTypeParser2.default)('text/plain');
+        var sniffOptions = {
+          transportLayerEncodingLabel: contentType.get('charset'),
+          defaultEncoding: defaultEncoding
+        };
+
+        var encoding = detectMetaCharset ? (0, _htmlEncodingSniffer2.default)(bufferData, sniffOptions) : _whatwgEncoding2.default.getBOMEncoding(bufferData) || _whatwgEncoding2.default.labelToName(contentType.get('charset')) || defaultEncoding;
+        var decoded = _whatwgEncoding2.default.decode(bufferData, encoding);
+
+        contentType.set('charset', encoding);
+        response.headers['content-type'] = contentType.toString();
+
+        callback(null, decoded, response);
+      } else {
+        callback(null, bufferData, response);
+      }
+    } else {
+      callback(error, null, response);
+    }
+  });
+
+  logRequest(req);
+
+  return {
+    originalRequest: req,
+    abort: function abort() {
+      req.abort();
+      var error = new Error('request canceled by user');
+      error.isAbortError = true;
+      callback(error);
+    }
+  };
+}
 
 /***/ }),
 /* 21 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/core-js/object/keys");
+module.exports = require("apollo-fetch");
 
 /***/ }),
 /* 22 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/core-js/object/values");
+module.exports = require("babel-runtime/core-js/object/assign");
 
 /***/ }),
 /* 23 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/helpers/slicedToArray");
+module.exports = require("babel-runtime/core-js/object/keys");
 
 /***/ }),
 /* 24 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/helpers/toConsumableArray");
+module.exports = require("babel-runtime/core-js/object/values");
 
 /***/ }),
 /* 25 */
 /***/ (function(module, exports) {
 
-module.exports = require("isomorphic-fetch");
+module.exports = require("babel-runtime/helpers/slicedToArray");
 
 /***/ }),
 /* 26 */
 /***/ (function(module, exports) {
 
-module.exports = require("jsdom");
+module.exports = require("babel-runtime/helpers/toConsumableArray");
 
 /***/ }),
 /* 27 */
 /***/ (function(module, exports) {
 
-module.exports = require("jsonfile");
+module.exports = require("content-type-parser");
 
 /***/ }),
 /* 28 */
 /***/ (function(module, exports) {
 
-module.exports = require("localtunnel");
+module.exports = require("html-encoding-sniffer");
 
 /***/ }),
 /* 29 */
 /***/ (function(module, exports) {
 
+module.exports = require("isomorphic-fetch");
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports) {
+
+module.exports = require("jsdom");
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports) {
+
+module.exports = require("jsdom/lib/jsdom/browser/resource-loader");
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports) {
+
+module.exports = require("jsdom/lib/old-api");
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports) {
+
+module.exports = require("jsonfile");
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports) {
+
+module.exports = require("localtunnel");
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports) {
+
 module.exports = require("path");
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports) {
+
+module.exports = require("progress");
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports) {
+
+module.exports = require("request");
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports) {
+
+module.exports = require("util");
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports) {
+
+module.exports = require("whatwg-encoding");
 
 /***/ })
 /******/ ]);

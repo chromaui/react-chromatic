@@ -18,16 +18,21 @@
     "apollo-fetch": "^0.6.0",
     "babel-runtime": "^6.26.0",
     "commander": "^2.9.0",
+    "content-type-parser": "^1.0.2",
     "debug": "^3.0.1",
     "denodeify": "^1.2.1",
     "ejson": "^2.1.2",
     "es6-error": "^4.0.2",
+    "html-encoding-sniffer": "^1.0.2",
     "isomorphic-fetch": "^2.2.1",
     "jsdom": "^11.3.0",
     "jsonfile": "^4.0.0",
     "localtunnel": "^1.8.3",
     "node-ask": "^1.0.1",
-    "tree-kill": "^1.1.0"
+    "progress": "^2.0.0",
+    "request": "^2.83.0",
+    "tree-kill": "^1.1.0",
+    "whatwg-encoding": "^1.0.3"
   },
   "peerDependencies": {
     "react-dom": "15.x || 16.x",
