@@ -1171,7 +1171,7 @@ exports.default = function () {
 
 module.exports = {
 	"name": "react-chromatic",
-	"version": "0.7.6",
+	"version": "0.7.7",
 	"description": "Visual Testing for React Components",
 	"browser": "./dist/client.js",
 	"main": "./dist/assets/null-server.js",
