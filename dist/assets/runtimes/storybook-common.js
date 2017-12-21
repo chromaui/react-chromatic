@@ -40,7 +40,7 @@ function storybookRuntimeOptions(getStorybook) {
 
       return story.render({
         kind: kind,
-        name: name
+        story: name
       });
     },
     specs: function specs() {
