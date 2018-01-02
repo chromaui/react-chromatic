@@ -1406,7 +1406,7 @@ exports.default = function () {
               break;
             }
 
-            throw new Error('You must provide an app code  -- visit https://chromaticqa.com to get your code');
+            throw new Error('You must provide an app code  -- visit https://chromaticqa.com to get your code.' + '\nPass your app code with the `CHROMATIC_APP_CODE` environment variable or the `--app-code` flag.');
 
           case 4:
             if (!(!scriptName && !noStart || !port)) {
@@ -1653,11 +1653,11 @@ exports.default = function () {
 
           case 120:
             if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
-              _context2.next = 126;
+              _context2.next = 127;
               break;
             }
 
-            scriptCommand = 'chromatic test ' + originalArgv.slice(2).join(' ');
+            scriptCommand = ('chromatic test ' + originalArgv.slice(2).join(' ')).replace(/--app-code[= ]\S+/, '');
             _context2.next = 124;
             return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
 
@@ -1673,10 +1673,13 @@ exports.default = function () {
               console.log('\nNo problem. You can add it later with:\n{\n  "scripts": {\n    "chromatic": "' + scriptCommand + '"\n  }\n}');
             }
 
-          case 126:
-            return _context2.abrupt('return', exitCode);
+            // eslint-disable-next-line no-console
+            console.log('\nMake sure you set the `CHROMATIC_APP_CODE` environment variable when running builds (in particular on your CI server).');
 
           case 127:
+            return _context2.abrupt('return', exitCode);
+
+          case 128:
           case 'end':
             return _context2.stop();
         }
