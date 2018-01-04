@@ -1,3 +1,7 @@
+# 0.7.7 - 2017-12-21
+
+- This version sends us a little more information about the environment the package runs in -- is it CI? which package version?
+
 # 0.7.6 - 2017-12-19
 
 - Fix an issue where we did not pass the context to stories in the right format.
