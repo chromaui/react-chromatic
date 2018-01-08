@@ -1169,48 +1169,7 @@ exports.default = function () {
 /* 16 */
 /***/ (function(module, exports) {
 
-module.exports = {
-	"name": "react-chromatic",
-	"version": "0.7.7",
-	"description": "Visual Testing for React Components",
-	"browser": "./dist/client.js",
-	"main": "./dist/assets/null-server.js",
-	"scripts": {
-		"prebuild": "rm -rf ./dist",
-		"build:bin": "babel -s -d ./dist ./src -D --only 'assets,bin'",
-		"build:webpack": "webpack",
-		"build": "npm-run-all --serial -l build:**",
-		"prepare": "npm run build",
-		"dev": "npm-run-all --parallel -l 'build:** -- --watch'"
-	},
-	"bin": {
-		"chromatic": "./dist/bin/chromatic.js"
-	},
-	"dependencies": {
-		"apollo-fetch": "^0.6.0",
-		"babel-runtime": "^6.26.0",
-		"commander": "^2.9.0",
-		"debug": "^3.0.1",
-		"denodeify": "^1.2.1",
-		"ejson": "^2.1.2",
-		"es6-error": "^4.0.2",
-		"isomorphic-fetch": "^2.2.1",
-		"jsdom": "^11.3.0",
-		"jsonfile": "^4.0.0",
-		"localtunnel": "^1.8.3",
-		"node-ask": "^1.0.1",
-		"tree-kill": "^1.1.0"
-	},
-	"peerDependencies": {
-		"react-dom": "15.x || 16.x",
-		"react": "15.x || 16.x"
-	},
-	"devDependencies": {
-		"npm-run-all": "^4.0.2",
-		"webpack-node-externals": "^1.6.0",
-		"prettier-eslint": "^7.1.0"
-	}
-};
+module.exports = {"name":"react-chromatic","version":"0.7.8-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"webpack","build":"npm-run-all --serial -l build:**","prepare":"npm run build","dev":"npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.3.0","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react-dom":"15.x || 16.x","react":"15.x || 16.x"},"devDependencies":{"npm-run-all":"^4.0.2","webpack-node-externals":"^1.6.0","prettier-eslint":"^7.1.0"}}
 
 /***/ }),
 /* 17 */
@@ -1406,7 +1365,7 @@ exports.default = function () {
               break;
             }
 
-            throw new Error('You must provide an app code  -- visit https://chromaticqa.com to get your code');
+            throw new Error('You must provide an app code  -- visit https://chromaticqa.com to get your code.' + '\nPass your app code with the `CHROMATIC_APP_CODE` environment variable or the `--app-code` flag.');
 
           case 4:
             if (!(!scriptName && !noStart || !port)) {
@@ -1653,11 +1612,11 @@ exports.default = function () {
 
           case 120:
             if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
-              _context2.next = 126;
+              _context2.next = 127;
               break;
             }
 
-            scriptCommand = 'chromatic test ' + originalArgv.slice(2).join(' ');
+            scriptCommand = ('chromatic test ' + originalArgv.slice(2).join(' ')).replace(/--app-code[= ]\S+/, '');
             _context2.next = 124;
             return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
 
@@ -1673,10 +1632,13 @@ exports.default = function () {
               console.log('\nNo problem. You can add it later with:\n{\n  "scripts": {\n    "chromatic": "' + scriptCommand + '"\n  }\n}');
             }
 
-          case 126:
-            return _context2.abrupt('return', exitCode);
+            // eslint-disable-next-line no-console
+            console.log('\nMake sure you set the `CHROMATIC_APP_CODE` environment variable when running builds (in particular on your CI server).');
 
           case 127:
+            return _context2.abrupt('return', exitCode);
+
+          case 128:
           case 'end':
             return _context2.stop();
         }
