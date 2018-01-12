@@ -912,11 +912,12 @@ exports.default = function () {
 
             return _context.abrupt('return', new _promise2.default(function (resolve, reject) {
               return dom.window.document.addEventListener('DOMContentLoaded', function () {
+                var separator = '=========================';
+
                 if (!dom.window.__chromaticRuntimeSpecs__) {
                   console.error('Didn\'t find \'window.__chromaticRuntimeSpecs__\' at ' + url + '.\n' + 'Have you installed the Chromatic widget or addon correctly?\n');
 
                   if (!verbose && logs.length) {
-                    var separator = '=========================';
                     console.error('Your app\'s output:\n' + separator + '\n');
                     logs.forEach(function (_ref3) {
                       var logType = _ref3.logType,
@@ -927,6 +928,23 @@ exports.default = function () {
                   }
                   reject(new Error('Didn\'t find \'window.__chromaticRuntimeSpecs__\' at ' + url + '.'));
                 }
+
+                // If their app logged something to console.error, it's probably, but
+                // not definitely an issue. See https://github.com/hichroma/chromatic/issues/757
+                if (logs.find(function (log) {
+                  return log.logType === 'error';
+                })) {
+                  console.error('\nYour app logged the following to the error console:\n' + separator);
+                  logs.filter(function (log) {
+                    return log.logType === 'error';
+                  }).forEach(function (_ref4) {
+                    var logType = _ref4.logType,
+                        log = _ref4.log;
+                    return console[logType](log);
+                  });
+                  console.error('\n' + separator + '\nThis may lead to some stories not working right or getting detected by Chromatic' + '\nWe suggest you fix the errors, but we will continue anyway..\n');
+                }
+
                 var specs = dom.window.__chromaticRuntimeSpecs__();
                 dom.window.close();
                 resolve(specs);
@@ -1169,48 +1187,7 @@ exports.default = function () {
 /* 16 */
 /***/ (function(module, exports) {
 
-module.exports = {
-	"name": "react-chromatic",
-	"version": "0.7.7",
-	"description": "Visual Testing for React Components",
-	"browser": "./dist/client.js",
-	"main": "./dist/assets/null-server.js",
-	"scripts": {
-		"prebuild": "rm -rf ./dist",
-		"build:bin": "babel -s -d ./dist ./src -D --only 'assets,bin'",
-		"build:webpack": "webpack",
-		"build": "npm-run-all --serial -l build:**",
-		"prepare": "npm run build",
-		"dev": "npm-run-all --parallel -l 'build:** -- --watch'"
-	},
-	"bin": {
-		"chromatic": "./dist/bin/chromatic.js"
-	},
-	"dependencies": {
-		"apollo-fetch": "^0.6.0",
-		"babel-runtime": "^6.26.0",
-		"commander": "^2.9.0",
-		"debug": "^3.0.1",
-		"denodeify": "^1.2.1",
-		"ejson": "^2.1.2",
-		"es6-error": "^4.0.2",
-		"isomorphic-fetch": "^2.2.1",
-		"jsdom": "^11.3.0",
-		"jsonfile": "^4.0.0",
-		"localtunnel": "^1.8.3",
-		"node-ask": "^1.0.1",
-		"tree-kill": "^1.1.0"
-	},
-	"peerDependencies": {
-		"react-dom": "15.x || 16.x",
-		"react": "15.x || 16.x"
-	},
-	"devDependencies": {
-		"npm-run-all": "^4.0.2",
-		"webpack-node-externals": "^1.6.0",
-		"prettier-eslint": "^7.1.0"
-	}
-};
+module.exports = {"name":"react-chromatic","version":"0.7.8-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"webpack","build":"npm-run-all --serial -l build:**","prepare":"npm run build","dev":"npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.3.0","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react-dom":"15.x || 16.x","react":"15.x || 16.x"},"devDependencies":{"npm-run-all":"^4.0.2","webpack-node-externals":"^1.6.0","prettier-eslint":"^7.1.0"}}
 
 /***/ }),
 /* 17 */
