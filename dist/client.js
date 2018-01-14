@@ -136,7 +136,7 @@ function drawIsolator() {
   if (drawn) {
     return;
   }
-  var styles = '\n  body {\n    margin: 0;\n  }\n  /* ensure a given element is not laid out at all */\n  .' + _render.NO_LAYOUT_CLASS + ' {\n    margin: 0 !important;\n    padding: 0 !important;\n    position: static !important;\n  }\n  ';
+  var styles = '\n  /* ensure a given element is not laid out at all */\n  .' + _render.NO_LAYOUT_CLASS + ' {\n    margin: 0 !important;\n    padding: 0 !important;\n    position: static !important;\n  }\n  ';
   var el = document.createElement('style');
   el.type = 'text/css';
   el.innerHTML = styles;
