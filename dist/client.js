@@ -136,7 +136,7 @@ function drawIsolator() {
   if (drawn) {
     return;
   }
-  var styles = '\n  body {\n    margin: 0;\n  }\n  /* ensure a given element is not laid out at all */\n  .' + _render.NO_LAYOUT_CLASS + ' {\n    margin: 0 !important;\n    padding: 0 !important;\n    position: static !important;\n  }\n  ';
+  var styles = '\n  /* ensure a given element is not laid out at all */\n  .' + _render.NO_LAYOUT_CLASS + ' {\n    margin: 0 !important;\n    padding: 0 !important;\n    position: static !important;\n  }\n  ';
   var el = document.createElement('style');
   el.type = 'text/css';
   el.innerHTML = styles;
@@ -490,7 +490,8 @@ function configure() {
 
   // If we are rendered in an iframe, (by ourself), then we need to clear
   // the screen right away, rather than waiting for a spec
-  var isIsolator = window.frameElement && window.frameElement.dataset.chromaticIsolator;
+  var isIsolator = document.location.hash.match('__chromatic_isolator__');
+
   (0, _isolator2.default)({
     runtimes: [].concat(runtimes), // allow passing a single runtime
     clearScreen: isIsolator

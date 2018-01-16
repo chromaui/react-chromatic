@@ -40,7 +40,7 @@ function storybookRuntimeOptions(getStorybook) {
 
       return story.render({
         kind: kind,
-        name: name
+        story: name
       });
     },
     specs: function specs() {
@@ -51,7 +51,10 @@ function storybookRuntimeOptions(getStorybook) {
           var name = _ref3.name;
           return {
             name: name,
-            componentName: kind,
+            component: {
+              name: kind,
+              displayName: kind.split('/').slice(-1)[0]
+            },
             runtime: runtime,
             input: (0, _stringify2.default)({
               kind: kind,
