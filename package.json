@@ -1,6 +1,6 @@
 {
   "name": "react-chromatic",
-  "version": "0.7.8-dev",
+  "version": "0.7.9-dev",
   "description": "Visual Testing for React Components",
   "browser": "./dist/client.js",
   "main": "./dist/assets/null-server.js",
@@ -30,12 +30,14 @@
     "tree-kill": "^1.1.0"
   },
   "peerDependencies": {
-    "react-dom": "15.x || 16.x",
-    "react": "15.x || 16.x"
+    "react": "15.x || 16.x",
+    "react-dom": "15.x || 16.x"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "npm-run-all": "^4.0.2",
-    "webpack-node-externals": "^1.6.0",
-    "prettier-eslint": "^7.1.0"
+    "prettier-eslint": "^7.1.0",
+    "webpack": "^3.10.0",
+    "webpack-node-externals": "^1.6.0"
   }
 }
