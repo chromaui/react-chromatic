@@ -1152,7 +1152,7 @@ exports.default = function () {
               break;
             }
 
-            throw new Error('Detected process already running at ' + url);
+            throw new Error('Detected process already running at ' + url + '\nIf you are sure this is your server, pass `--do-not-start` to skip this step.');
 
           case 6:
 
