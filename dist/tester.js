@@ -949,7 +949,11 @@ exports.default = function () {
 
                 var specs = dom.window.__chromaticRuntimeSpecs__();
                 dom.window.close();
-                resolve(specs);
+
+                // return resolve(specs);
+                resolve(specs.filter(function (s) {
+                  return s.component.displayName === 'LandingScreen' && s.name === 'not logged in';
+                }));
               });
             }));
 
