@@ -705,7 +705,7 @@ var _values2 = _interopRequireDefault(_values);
 exports.checkPackageJson = checkPackageJson;
 exports.addScriptToPackageJson = addScriptToPackageJson;
 
-var _path = __webpack_require__(30);
+var _path = __webpack_require__(31);
 
 var _path2 = _interopRequireDefault(_path);
 
@@ -1121,6 +1121,10 @@ var _isomorphicFetch = __webpack_require__(26);
 
 var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
+var _npmRunPath = __webpack_require__(30);
+
+var _npmRunPath2 = _interopRequireDefault(_npmRunPath);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var CHECK_EVERY = 1000;
@@ -1156,8 +1160,9 @@ exports.default = function () {
 
           case 6:
 
-            child = (0, _child_process.spawn)('npm', ['run', scriptName], {
+            child = (0, _child_process.spawn)(scriptName, {
               env: (0, _extends3.default)({}, process.env, {
+                PATH: (0, _npmRunPath2.default)({ path: '' }), // <-- pass null to avoid having the true PATH here
                 NODE_ENV: 'development',
                 BROWSER: 'none'
               })
@@ -1189,7 +1194,7 @@ exports.default = function () {
 /* 16 */
 /***/ (function(module, exports) {
 
-module.exports = {"name":"react-chromatic","version":"0.7.10-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"webpack","build":"npm-run-all --serial -l build:**","prepare":"npm run build","dev":"npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
+module.exports = {"name":"react-chromatic","version":"0.7.10-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"webpack","build":"npm-run-all --serial -l build:**","prepare":"npm run build","dev":"npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","npm-run-path":"^2.0.2","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
 
 /***/ }),
 /* 17 */
@@ -1729,6 +1734,12 @@ module.exports = require("localtunnel");
 
 /***/ }),
 /* 30 */
+/***/ (function(module, exports) {
+
+module.exports = require("npm-run-path");
+
+/***/ }),
+/* 31 */
 /***/ (function(module, exports) {
 
 module.exports = require("path");
