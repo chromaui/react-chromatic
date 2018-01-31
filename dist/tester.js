@@ -181,10 +181,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var GraphQLClient = function () {
   function GraphQLClient(_ref) {
     var uri = _ref.uri,
-        jwtToken = _ref.jwtToken;
+        jwtToken = _ref.jwtToken,
+        headers = _ref.headers;
     (0, _classCallCheck3.default)(this, GraphQLClient);
 
     this.apolloFetch = (0, _apolloFetch.createApolloFetch)({ uri: uri });
+    this.headers = headers;
 
     if (jwtToken) {
       this.setJwtToken(jwtToken);
@@ -194,12 +196,14 @@ var GraphQLClient = function () {
   (0, _createClass3.default)(GraphQLClient, [{
     key: 'setJwtToken',
     value: function setJwtToken(jwtToken) {
+      var _this = this;
+
       this.apolloFetch.use(function (_ref2, next) {
         var options = _ref2.options;
 
         if (jwtToken) {
           // eslint-disable-next-line no-param-reassign
-          options.headers = (0, _extends3.default)({}, options.headers, {
+          options.headers = (0, _extends3.default)({}, options.headers, _this.headers, {
             authorization: 'bearer ' + jwtToken
           });
         }
