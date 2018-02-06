@@ -1488,7 +1488,7 @@ exports.default = function () {
               break;
             }
 
-            throw new Error('Did not attempt app running at ' + url + ' -- make sure you\'ve started it.');
+            throw new Error('No server responding at ' + url + ' -- make sure you\'ve started it.');
 
           case 47:
             log('Detected app on port ' + port);
