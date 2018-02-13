@@ -1395,7 +1395,7 @@ exports.default = function () {
               break;
             }
 
-            throw new Error('You must provide an app code  -- visit https://chromaticqa.com to get your code.' + '\nPass your app code with the `CHROMATIC_APP_CODE` environment variable or the `--app-code` flag.');
+            throw new Error('You must provide an app code  -- visit https://www.chromaticqa.com to get your code.' + '\nPass your app code with the `CHROMATIC_APP_CODE` environment variable or the `--app-code` flag.');
 
           case 4:
             if (!(!scriptName && !noStart || !port)) {
@@ -1429,7 +1429,7 @@ exports.default = function () {
               break;
             }
 
-            throw new Error('Incorrect app code \'' + appCode + '\' -- visit https://chromaticqa.com to get your code');
+            throw new Error('Incorrect app code \'' + appCode + '\' -- visit https://www.chromaticqa.com to get your code');
 
           case 18:
             throw _context2.t0;
