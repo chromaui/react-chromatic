@@ -1342,7 +1342,7 @@ var TesterCreateAppTokenMutation = '\n  mutation TesterCreateAppTokenMutation($a
 
 var TesterCreateBuildMutation = '\n  mutation TesterCreateBuildMutation($input: CreateBuildInput!, $isolatorUrl: String!) {\n    createBuild(input: $input, isolatorUrl: $isolatorUrl) {\n      id\n      number\n      specCount\n      componentCount\n      webUrl\n    }\n  }\n';
 
-var TesterBuildQuery = '\n  query TesterBuildQuery($buildNumber: Int!) {\n    app {\n      build(number: $buildNumber) {\n        id\n        status\n        inProgressCount: snapshotCount(status: SNAPSHOT_IN_PROGRESS)\n        specCount\n        changeCount: snapshotCount(change: SNAPSHOT_VISUALLY_DIFFERENT)\n        errorCount: snapshotCount(status: SNAPSHOT_CAPTURE_ERROR)\n      }\n    }\n  }\n';
+var TesterBuildQuery = '\n  query TesterBuildQuery($buildNumber: Int!) {\n    app {\n      build(number: $buildNumber) {\n        id\n        status\n        inProgressCount: snapshotCount(status: [SNAPSHOT_IN_PROGRESS])\n        specCount\n        changeCount: snapshotCount(status: [SNAPSHOT_PENDING, SNAPSHOT_ACCEPTED, SNAPSHOT_DENIED])\n        errorCount: snapshotCount(status: [SNAPSHOT_CAPTURE_ERROR])\n      }\n    }\n  }\n';
 
 var debug = (0, _debug2.default)('react-chromatic:tester');
 
@@ -1368,6 +1368,7 @@ exports.default = function () {
         port = _ref3.port,
         _ref3$appPath = _ref3.appPath,
         appPath = _ref3$appPath === undefined ? '/' : _ref3$appPath,
+        url = _ref3.url,
         _ref3$exitZeroOnChang = _ref3.exitZeroOnChanges,
         exitZeroOnChanges = _ref3$exitZeroOnChang === undefined ? false : _ref3$exitZeroOnChang,
         _ref3$verbose = _ref3.verbose,
@@ -1381,7 +1382,7 @@ exports.default = function () {
         _ref3$originalArgv = _ref3.originalArgv,
         originalArgv = _ref3$originalArgv === undefined ? false : _ref3$originalArgv;
 
-    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, branch, baselineCommits, appPathWithSlash, url, child, isolatorUrl, tunnel, runtimeSpecs, fromCI, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
+    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, branch, baselineCommits, appPathWithSlash, appUrl, child, isolatorUrl, tunnel, runtimeSpecs, fromCI, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
 
     return _regenerator2.default.wrap(function _callee2$(_context2) {
       while (1) {
@@ -1459,17 +1460,17 @@ exports.default = function () {
             debug('Found baselineCommits: ' + baselineCommits);
 
             appPathWithSlash = appPath[0] === '/' ? appPath : '/' + appPath;
-            url = 'http://localhost:' + port + appPathWithSlash;
+            appUrl = url || 'http://localhost:' + port + appPathWithSlash;
             child = void 0;
 
-            if (noStart) {
+            if (!(!noStart && !url)) {
               _context2.next = 43;
               break;
             }
 
             log('Starting app with `npm run ' + scriptName + '`');
             _context2.next = 39;
-            return (0, _startApp2.default)({ scriptName: scriptName, url: url });
+            return (0, _startApp2.default)({ scriptName: scriptName, url: appUrl });
 
           case 39:
             child = _context2.sent;
@@ -1480,7 +1481,7 @@ exports.default = function () {
 
           case 43:
             _context2.next = 45;
-            return (0, _startApp.checkResponse)(url);
+            return (0, _startApp.checkResponse)(appUrl);
 
           case 45:
             if (_context2.sent) {
@@ -1488,16 +1489,16 @@ exports.default = function () {
               break;
             }
 
-            throw new Error('No server responding at ' + url + ' -- make sure you\'ve started it.');
+            throw new Error('No server responding at ' + appUrl + ' -- make sure you\'ve started it.');
 
           case 47:
             log('Detected app on port ' + port);
 
           case 48:
-            isolatorUrl = url;
+            isolatorUrl = appUrl;
             tunnel = void 0;
 
-            if (!createTunnel) {
+            if (!(createTunnel && !url)) {
               _context2.next = 57;
               break;
             }
