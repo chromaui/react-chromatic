@@ -1342,7 +1342,7 @@ var TesterCreateAppTokenMutation = '\n  mutation TesterCreateAppTokenMutation($a
 
 var TesterCreateBuildMutation = '\n  mutation TesterCreateBuildMutation($input: CreateBuildInput!, $isolatorUrl: String!) {\n    createBuild(input: $input, isolatorUrl: $isolatorUrl) {\n      id\n      number\n      specCount\n      componentCount\n      webUrl\n    }\n  }\n';
 
-var TesterBuildQuery = '\n  query TesterBuildQuery($buildNumber: Int!) {\n    app {\n      build(number: $buildNumber) {\n        id\n        status\n        inProgressCount: snapshotCount(status: [SNAPSHOT_IN_PROGRESS])\n        specCount\n        changeCount: snapshotCount(status: [SNAPSHOT_PENDING, SNAPSHOT_ACCEPTED, SNAPSHOT_DENIED])\n        errorCount: snapshotCount(status: [SNAPSHOT_CAPTURE_ERROR])\n      }\n    }\n  }\n';
+var TesterBuildQuery = '\n  query TesterBuildQuery($buildNumber: Int!) {\n    app {\n      build(number: $buildNumber) {\n        id\n        status\n        inProgressCount: snapshotCount(statuses: [SNAPSHOT_IN_PROGRESS])\n        specCount\n        changeCount: snapshotCount(statuses: [SNAPSHOT_PENDING, SNAPSHOT_ACCEPTED, SNAPSHOT_DENIED])\n        errorCount: snapshotCount(statuses: [SNAPSHOT_CAPTURE_ERROR])\n      }\n    }\n  }\n';
 
 var debug = (0, _debug2.default)('react-chromatic:tester');
 
