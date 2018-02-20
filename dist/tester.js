@@ -1578,7 +1578,7 @@ exports.default = function () {
           case 90:
             log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
             if (!exitZeroOnChanges) {
-              log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case. Read more: http://docs.chromaticqa.com/setup_ci');
+              log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case. Read more: http://docs.chromaticqa.com/test');
             }
             exitCode = exitZeroOnChanges ? 0 : 1;
             return _context2.abrupt('break', 104);
