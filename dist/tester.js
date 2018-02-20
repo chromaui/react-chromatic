@@ -93,36 +93,58 @@ module.exports = require("denodeify");
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = require("debug");
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+// Note this file differs from our usual convention because it is packaged
+var _process$env = process.env,
+    _process$env$CHROMATI = _process$env.CHROMATIC_SERVER_PORT,
+    CHROMATIC_SERVER_PORT = _process$env$CHROMATI === undefined ? 3004 : _process$env$CHROMATI,
+    _process$env$CHROMATI2 = _process$env.CHROMATIC_INDEX_URL,
+    CHROMATIC_INDEX_URL = _process$env$CHROMATI2 === undefined ? 'https://index.chromaticqa.com' : _process$env$CHROMATI2,
+    _process$env$CHROMATI3 = _process$env.CHROMATIC_TUNNEL_URL,
+    CHROMATIC_TUNNEL_URL = _process$env$CHROMATI3 === undefined ? 'https://tunnel.chromaticqa.com' : _process$env$CHROMATI3;
+exports.CHROMATIC_SERVER_PORT = CHROMATIC_SERVER_PORT;
+exports.CHROMATIC_INDEX_URL = CHROMATIC_INDEX_URL;
+exports.CHROMATIC_TUNNEL_URL = CHROMATIC_TUNNEL_URL;
 
 /***/ }),
 /* 5 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/helpers/classCallCheck");
+module.exports = require("debug");
 
 /***/ }),
 /* 6 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/helpers/createClass");
+module.exports = require("babel-runtime/helpers/classCallCheck");
 
 /***/ }),
 /* 7 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/helpers/extends");
+module.exports = require("babel-runtime/helpers/createClass");
 
 /***/ }),
 /* 8 */
 /***/ (function(module, exports) {
 
-module.exports = require("child_process");
+module.exports = require("babel-runtime/helpers/extends");
 
 /***/ }),
 /* 9 */
+/***/ (function(module, exports) {
+
+module.exports = require("child_process");
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -140,15 +162,15 @@ var _asyncToGenerator2 = __webpack_require__(0);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _extends2 = __webpack_require__(7);
+var _extends2 = __webpack_require__(8);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _classCallCheck2 = __webpack_require__(5);
+var _classCallCheck2 = __webpack_require__(6);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(6);
+var _createClass2 = __webpack_require__(7);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
@@ -159,12 +181,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var GraphQLClient = function () {
   function GraphQLClient(_ref) {
     var uri = _ref.uri,
-        jwtToken = _ref.jwtToken,
-        headers = _ref.headers;
+        jwtToken = _ref.jwtToken;
     (0, _classCallCheck3.default)(this, GraphQLClient);
 
     this.apolloFetch = (0, _apolloFetch.createApolloFetch)({ uri: uri });
-    this.headers = headers;
 
     if (jwtToken) {
       this.setJwtToken(jwtToken);
@@ -174,14 +194,12 @@ var GraphQLClient = function () {
   (0, _createClass3.default)(GraphQLClient, [{
     key: 'setJwtToken',
     value: function setJwtToken(jwtToken) {
-      var _this = this;
-
       this.apolloFetch.use(function (_ref2, next) {
         var options = _ref2.options;
 
         if (jwtToken) {
           // eslint-disable-next-line no-param-reassign
-          options.headers = (0, _extends3.default)({}, options.headers, _this.headers, {
+          options.headers = (0, _extends3.default)({}, options.headers, {
             authorization: 'bearer ' + jwtToken
           });
         }
@@ -265,33 +283,6 @@ var GraphQLClient = function () {
 exports.default = GraphQLClient;
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-// Note this file differs from our usual convention because it is packaged
-var _process$env = process.env,
-    _process$env$CHROMATI = _process$env.CHROMATIC_SERVER_PORT,
-    CHROMATIC_SERVER_PORT = _process$env$CHROMATI === undefined ? 3004 : _process$env$CHROMATI,
-    _process$env$CHROMATI2 = _process$env.CHROMATIC_INDEX_URL,
-    CHROMATIC_INDEX_URL = _process$env$CHROMATI2 === undefined ? 'https://index.chromaticqa.com' : _process$env$CHROMATI2,
-    _process$env$CHROMATI3 = _process$env.CHROMATIC_TUNNEL_URL,
-    CHROMATIC_TUNNEL_URL = _process$env$CHROMATI3 === undefined ? 'https://tunnel.chromaticqa.com' : _process$env$CHROMATI3,
-    _process$env$CHROMATI4 = _process$env.CHROMATIC_CREATE_TUNNEL,
-    CHROMATIC_CREATE_TUNNEL = _process$env$CHROMATI4 === undefined ? 'true' : _process$env$CHROMATI4,
-    CHROMATIC_APP_CODE = _process$env.CHROMATIC_APP_CODE;
-exports.CHROMATIC_SERVER_PORT = CHROMATIC_SERVER_PORT;
-exports.CHROMATIC_INDEX_URL = CHROMATIC_INDEX_URL;
-exports.CHROMATIC_TUNNEL_URL = CHROMATIC_TUNNEL_URL;
-exports.CHROMATIC_CREATE_TUNNEL = CHROMATIC_CREATE_TUNNEL;
-exports.CHROMATIC_APP_CODE = CHROMATIC_APP_CODE;
-
-/***/ }),
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -318,12 +309,13 @@ var _denodeify = __webpack_require__(3);
 
 var _denodeify2 = _interopRequireDefault(_denodeify);
 
+var _environment = __webpack_require__(4);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = function () {
   var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(_ref) {
-    var tunnelUrl = _ref.tunnelUrl,
-        port = _ref.port;
+    var port = _ref.port;
     return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -338,7 +330,7 @@ exports.default = function () {
           case 2:
             return _context.abrupt('return', (0, _denodeify2.default)(_localtunnel2.default)(port, {
               local_host: 'localhost',
-              host: tunnelUrl
+              host: _environment.CHROMATIC_TUNNEL_URL
             }));
 
           case 3:
@@ -676,13 +668,13 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
   };
 }();
 
-var _child_process = __webpack_require__(8);
+var _child_process = __webpack_require__(9);
 
 var _denodeify = __webpack_require__(3);
 
 var _denodeify2 = _interopRequireDefault(_denodeify);
 
-var _debug = __webpack_require__(4);
+var _debug = __webpack_require__(5);
 
 var _debug2 = _interopRequireDefault(_debug);
 
@@ -779,11 +771,11 @@ var _asyncToGenerator2 = __webpack_require__(0);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _classCallCheck2 = __webpack_require__(5);
+var _classCallCheck2 = __webpack_require__(6);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(6);
+var _createClass2 = __webpack_require__(7);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
@@ -904,9 +896,7 @@ exports.default = function () {
               // We need to load scripts that are loaded via script tags
               resources: 'usable',
               // Send console.logs -> /dev/null (so to speak)
-              virtualConsole: virtualConsole,
-              // Add a requestAnimationFrame polyfill, react@16 warns about it
-              pretendToBeVisual: true
+              virtualConsole: virtualConsole
             });
 
           case 7:
@@ -922,12 +912,11 @@ exports.default = function () {
 
             return _context.abrupt('return', new _promise2.default(function (resolve, reject) {
               return dom.window.document.addEventListener('DOMContentLoaded', function () {
-                var separator = '=========================';
-
                 if (!dom.window.__chromaticRuntimeSpecs__) {
                   console.error('Didn\'t find \'window.__chromaticRuntimeSpecs__\' at ' + url + '.\n' + 'Have you installed the Chromatic widget or addon correctly?\n');
 
                   if (!verbose && logs.length) {
+                    var separator = '=========================';
                     console.error('Your app\'s output:\n' + separator + '\n');
                     logs.forEach(function (_ref3) {
                       var logType = _ref3.logType,
@@ -938,23 +927,6 @@ exports.default = function () {
                   }
                   reject(new Error('Didn\'t find \'window.__chromaticRuntimeSpecs__\' at ' + url + '.'));
                 }
-
-                // If their app logged something to console.error, it's probably, but
-                // not definitely an issue. See https://github.com/hichroma/chromatic/issues/757
-                if (logs.find(function (log) {
-                  return log.logType === 'error';
-                })) {
-                  console.error('\nYour app logged the following to the error console:\n' + separator);
-                  logs.filter(function (log) {
-                    return log.logType === 'error';
-                  }).forEach(function (_ref4) {
-                    var logType = _ref4.logType,
-                        log = _ref4.log;
-                    return console[logType](log);
-                  });
-                  console.error('\n' + separator + '\nThis may lead to some stories not working right or getting detected by Chromatic' + '\nWe suggest you fix the errors, but we will continue anyway..\n');
-                }
-
                 var specs = dom.window.__chromaticRuntimeSpecs__();
                 dom.window.close();
                 resolve(specs);
@@ -988,7 +960,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.checkResponse = undefined;
 
-var _extends2 = __webpack_require__(7);
+var _extends2 = __webpack_require__(8);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
@@ -1123,7 +1095,7 @@ var waitForResponse = function () {
   };
 }();
 
-var _child_process = __webpack_require__(8);
+var _child_process = __webpack_require__(9);
 
 var _isomorphicFetch = __webpack_require__(26);
 
@@ -1160,7 +1132,7 @@ exports.default = function () {
               break;
             }
 
-            throw new Error('Detected process already running at ' + url + '\nIf you are sure this is your server, pass `--do-not-start` to skip this step.');
+            throw new Error('Detected process already running at ' + url);
 
           case 6:
 
@@ -1197,7 +1169,7 @@ exports.default = function () {
 /* 16 */
 /***/ (function(module, exports) {
 
-module.exports = {"name":"react-chromatic","version":"0.7.10-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"webpack","build":"npm-run-all --serial -l build:**","prepare":"npm run build","dev":"npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
+module.exports = {"name":"react-chromatic","version":"0.7.8-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"webpack","build":"npm-run-all --serial -l build:**","prepare":"npm run build","dev":"npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.3.0","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react-dom":"15.x || 16.x","react":"15.x || 16.x"},"devDependencies":{"npm-run-all":"^4.0.2","webpack-node-externals":"^1.6.0","prettier-eslint":"^7.1.0"}}
 
 /***/ }),
 /* 17 */
@@ -1302,13 +1274,15 @@ var _denodeify2 = _interopRequireDefault(_denodeify);
 
 var _nodeAsk = __webpack_require__(18);
 
-var _debug = __webpack_require__(4);
+var _debug = __webpack_require__(5);
 
 var _debug2 = _interopRequireDefault(_debug);
 
 var _treeKill = __webpack_require__(19);
 
 var _treeKill2 = _interopRequireDefault(_treeKill);
+
+var _environment = __webpack_require__(4);
 
 var _runtimes = __webpack_require__(14);
 
@@ -1324,15 +1298,13 @@ var _tunnel2 = _interopRequireDefault(_tunnel);
 
 var _packageJson = __webpack_require__(13);
 
-var _GraphQLClient = __webpack_require__(9);
+var _GraphQLClient = __webpack_require__(10);
 
 var _GraphQLClient2 = _interopRequireDefault(_GraphQLClient);
 
 var _git = __webpack_require__(12);
 
 var _package = __webpack_require__(16);
-
-var _environment = __webpack_require__(10);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1374,8 +1346,6 @@ exports.default = function () {
         verbose = _ref3$verbose === undefined ? false : _ref3$verbose,
         _ref3$indexUrl = _ref3.indexUrl,
         indexUrl = _ref3$indexUrl === undefined ? _environment.CHROMATIC_INDEX_URL : _ref3$indexUrl,
-        _ref3$tunnelUrl = _ref3.tunnelUrl,
-        tunnelUrl = _ref3$tunnelUrl === undefined ? _environment.CHROMATIC_TUNNEL_URL : _ref3$tunnelUrl,
         _ref3$createTunnel = _ref3.createTunnel,
         createTunnel = _ref3$createTunnel === undefined ? true : _ref3$createTunnel,
         _ref3$originalArgv = _ref3.originalArgv,
@@ -1395,7 +1365,7 @@ exports.default = function () {
               break;
             }
 
-            throw new Error('You must provide an app code  -- visit https://www.chromaticqa.com to get your code.' + '\nPass your app code with the `CHROMATIC_APP_CODE` environment variable or the `--app-code` flag.');
+            throw new Error('You must provide an app code  -- visit https://chromaticqa.com to get your code.' + '\nPass your app code with the `CHROMATIC_APP_CODE` environment variable or the `--app-code` flag.');
 
           case 4:
             if (!(!scriptName && !noStart || !port)) {
@@ -1429,7 +1399,7 @@ exports.default = function () {
               break;
             }
 
-            throw new Error('Incorrect app code \'' + appCode + '\' -- visit https://www.chromaticqa.com to get your code');
+            throw new Error('Incorrect app code \'' + appCode + '\' -- visit https://chromaticqa.com to get your code');
 
           case 18:
             throw _context2.t0;
@@ -1488,7 +1458,7 @@ exports.default = function () {
               break;
             }
 
-            throw new Error('No server responding at ' + url + ' -- make sure you\'ve started it.');
+            throw new Error('Did not attempt app running at ' + url + ' -- make sure you\'ve started it.');
 
           case 47:
             log('Detected app on port ' + port);
@@ -1504,7 +1474,7 @@ exports.default = function () {
 
             log('Opening tunnel to Chromatic capture servers');
             _context2.next = 54;
-            return (0, _tunnel2.default)({ tunnelUrl: tunnelUrl, port: port });
+            return (0, _tunnel2.default)({ port: port });
 
           case 54:
             tunnel = _context2.sent;

@@ -31,14 +31,12 @@ var _tester = require('../tester');
 
 var _tester2 = _interopRequireDefault(_tester);
 
-var _environment = require('../assets/environment');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Ensure NODE_ENV is set
 process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
-_commander2.default.option('-a, --app-code [code]', 'the code for your app, get from chromaticqa.com').option('-s, --script-name [name]', 'The npm script that starts your app/storybook.').option('-S, --do-not-start', "Don't attempt to start; use if your app is already running", false).option('-p, --port [port]', 'What port does your app serve?').option('--app-path [path]', 'URI path component to access Chromatic within the target app').option('--storybook-addon', 'Autodetect config for storybook addon setup', false).option('--exit-zero-on-changes', "Use a 0 exit code if changes are detected (i.e. don't stop the build)", false).option('--debug', 'Output more debugging information', false).parse(process.argv);
+_commander2.default.option('-a, --app-code [code]', 'the code for your app, get from chromaticqa.com').option('-s, --script-name [name]', 'The npm script that starts your app/storybook.').option('-S, --do-not-start', "Don't attempt to start; use if your app is already running", false).option('-p, --port [port]', 'What port does your app serve?').option('--app-path [path]', 'URI path component to access Chromatic within the target app').option('--storybook-addon', 'Autodetect config for storybook addon setup', false).option('--exit-zero-on-changes', "Use a 0 exit code if changes are detected (i.e. don't stop the build)", false).option('--debug', 'Output more debugging information', false).option('--create-tunnel [boolean]', 'tunnel the service over the internet (default true)', true).option('--index-url [url]', 'index to connect to').parse(process.argv);
 
 function findOption(storybookScript, shortName, longName) {
   var parts = storybookScript.split(/[\s+|=]/);
@@ -81,14 +79,15 @@ if (_commander2.default.storybookAddon) {
 
 var commanderOptions = {
   config: _commander2.default.config,
-  appCode: _commander2.default.appCode || _environment.CHROMATIC_APP_CODE,
+  appCode: _commander2.default.appCode || process.env.CHROMATIC_APP_CODE,
   scriptName: _commander2.default.scriptName,
   noStart: _commander2.default.doNotStart,
   port: _commander2.default.port,
   appPath: _commander2.default.appPath,
   exitZeroOnChanges: _commander2.default.exitZeroOnChanges,
   verbose: _commander2.default.debug,
-  createTunnel: _environment.CHROMATIC_CREATE_TUNNEL !== 'false',
+  createTunnel: _commander2.default.createTunnel !== 'false',
+  indexUrl: _commander2.default.indexUrl,
   originalArgv: process.argv
 };
 
