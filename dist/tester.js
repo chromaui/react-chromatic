@@ -1197,7 +1197,7 @@ exports.default = function () {
 /* 16 */
 /***/ (function(module, exports) {
 
-module.exports = {"name":"react-chromatic","version":"0.7.11-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"webpack","build":"npm-run-all --serial -l build:**","prepare":"npm run build","dev":"npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
+module.exports = {"name":"react-chromatic","version":"0.7.10-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"webpack","build":"npm-run-all --serial -l build:**","prepare":"npm run build","dev":"npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
 
 /***/ }),
 /* 17 */
@@ -1368,6 +1368,7 @@ exports.default = function () {
         port = _ref3.port,
         _ref3$appPath = _ref3.appPath,
         appPath = _ref3$appPath === undefined ? '/' : _ref3$appPath,
+        url = _ref3.url,
         _ref3$exitZeroOnChang = _ref3.exitZeroOnChanges,
         exitZeroOnChanges = _ref3$exitZeroOnChang === undefined ? false : _ref3$exitZeroOnChang,
         _ref3$verbose = _ref3.verbose,
@@ -1381,7 +1382,7 @@ exports.default = function () {
         _ref3$originalArgv = _ref3.originalArgv,
         originalArgv = _ref3$originalArgv === undefined ? false : _ref3$originalArgv;
 
-    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, branch, baselineCommits, appPathWithSlash, url, child, isolatorUrl, tunnel, runtimeSpecs, fromCI, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
+    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, branch, baselineCommits, appPathWithSlash, appUrl, child, isolatorUrl, tunnel, runtimeSpecs, fromCI, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
 
     return _regenerator2.default.wrap(function _callee2$(_context2) {
       while (1) {
@@ -1459,17 +1460,17 @@ exports.default = function () {
             debug('Found baselineCommits: ' + baselineCommits);
 
             appPathWithSlash = appPath[0] === '/' ? appPath : '/' + appPath;
-            url = 'http://localhost:' + port + appPathWithSlash;
+            appUrl = url || 'http://localhost:' + port + appPathWithSlash;
             child = void 0;
 
-            if (noStart) {
+            if (!(!noStart && !url)) {
               _context2.next = 43;
               break;
             }
 
             log('Starting app with `npm run ' + scriptName + '`');
             _context2.next = 39;
-            return (0, _startApp2.default)({ scriptName: scriptName, url: url });
+            return (0, _startApp2.default)({ scriptName: scriptName, url: appUrl });
 
           case 39:
             child = _context2.sent;
@@ -1480,7 +1481,7 @@ exports.default = function () {
 
           case 43:
             _context2.next = 45;
-            return (0, _startApp.checkResponse)(url);
+            return (0, _startApp.checkResponse)(appUrl);
 
           case 45:
             if (_context2.sent) {
@@ -1488,16 +1489,16 @@ exports.default = function () {
               break;
             }
 
-            throw new Error('No server responding at ' + url + ' -- make sure you\'ve started it.');
+            throw new Error('No server responding at ' + appUrl + ' -- make sure you\'ve started it.');
 
           case 47:
             log('Detected app on port ' + port);
 
           case 48:
-            isolatorUrl = url;
+            isolatorUrl = appUrl;
             tunnel = void 0;
 
-            if (!createTunnel) {
+            if (!(createTunnel && !url)) {
               _context2.next = 57;
               break;
             }
@@ -1578,7 +1579,7 @@ exports.default = function () {
           case 90:
             log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
             if (!exitZeroOnChanges) {
-              log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case. Read more: http://docs.chromaticqa.com/test');
+              log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case. Read more: http://docs.chromaticqa.com/setup_ci');
             }
             exitCode = exitZeroOnChanges ? 0 : 1;
             return _context2.abrupt('break', 104);

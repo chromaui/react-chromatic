@@ -1,7 +1,3 @@
-# 0.7.10 - 2017-02-22
-
-* Small API change for querying build change counts.
-
 # 0.7.9 - 2017-01-23
 
 * Our test script now warns you if your storybook logs any errors. This can sometimes help reveal subtle problems that are caused by the script evaluating your storybook in JSDOM. If you have legitimate things logged to `console.error` this may cause noise---you should probably get rid of them.
