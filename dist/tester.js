@@ -1368,7 +1368,6 @@ exports.default = function () {
         port = _ref3.port,
         _ref3$appPath = _ref3.appPath,
         appPath = _ref3$appPath === undefined ? '/' : _ref3$appPath,
-        url = _ref3.url,
         _ref3$exitZeroOnChang = _ref3.exitZeroOnChanges,
         exitZeroOnChanges = _ref3$exitZeroOnChang === undefined ? false : _ref3$exitZeroOnChang,
         _ref3$verbose = _ref3.verbose,
@@ -1382,7 +1381,7 @@ exports.default = function () {
         _ref3$originalArgv = _ref3.originalArgv,
         originalArgv = _ref3$originalArgv === undefined ? false : _ref3$originalArgv;
 
-    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, branch, baselineCommits, appPathWithSlash, appUrl, child, isolatorUrl, tunnel, runtimeSpecs, fromCI, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
+    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, branch, baselineCommits, appPathWithSlash, url, child, isolatorUrl, tunnel, runtimeSpecs, fromCI, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
 
     return _regenerator2.default.wrap(function _callee2$(_context2) {
       while (1) {
@@ -1460,17 +1459,17 @@ exports.default = function () {
             debug('Found baselineCommits: ' + baselineCommits);
 
             appPathWithSlash = appPath[0] === '/' ? appPath : '/' + appPath;
-            appUrl = url || 'http://localhost:' + port + appPathWithSlash;
+            url = 'http://localhost:' + port + appPathWithSlash;
             child = void 0;
 
-            if (!(!noStart && !url)) {
+            if (noStart) {
               _context2.next = 43;
               break;
             }
 
             log('Starting app with `npm run ' + scriptName + '`');
             _context2.next = 39;
-            return (0, _startApp2.default)({ scriptName: scriptName, url: appUrl });
+            return (0, _startApp2.default)({ scriptName: scriptName, url: url });
 
           case 39:
             child = _context2.sent;
@@ -1481,7 +1480,7 @@ exports.default = function () {
 
           case 43:
             _context2.next = 45;
-            return (0, _startApp.checkResponse)(appUrl);
+            return (0, _startApp.checkResponse)(url);
 
           case 45:
             if (_context2.sent) {
@@ -1489,16 +1488,16 @@ exports.default = function () {
               break;
             }
 
-            throw new Error('No server responding at ' + appUrl + ' -- make sure you\'ve started it.');
+            throw new Error('No server responding at ' + url + ' -- make sure you\'ve started it.');
 
           case 47:
             log('Detected app on port ' + port);
 
           case 48:
-            isolatorUrl = appUrl;
+            isolatorUrl = url;
             tunnel = void 0;
 
-            if (!(createTunnel && !url)) {
+            if (!createTunnel) {
               _context2.next = 57;
               break;
             }
