@@ -551,12 +551,12 @@ var getRecentCommits = function () {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                if (!(skip === max)) {
+                if (!(skip >= max)) {
                   _context5.next = 2;
                   break;
                 }
 
-                throw new Error('Didn\'t find any commits in this git repository in the last ' + max + ' builds.\n\nAre you sure you are running this command against the correct app-code?\n\nPlease find out more here: http://docs.chromaticqa.com/branching-and-baselines');
+                return _context5.abrupt('return', fail(max));
 
               case 2:
                 _context5.next = 4;
@@ -570,21 +570,37 @@ var getRecentCommits = function () {
 
                 debug(FETCH_N_INITIAL_BUILD_COMMITS + ' after ' + skip + ' commits: ' + recentCommits);
 
-                _context5.next = 8;
-                return checkSomeCommitsAreInHistory(recentCommits);
-
-              case 8:
-                if (!_context5.sent) {
+                if (!(recentCommits.length === 0)) {
                   _context5.next = 10;
+                  break;
+                }
+
+                if (!(skip === 0)) {
+                  _context5.next = 9;
                   break;
                 }
 
                 return _context5.abrupt('return', recentCommits);
 
-              case 10:
-                return _context5.abrupt('return', getSince(skip + FETCH_N_INITIAL_BUILD_COMMITS));
+              case 9:
+                return _context5.abrupt('return', fail(skip));
 
-              case 11:
+              case 10:
+                _context5.next = 12;
+                return checkSomeCommitsAreInHistory(recentCommits);
+
+              case 12:
+                if (!_context5.sent) {
+                  _context5.next = 14;
+                  break;
+                }
+
+                return _context5.abrupt('return', recentCommits);
+
+              case 14:
+                return _context5.abrupt('return', getSince(skip + recentCommits.length));
+
+              case 15:
               case 'end':
                 return _context5.stop();
             }
@@ -597,15 +613,19 @@ var getRecentCommits = function () {
       };
     }();
 
-    var max;
+    var max, fail;
     return _regenerator2.default.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
+            fail = function fail(count) {
+              throw new Error('Didn\'t find any commits in this git repository in the last ' + count + ' builds.\n\nAre you sure you are running this command against the correct app-code?\n\nPlease find out more here: http://docs.chromaticqa.com/branching-and-baselines');
+            };
+
             max = FETCH_N_INITIAL_BUILD_COMMITS * MAX_N_FETCHES;
             return _context6.abrupt('return', getSince(0));
 
-          case 2:
+          case 3:
           case 'end':
             return _context6.stop();
         }
