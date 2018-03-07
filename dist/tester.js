@@ -366,7 +366,7 @@ exports.default = function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getBaselineCommits = exports.getBranch = exports.getCommit = exports.FETCH_N_INITAL_BUILD_COMMITS = undefined;
+exports.getBaselineCommits = exports.getBranch = exports.getCommit = exports.LIMIT_HISTORY_TO_N_COMMITS = exports.MAX_N_FETCHES = exports.FETCH_N_INITIAL_BUILD_COMMITS = undefined;
 
 var _toConsumableArray2 = __webpack_require__(25);
 
@@ -402,14 +402,14 @@ var execGitCommand = function () {
             _context.t0 = _context['catch'](0);
 
             // eslint-disable-next-line no-console
-            console.error('Unable to execute git command \'' + command + '\'.\n');
             if (_context.t0.message && _context.t0.message.match('Not a git repository')) {
+              console.error('Unable to execute git command \'' + command + '\'.\n');
               // eslint-disable-next-line no-console
               console.error('Chromatic only works in git projects.\n' + 'Contact us at support@hichroma.com if you need to use Chromatic outside of one.\n\n');
             }
             throw _context.t0;
 
-          case 11:
+          case 10:
           case 'end':
             return _context.stop();
         }
@@ -426,25 +426,28 @@ var execGitCommand = function () {
 // remote and the branch matches with origin/REF, but for now we are naive about
 // adhoc builds.
 
+// We could cache this, but it's probably pretty quick
 var getCommit = exports.getCommit = function () {
   var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
-    var _trim$split, _trim$split2, commit, committedAtSeconds;
+    var _trim$split, _trim$split2, commit, committedAtSeconds, committerEmail, committerName;
 
     return _regenerator2.default.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.next = 2;
-            return execGitCommand('git log -n 1 --format="%H %ct"');
+            return execGitCommand('git log -n 1 --format="%H,%ct,%ce,%cn"');
 
           case 2:
-            _trim$split = _context2.sent.trim().split(' ');
-            _trim$split2 = (0, _slicedToArray3.default)(_trim$split, 2);
+            _trim$split = _context2.sent.trim().split(',');
+            _trim$split2 = (0, _slicedToArray3.default)(_trim$split, 4);
             commit = _trim$split2[0];
             committedAtSeconds = _trim$split2[1];
-            return _context2.abrupt('return', { commit: commit, committedAt: committedAtSeconds * 1000 });
+            committerEmail = _trim$split2[2];
+            committerName = _trim$split2[3];
+            return _context2.abrupt('return', { commit: commit, committedAt: committedAtSeconds * 1000, committerEmail: committerEmail, committerName: committerName });
 
-          case 7:
+          case 9:
           case 'end':
             return _context2.stop();
         }
@@ -493,6 +496,151 @@ var getBranch = exports.getBranch = function () {
   };
 }();
 
+// Given a list of commit hashes, ensure that at least one of them is from our
+// current git history
+var checkSomeCommitsAreInHistory = function () {
+  var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(commits) {
+    return _regenerator2.default.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            _context4.prev = 0;
+            _context4.next = 3;
+            return execGitCommand('git rev-list -n 1 --ignore-missing ' + commitsForCLI(commits));
+
+          case 3:
+            return _context4.abrupt('return', true);
+
+          case 6:
+            _context4.prev = 6;
+            _context4.t0 = _context4['catch'](0);
+
+            if (!(_context4.t0.code === 129)) {
+              _context4.next = 10;
+              break;
+            }
+
+            return _context4.abrupt('return', false);
+
+          case 10:
+            throw _context4.t0;
+
+          case 11:
+          case 'end':
+            return _context4.stop();
+        }
+      }
+    }, _callee4, this, [[0, 6]]);
+  }));
+
+  return function checkSomeCommitsAreInHistory(_x2) {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
+// Get (at most) FETCH_N_INITIAL_BUILD_COMMITS most recent commits from this,
+// with a guarantee that at least *one* of the commits exists in this repository
+// (i.e. hasn't been rebased or squashed out of the repo)
+// If we need to do more than MAX_N_FETCHES to get them (i.e. the most recent
+// FETCH_N_INITIAL_BUILD_COMMITS * MAX_N_FETCHES commits are all gone), we throw
+
+
+var getRecentCommits = function () {
+  var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(client, newestCommittedAt) {
+    var getSince = function () {
+      var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(skip) {
+        var recentCommits;
+        return _regenerator2.default.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                if (!(skip >= max)) {
+                  _context5.next = 2;
+                  break;
+                }
+
+                return _context5.abrupt('return', fail(max));
+
+              case 2:
+                _context5.next = 4;
+                return client.runQuery(TesterGetRecentBuildCommitsQuery, {
+                  newestCommittedAt: newestCommittedAt,
+                  skip: skip
+                });
+
+              case 4:
+                recentCommits = _context5.sent.app.buildCommits;
+
+                debug(FETCH_N_INITIAL_BUILD_COMMITS + ' after ' + skip + ' commits: ' + recentCommits);
+
+                if (!(recentCommits.length === 0)) {
+                  _context5.next = 10;
+                  break;
+                }
+
+                if (!(skip === 0)) {
+                  _context5.next = 9;
+                  break;
+                }
+
+                return _context5.abrupt('return', recentCommits);
+
+              case 9:
+                return _context5.abrupt('return', fail(skip));
+
+              case 10:
+                _context5.next = 12;
+                return checkSomeCommitsAreInHistory(recentCommits);
+
+              case 12:
+                if (!_context5.sent) {
+                  _context5.next = 14;
+                  break;
+                }
+
+                return _context5.abrupt('return', recentCommits);
+
+              case 14:
+                return _context5.abrupt('return', getSince(skip + recentCommits.length));
+
+              case 15:
+              case 'end':
+                return _context5.stop();
+            }
+          }
+        }, _callee5, this);
+      }));
+
+      return function getSince(_x5) {
+        return _ref6.apply(this, arguments);
+      };
+    }();
+
+    var max, fail;
+    return _regenerator2.default.wrap(function _callee6$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+            fail = function fail(count) {
+              throw new Error('Didn\'t find any commits in this git repository in the last ' + count + ' builds.\n\nAre you sure you are running this command against the correct app-code?\n\nPlease find out more here: http://docs.chromaticqa.com/branching-and-baselines');
+            };
+
+            max = FETCH_N_INITIAL_BUILD_COMMITS * MAX_N_FETCHES;
+            return _context6.abrupt('return', getSince(0));
+
+          case 3:
+          case 'end':
+            return _context6.stop();
+        }
+      }
+    }, _callee6, this);
+  }));
+
+  return function getRecentCommits(_x3, _x4) {
+    return _ref5.apply(this, arguments);
+  };
+}();
+
 // We use rev-list to get all the commits that are ancestors of HEAD but not
 // ancestors of any of the <commits>.
 //
@@ -512,28 +660,40 @@ var getBranch = exports.getBranch = function () {
 
 
 var getBaselinesFromCommits = function () {
-  var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(commits) {
-    var boundaryData, baselineCommits, oldestCommittedAt;
-    return _regenerator2.default.wrap(function _callee4$(_context4) {
+  var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(commits) {
+    var boundaryData, boundaryLines, baselineCommits, oldestCommittedAt;
+    return _regenerator2.default.wrap(function _callee7$(_context7) {
       while (1) {
-        switch (_context4.prev = _context4.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
-            _context4.next = 2;
-            return execGitCommand('git rev-list HEAD --boundary --format=\'%m%H %ct\' --ignore-missing       --not ' + commits.map(function (c) {
-              return c.trim();
-            }).join(' '));
+            _context7.next = 2;
+            return execGitCommand('git rev-list HEAD --boundary --format=\'%m%H %ct\' --ignore-missing       -n ' + LIMIT_HISTORY_TO_N_COMMITS + ' --not ' + commitsForCLI(commits));
 
           case 2:
-            boundaryData = _context4.sent;
+            boundaryData = _context7.sent;
+            boundaryLines = boundaryData.trim().split('\n');
+
+            // If we don't find commit history within LIMIT_HISTORY_TO_N_COMMITS commits
+            // we assume we never will. Otherwise commits that are detached from the
+            // history can cause us to crash
+
+            if (!(boundaryLines.length >= LIMIT_HISTORY_TO_N_COMMITS * 2)) {
+              _context7.next = 6;
+              break;
+            }
+
+            throw new Error('Failed to find common ancestors with most recent builds within ' + LIMIT_HISTORY_TO_N_COMMITS + ' commits.\n\nPrevious builds used commits: ' + commits + '.\nAre you sure you are running this command against the correct app-code?\n\nPlease find out more here: http://docs.chromaticqa.com/branching-and-baselines');
+
+          case 6:
             baselineCommits = [];
             oldestCommittedAt = null;
 
-            boundaryData.trim().split('\n')
             // rev-list lists each commit like:
             // commit 4a1c922edd61fa0e9d3cb25d4e205816701557a5
             // >4a1c922edd61fa0e9d3cb25d4e205816701557a5 1495065352
             // We want the second line if it matches ("-")
-            .filter(function (l) {
+
+            boundaryLines.filter(function (l) {
               return !l.match('commit') && l.match('-');
             }).forEach(function (rawRow) {
               var _rawRow$trim$split = rawRow.trim().split(' '),
@@ -554,21 +714,21 @@ var getBaselinesFromCommits = function () {
               }
             });
 
-            return _context4.abrupt('return', {
+            return _context7.abrupt('return', {
               baselineCommits: baselineCommits,
               oldestCommittedAt: oldestCommittedAt
             });
 
-          case 7:
+          case 10:
           case 'end':
-            return _context4.stop();
+            return _context7.stop();
         }
       }
-    }, _callee4, this);
+    }, _callee7, this);
   }));
 
-  return function getBaselinesFromCommits(_x2) {
-    return _ref4.apply(this, arguments);
+  return function getBaselinesFromCommits(_x6) {
+    return _ref7.apply(this, arguments);
   };
 }();
 
@@ -576,57 +736,55 @@ var getBaselinesFromCommits = function () {
 
 
 var getBaselineCommits = exports.getBaselineCommits = function () {
-  var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(client) {
-    var _ref6, currentCommit, committedAt, recentCommits, _ref7, recentBaselineCommits, oldestCommittedAt, allPossibleCommits, _ref8, baselineCommits;
+  var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(client) {
+    var _ref9, currentCommit, committedAt, recentCommits, _ref10, recentBaselineCommits, oldestCommittedAt, allPossibleCommits, _ref11, baselineCommits;
 
-    return _regenerator2.default.wrap(function _callee5$(_context5) {
+    return _regenerator2.default.wrap(function _callee8$(_context8) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context8.prev = _context8.next) {
           case 0:
-            _context5.next = 2;
+            _context8.next = 2;
             return getCommit();
 
           case 2:
-            _ref6 = _context5.sent;
-            currentCommit = _ref6.commit;
-            committedAt = _ref6.committedAt;
-            _context5.next = 7;
-            return client.runQuery(TesterGetRecentBuildCommitsQuery, {
-              newestCommittedAt: committedAt
-            });
+            _ref9 = _context8.sent;
+            currentCommit = _ref9.commit;
+            committedAt = _ref9.committedAt;
+            _context8.next = 7;
+            return getRecentCommits(client, committedAt);
 
           case 7:
-            recentCommits = _context5.sent.app.buildCommits;
+            recentCommits = _context8.sent;
 
-            debug('First ' + FETCH_N_INITAL_BUILD_COMMITS + ' commits: ' + recentCommits);
+            debug('Found commits: ' + recentCommits);
 
             // Short-circuit: on first run, there's definitely no baseline!
 
             if (!(recentCommits.length === 0)) {
-              _context5.next = 11;
+              _context8.next = 11;
               break;
             }
 
-            return _context5.abrupt('return', []);
+            return _context8.abrupt('return', []);
 
           case 11:
             if (!recentCommits.find(function (c) {
               return c === currentCommit;
             })) {
-              _context5.next = 13;
+              _context8.next = 13;
               break;
             }
 
-            return _context5.abrupt('return', [currentCommit]);
+            return _context8.abrupt('return', [currentCommit]);
 
           case 13:
-            _context5.next = 15;
+            _context8.next = 15;
             return getBaselinesFromCommits(recentCommits);
 
           case 15:
-            _ref7 = _context5.sent;
-            recentBaselineCommits = _ref7.baselineCommits;
-            oldestCommittedAt = _ref7.oldestCommittedAt;
+            _ref10 = _context8.sent;
+            recentBaselineCommits = _ref10.baselineCommits;
+            oldestCommittedAt = _ref10.oldestCommittedAt;
 
             debug('Baselines from initial commits: ' + recentBaselineCommits + ' [' + oldestCommittedAt + ']');
 
@@ -634,45 +792,45 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
             // Important optimization. If we are sure that there aren't any older relevant
             // builds, we can avoid an extra query
 
-            if (!(oldestCommittedAt === null || recentCommits.length < FETCH_N_INITAL_BUILD_COMMITS)) {
-              _context5.next = 21;
+            if (!(oldestCommittedAt === null || recentCommits.length < FETCH_N_INITIAL_BUILD_COMMITS)) {
+              _context8.next = 21;
               break;
             }
 
-            return _context5.abrupt('return', recentBaselineCommits);
+            return _context8.abrupt('return', recentBaselineCommits);
 
           case 21:
-            _context5.next = 23;
+            _context8.next = 23;
             return client.runQuery(TesterGetAllPossibleBuildCommitsQuery, {
               newestCommittedAt: committedAt,
               oldestCommittedAt: oldestCommittedAt
             });
 
           case 23:
-            allPossibleCommits = _context5.sent.app.buildCommits;
+            allPossibleCommits = _context8.sent.app.buildCommits;
 
             debug('allPossibleCommits: ' + allPossibleCommits);
 
-            _context5.next = 27;
+            _context8.next = 27;
             return getBaselinesFromCommits([].concat((0, _toConsumableArray3.default)(recentCommits), (0, _toConsumableArray3.default)(allPossibleCommits)));
 
           case 27:
-            _ref8 = _context5.sent;
-            baselineCommits = _ref8.baselineCommits;
+            _ref11 = _context8.sent;
+            baselineCommits = _ref11.baselineCommits;
 
             debug('allPossible baselineCommits: ' + baselineCommits);
-            return _context5.abrupt('return', baselineCommits);
+            return _context8.abrupt('return', baselineCommits);
 
           case 31:
           case 'end':
-            return _context5.stop();
+            return _context8.stop();
         }
       }
-    }, _callee5, this);
+    }, _callee8, this);
   }));
 
-  return function getBaselineCommits(_x3) {
-    return _ref5.apply(this, arguments);
+  return function getBaselineCommits(_x7) {
+    return _ref8.apply(this, arguments);
   };
 }();
 
@@ -690,10 +848,19 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var debug = (0, _debug2.default)('react-chromatic:tester:git');
 
-var FETCH_N_INITAL_BUILD_COMMITS = exports.FETCH_N_INITAL_BUILD_COMMITS = 20;
-var TesterGetRecentBuildCommitsQuery = '\n  query TesterGetRecentBuildCommitsQuery($newestCommittedAt: Float!) {\n    app {\n      buildCommits(limit: ' + FETCH_N_INITAL_BUILD_COMMITS + ', newestCommittedAt: $newestCommittedAt)\n    }\n  }\n';
+var FETCH_N_INITIAL_BUILD_COMMITS = exports.FETCH_N_INITIAL_BUILD_COMMITS = 20;
+var MAX_N_FETCHES = exports.MAX_N_FETCHES = 5;
+var LIMIT_HISTORY_TO_N_COMMITS = exports.LIMIT_HISTORY_TO_N_COMMITS = 1000;
 
-var TesterGetAllPossibleBuildCommitsQuery = '\n  query TesterGetAllPossibleBuildCommitsQuery($newestCommittedAt: Float!, $oldestCommittedAt: Float!) {\n    app {\n      buildCommits(skip: ' + FETCH_N_INITAL_BUILD_COMMITS + ', newestCommittedAt: $newestCommittedAt, oldestCommittedAt: $oldestCommittedAt)\n    }\n  }\n';
+var TesterGetRecentBuildCommitsQuery = '\n  query TesterGetRecentBuildCommitsQuery($skip: Int!, $newestCommittedAt: Float!) {\n    app {\n      buildCommits(skip: $skip, limit: ' + FETCH_N_INITIAL_BUILD_COMMITS + ', newestCommittedAt: $newestCommittedAt)\n    }\n  }\n';
+
+var TesterGetAllPossibleBuildCommitsQuery = '\n  query TesterGetAllPossibleBuildCommitsQuery($newestCommittedAt: Float!, $oldestCommittedAt: Float!) {\n    app {\n      buildCommits(skip: ' + FETCH_N_INITIAL_BUILD_COMMITS + ', newestCommittedAt: $newestCommittedAt, oldestCommittedAt: $oldestCommittedAt)\n    }\n  }\n';
+
+function commitsForCLI(commits) {
+  return commits.map(function (c) {
+    return c.trim();
+  }).join(' ');
+}
 
 /***/ }),
 /* 13 */
@@ -1197,7 +1364,7 @@ exports.default = function () {
 /* 16 */
 /***/ (function(module, exports) {
 
-module.exports = {"name":"react-chromatic","version":"0.7.10-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"webpack","build":"npm-run-all --serial -l build:**","prepare":"npm run build","dev":"npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
+module.exports = {"name":"react-chromatic","version":"0.7.11-beta.1","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"../../node_modules/.bin/babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"../../node_modules/.bin/webpack","build":"../../node_modules/.bin/npm-run-all --serial -l build:**","prepare":"npm run build","dev":"../../node_modules/.bin/npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
 
 /***/ }),
 /* 17 */
@@ -1368,6 +1535,7 @@ exports.default = function () {
         port = _ref3.port,
         _ref3$appPath = _ref3.appPath,
         appPath = _ref3$appPath === undefined ? '/' : _ref3$appPath,
+        url = _ref3.url,
         _ref3$exitZeroOnChang = _ref3.exitZeroOnChanges,
         exitZeroOnChanges = _ref3$exitZeroOnChang === undefined ? false : _ref3$exitZeroOnChang,
         _ref3$verbose = _ref3.verbose,
@@ -1381,7 +1549,7 @@ exports.default = function () {
         _ref3$originalArgv = _ref3.originalArgv,
         originalArgv = _ref3$originalArgv === undefined ? false : _ref3$originalArgv;
 
-    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, branch, baselineCommits, appPathWithSlash, url, child, isolatorUrl, tunnel, runtimeSpecs, fromCI, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
+    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, committerEmail, committerName, branch, baselineCommits, appPathWithSlash, appUrl, child, isolatorUrl, tunnel, runtimeSpecs, fromCI, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
 
     return _regenerator2.default.wrap(function _callee2$(_context2) {
       while (1) {
@@ -1442,84 +1610,86 @@ exports.default = function () {
             _ref6 = _context2.sent;
             commit = _ref6.commit;
             committedAt = _ref6.committedAt;
-            _context2.next = 26;
+            committerEmail = _ref6.committerEmail;
+            committerName = _ref6.committerName;
+            _context2.next = 28;
             return (0, _git.getBranch)();
 
-          case 26:
+          case 28:
             branch = _context2.sent;
 
             debug('git info: ' + (0, _stringify2.default)({ commit: commit, committedAt: committedAt, branch: branch }));
 
-            _context2.next = 30;
+            _context2.next = 32;
             return (0, _git.getBaselineCommits)(client);
 
-          case 30:
+          case 32:
             baselineCommits = _context2.sent;
 
             debug('Found baselineCommits: ' + baselineCommits);
 
             appPathWithSlash = appPath[0] === '/' ? appPath : '/' + appPath;
-            url = 'http://localhost:' + port + appPathWithSlash;
+            appUrl = url || 'http://localhost:' + port + appPathWithSlash;
             child = void 0;
 
-            if (noStart) {
-              _context2.next = 43;
+            if (!(!noStart && !url)) {
+              _context2.next = 45;
               break;
             }
 
             log('Starting app with `npm run ' + scriptName + '`');
-            _context2.next = 39;
-            return (0, _startApp2.default)({ scriptName: scriptName, url: url });
+            _context2.next = 41;
+            return (0, _startApp2.default)({ scriptName: scriptName, url: appUrl });
 
-          case 39:
+          case 41:
             child = _context2.sent;
 
             log('Started app on port ' + port);
-            _context2.next = 48;
+            _context2.next = 50;
             break;
 
-          case 43:
-            _context2.next = 45;
-            return (0, _startApp.checkResponse)(url);
-
           case 45:
+            _context2.next = 47;
+            return (0, _startApp.checkResponse)(appUrl);
+
+          case 47:
             if (_context2.sent) {
-              _context2.next = 47;
+              _context2.next = 49;
               break;
             }
 
-            throw new Error('No server responding at ' + url + ' -- make sure you\'ve started it.');
+            throw new Error('No server responding at ' + appUrl + ' -- make sure you\'ve started it.');
 
-          case 47:
+          case 49:
             log('Detected app on port ' + port);
 
-          case 48:
-            isolatorUrl = url;
+          case 50:
+            isolatorUrl = appUrl;
             tunnel = void 0;
 
-            if (!createTunnel) {
-              _context2.next = 57;
+            if (!(createTunnel && !url)) {
+              _context2.next = 59;
               break;
             }
 
             log('Opening tunnel to Chromatic capture servers');
-            _context2.next = 54;
+            _context2.next = 56;
             return (0, _tunnel2.default)({ tunnelUrl: tunnelUrl, port: port });
 
-          case 54:
+          case 56:
             tunnel = _context2.sent;
 
             debug('Opened tunnel to ' + tunnel.url);
             isolatorUrl = '' + tunnel.url + appPathWithSlash;
 
-          case 57:
+          case 59:
 
             debug('Connecting to ' + isolatorUrl);
             log('Uploading and verifying build (this may take a few minutes depending on your connection)');
-            _context2.next = 61;
+            _context2.next = 63;
             return (0, _runtimes2.default)(isolatorUrl, { verbose: verbose });
 
-          case 61:
+          case 63:
             runtimeSpecs = _context2.sent;
 
             log('Found ' + runtimeSpecs.length + ' specs');
@@ -1530,8 +1700,8 @@ exports.default = function () {
             debug('Detected package version:' + _package.version);
 
             exitCode = 5;
-            _context2.prev = 67;
-            _context2.next = 70;
+            _context2.prev = 69;
+            _context2.next = 72;
             return client.runQuery(TesterCreateBuildMutation, {
               input: {
                 branch: branch,
@@ -1540,12 +1710,14 @@ exports.default = function () {
                 baselineCommits: baselineCommits,
                 runtimeSpecs: runtimeSpecs,
                 fromCI: fromCI,
-                packageVersion: _package.version
+                packageVersion: _package.version,
+                committerEmail: committerEmail,
+                committerName: committerName
               },
               isolatorUrl: isolatorUrl
             });
 
-          case 70:
+          case 72:
             _ref7 = _context2.sent;
             _ref7$createBuild = _ref7.createBuild;
             number = _ref7$createBuild.number;
@@ -1556,101 +1728,101 @@ exports.default = function () {
 
             log('Started Build ' + number + ' ' + ('(' + pluralize(componentCount, 'component') + ', ' + pluralize(specCount, 'spec') + ').\n\n' + onlineHint + '.'));
 
-            _context2.next = 80;
+            _context2.next = 82;
             return waitForBuild(client, {
               buildNumber: number
             });
 
-          case 80:
+          case 82:
             _ref8 = _context2.sent;
             status = _ref8.status;
             changeCount = _ref8.changeCount;
             errorCount = _ref8.errorCount;
             _context2.t1 = status;
-            _context2.next = _context2.t1 === 'BUILD_PASSED' ? 87 : _context2.t1 === 'BUILD_PENDING' ? 90 : _context2.t1 === 'BUILD_ACCEPTED' ? 90 : _context2.t1 === 'BUILD_DENIED' ? 90 : _context2.t1 === 'BUILD_FAILED' ? 94 : _context2.t1 === 'BUILD_TIMED_OUT' ? 97 : _context2.t1 === 'BUILD_ERROR' ? 100 : 103;
+            _context2.next = _context2.t1 === 'BUILD_PASSED' ? 89 : _context2.t1 === 'BUILD_PENDING' ? 92 : _context2.t1 === 'BUILD_ACCEPTED' ? 92 : _context2.t1 === 'BUILD_DENIED' ? 92 : _context2.t1 === 'BUILD_FAILED' ? 96 : _context2.t1 === 'BUILD_TIMED_OUT' ? 99 : _context2.t1 === 'BUILD_ERROR' ? 102 : 105;
             break;
 
-          case 87:
+          case 89:
             log('Build ' + number + ' passed! ' + onlineHint + '.');
             exitCode = 0;
-            return _context2.abrupt('break', 104);
+            return _context2.abrupt('break', 106);
 
-          case 90:
+          case 92:
             log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
             if (!exitZeroOnChanges) {
-              log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case. Read more: http://docs.chromaticqa.com/setup_ci');
+              log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case. Read more: http://docs.chromaticqa.com/test');
             }
             exitCode = exitZeroOnChanges ? 0 : 1;
-            return _context2.abrupt('break', 104);
+            return _context2.abrupt('break', 106);
 
-          case 94:
+          case 96:
             log('Build ' + number + ' has ' + pluralize(errorCount, 'error') + '. ' + onlineHint + '.');
             exitCode = 2;
-            return _context2.abrupt('break', 104);
+            return _context2.abrupt('break', 106);
 
-          case 97:
+          case 99:
             log('Build ' + number + ' has timed out. Ensure your machine is connected to the internet and please try again.');
             exitCode = 3;
-            return _context2.abrupt('break', 104);
+            return _context2.abrupt('break', 106);
 
-          case 100:
+          case 102:
             log('Build ' + number + ' has failed to run. Our apologies. Please try again.');
             exitCode = 4;
-            return _context2.abrupt('break', 104);
+            return _context2.abrupt('break', 106);
 
-          case 103:
+          case 105:
             throw new Error('Unexpected build status: ' + status);
 
-          case 104:
-            _context2.next = 114;
+          case 106:
+            _context2.next = 116;
             break;
 
-          case 106:
-            _context2.prev = 106;
-            _context2.t2 = _context2['catch'](67);
+          case 108:
+            _context2.prev = 108;
+            _context2.t2 = _context2['catch'](69);
 
             if (!(_context2.t2.length && _context2.t2[0] && _context2.t2[0].message.match(/Cannot run a build with no specs./))) {
-              _context2.next = 113;
+              _context2.next = 115;
               break;
             }
 
             log(_context2.t2[0].message);
             exitCode = 255;
-            _context2.next = 114;
+            _context2.next = 116;
             break;
 
-          case 113:
+          case 115:
             throw _context2.t2;
 
-          case 114:
-            _context2.prev = 114;
+          case 116:
+            _context2.prev = 116;
 
             if (tunnel) {
               tunnel.close();
             }
 
             if (!child) {
-              _context2.next = 119;
+              _context2.next = 121;
               break;
             }
 
-            _context2.next = 119;
+            _context2.next = 121;
             return (0, _denodeify2.default)(_treeKill2.default)(child.pid, 'SIGHUP');
 
-          case 119:
-            return _context2.finish(114);
+          case 121:
+            return _context2.finish(116);
 
-          case 120:
+          case 122:
             if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
-              _context2.next = 127;
+              _context2.next = 129;
               break;
             }
 
             scriptCommand = ('chromatic test ' + originalArgv.slice(2).join(' ')).replace(/--app-code[= ]\S+/, '');
-            _context2.next = 124;
+            _context2.next = 126;
             return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
 
-          case 124:
+          case 126:
             confirmed = _context2.sent;
 
             if (confirmed) {
@@ -1665,15 +1837,15 @@ exports.default = function () {
             // eslint-disable-next-line no-console
             console.log('\nMake sure you set the `CHROMATIC_APP_CODE` environment variable when running builds (in particular on your CI server).');
 
-          case 127:
+          case 129:
             return _context2.abrupt('return', exitCode);
 
-          case 128:
+          case 130:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[6, 14], [67, 106, 114, 120]]);
+    }, _callee2, this, [[6, 14], [69, 108, 116, 122]]);
   }));
 
   function runTest(_x3) {
