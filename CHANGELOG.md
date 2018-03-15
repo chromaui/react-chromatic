@@ -1,3 +1,9 @@
+# 0.7.11 - 2017-02-22
+
+* Handle the case where the last few Chromatic builds were run against commits which are no longer in the repository (due to rebasing or squashing). This could cause the tool to crash or fail to find a baseline for a build.
+
+* Add a `--url` argument to allow running tests against arbitrary running apps.
+
 # 0.7.10 - 2017-02-22
 
 * Small API change for querying build change counts.
