@@ -283,7 +283,7 @@ exports.default = function () {
         _ref3$originalArgv = _ref3.originalArgv,
         originalArgv = _ref3$originalArgv === undefined ? false : _ref3$originalArgv;
 
-    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, branch, baselineCommits, appPathWithSlash, appUrl, child, isolatorUrl, tunnel, runtimeSpecs, fromCI, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
+    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, committerEmail, committerName, branch, baselineCommits, appPathWithSlash, appUrl, child, isolatorUrl, tunnel, runtimeSpecs, fromCI, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
 
     return _regenerator2.default.wrap(function _callee2$(_context2) {
       while (1) {
@@ -344,18 +344,20 @@ exports.default = function () {
             _ref6 = _context2.sent;
             commit = _ref6.commit;
             committedAt = _ref6.committedAt;
-            _context2.next = 26;
+            committerEmail = _ref6.committerEmail;
+            committerName = _ref6.committerName;
+            _context2.next = 28;
             return (0, _git.getBranch)();
 
-          case 26:
+          case 28:
             branch = _context2.sent;
 
             debug('git info: ' + (0, _stringify2.default)({ commit: commit, committedAt: committedAt, branch: branch }));
 
-            _context2.next = 30;
+            _context2.next = 32;
             return (0, _git.getBaselineCommits)(client);
 
-          case 30:
+          case 32:
             baselineCommits = _context2.sent;
 
             debug('Found baselineCommits: ' + baselineCommits);
@@ -365,63 +367,63 @@ exports.default = function () {
             child = void 0;
 
             if (!(!noStart && !url)) {
-              _context2.next = 43;
+              _context2.next = 45;
               break;
             }
 
             log('Starting app with `npm run ' + scriptName + '`');
-            _context2.next = 39;
+            _context2.next = 41;
             return (0, _startApp2.default)({ scriptName: scriptName, url: appUrl });
 
-          case 39:
+          case 41:
             child = _context2.sent;
 
             log('Started app on port ' + port);
-            _context2.next = 48;
+            _context2.next = 50;
             break;
 
-          case 43:
-            _context2.next = 45;
+          case 45:
+            _context2.next = 47;
             return (0, _startApp.checkResponse)(appUrl);
 
-          case 45:
+          case 47:
             if (_context2.sent) {
-              _context2.next = 47;
+              _context2.next = 49;
               break;
             }
 
             throw new Error('No server responding at ' + appUrl + ' -- make sure you\'ve started it.');
 
-          case 47:
+          case 49:
             log('Detected app on port ' + port);
 
-          case 48:
+          case 50:
             isolatorUrl = appUrl;
             tunnel = void 0;
 
             if (!(createTunnel && !url)) {
-              _context2.next = 57;
+              _context2.next = 59;
               break;
             }
 
             log('Opening tunnel to Chromatic capture servers');
-            _context2.next = 54;
+            _context2.next = 56;
             return (0, _tunnel2.default)({ tunnelUrl: tunnelUrl, port: port });
 
-          case 54:
+          case 56:
             tunnel = _context2.sent;
 
             debug('Opened tunnel to ' + tunnel.url);
             isolatorUrl = '' + tunnel.url + appPathWithSlash;
 
-          case 57:
+          case 59:
 
             debug('Connecting to ' + isolatorUrl);
             log('Uploading and verifying build (this may take a few minutes depending on your connection)');
-            _context2.next = 61;
+            _context2.next = 63;
             return (0, _runtimes2.default)(isolatorUrl, { verbose: verbose });
 
-          case 61:
+          case 63:
             runtimeSpecs = _context2.sent;
 
             log('Found ' + runtimeSpecs.length + ' specs');
@@ -432,8 +434,8 @@ exports.default = function () {
             debug('Detected package version:' + _package.version);
 
             exitCode = 5;
-            _context2.prev = 67;
-            _context2.next = 70;
+            _context2.prev = 69;
+            _context2.next = 72;
             return client.runQuery(TesterCreateBuildMutation, {
               input: {
                 branch: branch,
@@ -442,12 +444,14 @@ exports.default = function () {
                 baselineCommits: baselineCommits,
                 runtimeSpecs: runtimeSpecs,
                 fromCI: fromCI,
-                packageVersion: _package.version
+                packageVersion: _package.version,
+                committerEmail: committerEmail,
+                committerName: committerName
               },
               isolatorUrl: isolatorUrl
             });
 
-          case 70:
+          case 72:
             _ref7 = _context2.sent;
             _ref7$createBuild = _ref7.createBuild;
             number = _ref7$createBuild.number;
@@ -458,101 +462,101 @@ exports.default = function () {
 
             log('Started Build ' + number + ' ' + ('(' + pluralize(componentCount, 'component') + ', ' + pluralize(specCount, 'spec') + ').\n\n' + onlineHint + '.'));
 
-            _context2.next = 80;
+            _context2.next = 82;
             return waitForBuild(client, {
               buildNumber: number
             });
 
-          case 80:
+          case 82:
             _ref8 = _context2.sent;
             status = _ref8.status;
             changeCount = _ref8.changeCount;
             errorCount = _ref8.errorCount;
             _context2.t1 = status;
-            _context2.next = _context2.t1 === 'BUILD_PASSED' ? 87 : _context2.t1 === 'BUILD_PENDING' ? 90 : _context2.t1 === 'BUILD_ACCEPTED' ? 90 : _context2.t1 === 'BUILD_DENIED' ? 90 : _context2.t1 === 'BUILD_FAILED' ? 94 : _context2.t1 === 'BUILD_TIMED_OUT' ? 97 : _context2.t1 === 'BUILD_ERROR' ? 100 : 103;
+            _context2.next = _context2.t1 === 'BUILD_PASSED' ? 89 : _context2.t1 === 'BUILD_PENDING' ? 92 : _context2.t1 === 'BUILD_ACCEPTED' ? 92 : _context2.t1 === 'BUILD_DENIED' ? 92 : _context2.t1 === 'BUILD_FAILED' ? 96 : _context2.t1 === 'BUILD_TIMED_OUT' ? 99 : _context2.t1 === 'BUILD_ERROR' ? 102 : 105;
             break;
 
-          case 87:
+          case 89:
             log('Build ' + number + ' passed! ' + onlineHint + '.');
             exitCode = 0;
-            return _context2.abrupt('break', 104);
+            return _context2.abrupt('break', 106);
 
-          case 90:
+          case 92:
             log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
             if (!exitZeroOnChanges) {
               log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case. Read more: http://docs.chromaticqa.com/test');
             }
             exitCode = exitZeroOnChanges ? 0 : 1;
-            return _context2.abrupt('break', 104);
+            return _context2.abrupt('break', 106);
 
-          case 94:
+          case 96:
             log('Build ' + number + ' has ' + pluralize(errorCount, 'error') + '. ' + onlineHint + '.');
             exitCode = 2;
-            return _context2.abrupt('break', 104);
+            return _context2.abrupt('break', 106);
 
-          case 97:
+          case 99:
             log('Build ' + number + ' has timed out. Ensure your machine is connected to the internet and please try again.');
             exitCode = 3;
-            return _context2.abrupt('break', 104);
+            return _context2.abrupt('break', 106);
 
-          case 100:
+          case 102:
             log('Build ' + number + ' has failed to run. Our apologies. Please try again.');
             exitCode = 4;
-            return _context2.abrupt('break', 104);
+            return _context2.abrupt('break', 106);
 
-          case 103:
+          case 105:
             throw new Error('Unexpected build status: ' + status);
 
-          case 104:
-            _context2.next = 114;
+          case 106:
+            _context2.next = 116;
             break;
 
-          case 106:
-            _context2.prev = 106;
-            _context2.t2 = _context2['catch'](67);
+          case 108:
+            _context2.prev = 108;
+            _context2.t2 = _context2['catch'](69);
 
             if (!(_context2.t2.length && _context2.t2[0] && _context2.t2[0].message.match(/Cannot run a build with no specs./))) {
-              _context2.next = 113;
+              _context2.next = 115;
               break;
             }
 
             log(_context2.t2[0].message);
             exitCode = 255;
-            _context2.next = 114;
+            _context2.next = 116;
             break;
 
-          case 113:
+          case 115:
             throw _context2.t2;
 
-          case 114:
-            _context2.prev = 114;
+          case 116:
+            _context2.prev = 116;
 
             if (tunnel) {
               tunnel.close();
             }
 
             if (!child) {
-              _context2.next = 119;
+              _context2.next = 121;
               break;
             }
 
-            _context2.next = 119;
+            _context2.next = 121;
             return (0, _denodeify2.default)(_treeKill2.default)(child.pid, 'SIGHUP');
 
-          case 119:
-            return _context2.finish(114);
+          case 121:
+            return _context2.finish(116);
 
-          case 120:
+          case 122:
             if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
-              _context2.next = 127;
+              _context2.next = 129;
               break;
             }
 
             scriptCommand = ('chromatic test ' + originalArgv.slice(2).join(' ')).replace(/--app-code[= ]\S+/, '');
-            _context2.next = 124;
+            _context2.next = 126;
             return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
 
-          case 124:
+          case 126:
             confirmed = _context2.sent;
 
             if (confirmed) {
@@ -567,15 +571,15 @@ exports.default = function () {
             // eslint-disable-next-line no-console
             console.log('\nMake sure you set the `CHROMATIC_APP_CODE` environment variable when running builds (in particular on your CI server).');
 
-          case 127:
+          case 129:
             return _context2.abrupt('return', exitCode);
 
-          case 128:
+          case 130:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[6, 14], [67, 106, 114, 120]]);
+    }, _callee2, this, [[6, 14], [69, 108, 116, 122]]);
   }));
 
   function runTest(_x3) {
@@ -1426,25 +1430,29 @@ var execGitCommand = function () {
 // NOTE: At some point we should check that the commit has been pushed to the
 // remote and the branch matches with origin/REF, but for now we are naive about
 // adhoc builds.
+
+// We could cache this, but it's probably pretty quick
 var getCommit = exports.getCommit = function () {
   var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
-    var _split, _split2, commit, committedAtSeconds;
+    var _split, _split2, commit, committedAtSeconds, committerEmail, committerName;
 
     return _regenerator2.default.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.next = 2;
-            return execGitCommand('git log -n 1 --format="%H %ct"');
+            return execGitCommand('git log -n 1 --format="%H,%ct,%ce,%cn"');
 
           case 2:
-            _split = _context2.sent.split(' ');
-            _split2 = (0, _slicedToArray3.default)(_split, 2);
+            _split = _context2.sent.split(',');
+            _split2 = (0, _slicedToArray3.default)(_split, 4);
             commit = _split2[0];
             committedAtSeconds = _split2[1];
-            return _context2.abrupt('return', { commit: commit, committedAt: committedAtSeconds * 1000 });
+            committerEmail = _split2[2];
+            committerName = _split2[3];
+            return _context2.abrupt('return', { commit: commit, committedAt: committedAtSeconds * 1000, committerEmail: committerEmail, committerName: committerName });
 
-          case 7:
+          case 9:
           case 'end':
             return _context2.stop();
         }
