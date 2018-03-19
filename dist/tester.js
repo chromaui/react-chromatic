@@ -1541,7 +1541,7 @@ var nextCommitsAndBoundaries = function () {
             // We want the next limit commits that aren't "covered" by `commitsWithBuilds`
             // This will print out all commits in `commitsWithoutBuilds` (except if they are covered),
             // so we ask enough that we'll definitely get `limit` unknown commits
-            command = 'git rev-list HEAD --boundary --since ' + (firstCommittedAtSeconds - 1) + '       -n ' + (limit + commitsWithoutBuilds.length) + ' --not ' + commitsForCLI(commitsWithBuilds);
+            command = 'git rev-list HEAD --boundary --since ' + firstCommittedAtSeconds + '       -n ' + (limit + commitsWithoutBuilds.length) + ' --not ' + commitsForCLI(commitsWithBuilds);
 
             debug('running ' + command);
             _context4.next = 4;
