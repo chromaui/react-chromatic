@@ -1371,7 +1371,7 @@ module.exports = require("apollo-fetch");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getBaselineCommits = exports.getBranch = exports.getCommit = exports.LIMIT_HISTORY_TO_N_COMMITS = exports.MAX_N_FETCHES = exports.FETCH_N_INITIAL_BUILD_COMMITS = undefined;
+exports.getBaselineCommits = exports.getBranch = exports.getCommit = exports.FETCH_N_INITIAL_BUILD_COMMITS = undefined;
 
 var _toConsumableArray2 = __webpack_require__(27);
 
@@ -1434,7 +1434,7 @@ var execGitCommand = function () {
 // We could cache this, but it's probably pretty quick
 var getCommit = exports.getCommit = function () {
   var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
-    var _trim$split, _trim$split2, commit, committedAtSeconds, committerEmail, committerName;
+    var _split, _split2, commit, committedAtSeconds, committerEmail, committerName;
 
     return _regenerator2.default.wrap(function _callee2$(_context2) {
       while (1) {
@@ -1444,12 +1444,12 @@ var getCommit = exports.getCommit = function () {
             return execGitCommand('git log -n 1 --format="%H,%ct,%ce,%cn"');
 
           case 2:
-            _trim$split = _context2.sent.trim().split(',');
-            _trim$split2 = (0, _slicedToArray3.default)(_trim$split, 4);
-            commit = _trim$split2[0];
-            committedAtSeconds = _trim$split2[1];
-            committerEmail = _trim$split2[2];
-            committerName = _trim$split2[3];
+            _split = _context2.sent.split(',');
+            _split2 = (0, _slicedToArray3.default)(_split, 4);
+            commit = _split2[0];
+            committedAtSeconds = _split2[1];
+            committerEmail = _split2[2];
+            committerName = _split2[3];
             return _context2.abrupt('return', { commit: commit, committedAt: committedAtSeconds * 1000, committerEmail: committerEmail, committerName: committerName });
 
           case 9:
@@ -1476,7 +1476,7 @@ var getBranch = exports.getBranch = function () {
             return execGitCommand('git rev-parse --abbrev-ref HEAD');
 
           case 2:
-            branch = _context3.sent.trim();
+            branch = _context3.sent;
 
             if (!(branch === 'HEAD')) {
               _context3.next = 5;
@@ -1501,238 +1501,193 @@ var getBranch = exports.getBranch = function () {
   };
 }();
 
-// Given a list of commit hashes, ensure that at least one of them is from our
-// current git history
-var checkSomeCommitsAreInHistory = function () {
-  var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(commits) {
+// git rev-list in a basic form gives us a list of commits reaching back to
+// `firstCommittedAtSeconds` (i.e. when the first build of this app happened)
+// in reverse chronological order.
+//
+// A simplified version of what we are doing here is just finding the first
+// commit in that list that has a build. We only want to send `limit` to
+// the server in this pass (although we may already know some commits that do
+// or do not have builds from earlier passes). So we just pick the first `limit`
+// commits from the command, filtering out `commitsWith[out]Builds`.
+//
+// However, it's not quite that simple -- because of branching. However,
+// passing commits after `--not` in to `git rev-list` *occludes* all the ancestors
+// of those commits. This is exactly what we need once we find one or more commits
+// that do have builds: a list of the ancestors of HEAD that are not accestors of
+// `commitsWithBuilds`.
+//
+// The other complexity is that if we know a few `commitsWithBuilds` from the server
+// we don't know immediately which of those are the nearer ancestor to HEAD
+// (and thus shoudl be used as the baseline).
+// However, the `--boundary` argument will tell us exactly where we stop in the
+// history in travelling back from HEAD.
+//
+// If we stop at a commit that has a build, then it is a baseline!
+// If we stop at a commit that *does not* have a build, that means that commit
+// branched off another commit that *is* an ancestor of a commit that does have a build.
+// [If this sentence is confusing, see the 'partial' test for some clarity]
+// So also long as we've checked every commit on the path back to that commit, we can stop.
+var nextCommitsAndBoundaries = function () {
+  var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(limit, _ref4) {
+    var firstCommittedAtSeconds = _ref4.firstCommittedAtSeconds,
+        commitsWithBuilds = _ref4.commitsWithBuilds,
+        commitsWithoutBuilds = _ref4.commitsWithoutBuilds;
+    var command, commits, boundaryCommits, nextCommits;
     return _regenerator2.default.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            _context4.prev = 0;
-            _context4.next = 3;
-            return execGitCommand('git rev-list -n 1 --ignore-missing ' + commitsForCLI(commits));
+            // We want the next limit commits that aren't "covered" by `commitsWithBuilds`
+            // This will print out all commits in `commitsWithoutBuilds` (except if they are covered),
+            // so we ask enough that we'll definitely get `limit` unknown commits
+            command = 'git rev-list HEAD --boundary --since ' + (firstCommittedAtSeconds - 1) + '       -n ' + (limit + commitsWithoutBuilds.length) + ' --not ' + commitsForCLI(commitsWithBuilds);
 
-          case 3:
-            return _context4.abrupt('return', true);
+            debug('running ' + command);
+            _context4.next = 4;
+            return execGitCommand(command);
 
-          case 6:
-            _context4.prev = 6;
-            _context4.t0 = _context4['catch'](0);
+          case 4:
+            _context4.t0 = function (c) {
+              return !!c;
+            };
 
-            if (!(_context4.t0.code === 129)) {
-              _context4.next = 10;
-              break;
-            }
+            commits = _context4.sent.split('\n').filter(_context4.t0);
 
-            return _context4.abrupt('return', false);
+            debug('command output: ' + commits);
+
+            // Boundary commits are listed with a `-` in front of the hash
+            boundaryCommits = commits.filter(function (c) {
+              return c[0] === '-';
+            }).map(function (c) {
+              return c.slice(1);
+            })
+            // We want the commitsWithBuilds on the boundary. There may be others on the boundary.
+            .filter(function (c) {
+              return commitsWithBuilds.includes(c);
+            });
+            nextCommits = commits
+            // Both boundary and non boundary commits are candidates for builds
+            .map(function (c) {
+              return c[0] === '-' ? c.slice(1) : c;
+            })
+            // No sense in checking commits we already know about
+            .filter(function (c) {
+              return !commitsWithBuilds.includes(c);
+            }).filter(function (c) {
+              return !commitsWithoutBuilds.includes(c);
+            }).slice(0, limit);
+            return _context4.abrupt('return', {
+              nextCommits: nextCommits,
+              boundaryCommits: boundaryCommits
+            });
 
           case 10:
-            throw _context4.t0;
-
-          case 11:
           case 'end':
             return _context4.stop();
         }
       }
-    }, _callee4, this, [[0, 6]]);
+    }, _callee4, this);
   }));
 
-  return function checkSomeCommitsAreInHistory(_x2) {
-    return _ref4.apply(this, arguments);
-  };
-}();
-
-// Get (at most) FETCH_N_INITIAL_BUILD_COMMITS most recent commits from this,
-// with a guarantee that at least *one* of the commits exists in this repository
-// (i.e. hasn't been rebased or squashed out of the repo)
-// If we need to do more than MAX_N_FETCHES to get them (i.e. the most recent
-// FETCH_N_INITIAL_BUILD_COMMITS * MAX_N_FETCHES commits are all gone), we throw
-
-
-var getRecentCommits = function () {
-  var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(client, newestCommittedAt) {
-    var getSince = function () {
-      var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(skip) {
-        var recentCommits;
-        return _regenerator2.default.wrap(function _callee5$(_context5) {
-          while (1) {
-            switch (_context5.prev = _context5.next) {
-              case 0:
-                if (!(skip >= max)) {
-                  _context5.next = 2;
-                  break;
-                }
-
-                return _context5.abrupt('return', fail(max));
-
-              case 2:
-                _context5.next = 4;
-                return client.runQuery(TesterGetRecentBuildCommitsQuery, {
-                  newestCommittedAt: newestCommittedAt,
-                  skip: skip
-                });
-
-              case 4:
-                recentCommits = _context5.sent.app.buildCommits;
-
-                debug(FETCH_N_INITIAL_BUILD_COMMITS + ' after ' + skip + ' commits: ' + recentCommits);
-
-                if (!(recentCommits.length === 0)) {
-                  _context5.next = 10;
-                  break;
-                }
-
-                if (!(skip === 0)) {
-                  _context5.next = 9;
-                  break;
-                }
-
-                return _context5.abrupt('return', recentCommits);
-
-              case 9:
-                return _context5.abrupt('return', fail(skip));
-
-              case 10:
-                _context5.next = 12;
-                return checkSomeCommitsAreInHistory(recentCommits);
-
-              case 12:
-                if (!_context5.sent) {
-                  _context5.next = 14;
-                  break;
-                }
-
-                return _context5.abrupt('return', recentCommits);
-
-              case 14:
-                return _context5.abrupt('return', getSince(skip + recentCommits.length));
-
-              case 15:
-              case 'end':
-                return _context5.stop();
-            }
-          }
-        }, _callee5, this);
-      }));
-
-      return function getSince(_x5) {
-        return _ref6.apply(this, arguments);
-      };
-    }();
-
-    var max, fail;
-    return _regenerator2.default.wrap(function _callee6$(_context6) {
-      while (1) {
-        switch (_context6.prev = _context6.next) {
-          case 0:
-            fail = function fail(count) {
-              throw new Error('Didn\'t find any commits in this git repository in the last ' + count + ' builds.\n\nAre you sure you are running this command against the correct app-code?\n\nPlease find out more here: http://docs.chromaticqa.com/branching-and-baselines');
-            };
-
-            max = FETCH_N_INITIAL_BUILD_COMMITS * MAX_N_FETCHES;
-            return _context6.abrupt('return', getSince(0));
-
-          case 3:
-          case 'end':
-            return _context6.stop();
-        }
-      }
-    }, _callee6, this);
-  }));
-
-  return function getRecentCommits(_x3, _x4) {
+  return function nextCommitsAndBoundaries(_x2, _x3) {
     return _ref5.apply(this, arguments);
   };
 }();
 
-// We use rev-list to get all the commits that are ancestors of HEAD but not
-// ancestors of any of the <commits>.
-//
-// These commits naturally form a tree that meets up to the complete history of
-// <commits> (call that the "known" history, from chromatic's perspective).
-// git calls the commits in the known history where the tree joins the "boundary".
-// Of the boundary commits:
-//   - Those that are actually members of <commits> correspond to builds that
-//     we want to use as a baseline
-//   - Otherwise they correspond to commits in the known history that we have
-//     commit path to but no known build on that path.
-//
-// We are just going to follow a simple algorithm: on the first pass, grab
-// X commits, check which are boundaries. If there are boundaries not in those
-// commits, choose the *oldest*, and grab all builds that are more recent.
-// In the second pass we do not care which
+// Exponentially iterate `limit` up to infinity to find baselines
 
 
-var getBaselinesFromCommits = function () {
-  var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(commits) {
-    var boundaryData, boundaryLines, baselineCommits, oldestCommittedAt;
-    return _regenerator2.default.wrap(function _callee7$(_context7) {
+var step = function () {
+  var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(client, limit, _ref6) {
+    var headCommit = _ref6.headCommit,
+        firstCommittedAtSeconds = _ref6.firstCommittedAtSeconds,
+        commitsWithBuilds = _ref6.commitsWithBuilds,
+        commitsWithoutBuilds = _ref6.commitsWithoutBuilds;
+
+    var _ref8, nextCommits, boundaryCommits, _ref9, newCommitsWithBuilds, newCommitsWithoutBuilds;
+
+    return _regenerator2.default.wrap(function _callee5$(_context5) {
       while (1) {
-        switch (_context7.prev = _context7.next) {
+        switch (_context5.prev = _context5.next) {
           case 0:
-            _context7.next = 2;
-            return execGitCommand('git rev-list HEAD --boundary --format=\'%m%H %ct\' --ignore-missing       -n ' + LIMIT_HISTORY_TO_N_COMMITS + ' --not ' + commitsForCLI(commits));
+            debug('step: checking ' + limit + ' up to ' + firstCommittedAtSeconds);
+            debug('step: commitsWithBuilds: ' + commitsWithBuilds);
+            debug('step: commitsWithoutBuilds: ' + commitsWithoutBuilds);
 
-          case 2:
-            boundaryData = _context7.sent;
-            boundaryLines = boundaryData.trim().split('\n');
+            _context5.next = 5;
+            return nextCommitsAndBoundaries(limit, {
+              firstCommittedAtSeconds: firstCommittedAtSeconds,
+              commitsWithBuilds: commitsWithBuilds,
+              commitsWithoutBuilds: commitsWithoutBuilds
+            });
 
-            // If we don't find commit history within LIMIT_HISTORY_TO_N_COMMITS commits
-            // we assume we never will. Otherwise commits that are detached from the
-            // history can cause us to crash
+          case 5:
+            _ref8 = _context5.sent;
+            nextCommits = _ref8.nextCommits;
+            boundaryCommits = _ref8.boundaryCommits;
 
-            if (!(boundaryLines.length >= LIMIT_HISTORY_TO_N_COMMITS * 2)) {
-              _context7.next = 6;
+
+            debug('step: nextCommits: ' + nextCommits);
+            debug('step: boundaryCommits: ' + boundaryCommits);
+
+            // No more commits uncovered by boundaryCommits!
+
+            if (!(nextCommits.length === 0)) {
+              _context5.next = 13;
               break;
             }
 
-            throw new Error('Failed to find common ancestors with most recent builds within ' + LIMIT_HISTORY_TO_N_COMMITS + ' commits.\n\nPrevious builds used commits: ' + commits + '.\nAre you sure you are running this command against the correct app-code?\n\nPlease find out more here: http://docs.chromaticqa.com/branching-and-baselines');
+            debug('step: no nextCommits; we are done');
+            return _context5.abrupt('return', boundaryCommits);
 
-          case 6:
-            baselineCommits = [];
-            oldestCommittedAt = null;
+          case 13:
+            _context5.next = 15;
+            return client.runQuery(TesterHasBuildsWithCommitsQuery, {
+              commits: nextCommits
+            });
 
-            // rev-list lists each commit like:
-            // commit 4a1c922edd61fa0e9d3cb25d4e205816701557a5
-            // >4a1c922edd61fa0e9d3cb25d4e205816701557a5 1495065352
-            // We want the second line if it matches ("-")
+          case 15:
+            _ref9 = _context5.sent;
+            newCommitsWithBuilds = _ref9.app.hasBuildsWithCommits;
 
-            boundaryLines.filter(function (l) {
-              return !l.match('commit') && l.match('-');
-            }).forEach(function (rawRow) {
-              var _rawRow$trim$split = rawRow.trim().split(' '),
-                  _rawRow$trim$split2 = (0, _slicedToArray3.default)(_rawRow$trim$split, 2),
-                  commitWithDash = _rawRow$trim$split2[0],
-                  committedAtSeconds = _rawRow$trim$split2[1];
+            debug('step: newCommitsWithBuilds: ' + newCommitsWithBuilds);
 
-              var commit = commitWithDash.slice(1);
+            // Special case -- if there is an existing build for the current HEAD,
+            // we can short circuit any more work; also this is important because
+            // `git rev-list --boundary` doesn't treat HEAD as a boundary
 
-              if (commits.find(function (c) {
+            if (!newCommitsWithBuilds.find(function (c) {
+              return c === headCommit;
+            })) {
+              _context5.next = 21;
+              break;
+            }
+
+            debug('step: HEAD has a build; short circuiting');
+            return _context5.abrupt('return', [headCommit]);
+
+          case 21:
+            newCommitsWithoutBuilds = nextCommits.filter(function (commit) {
+              return !newCommitsWithBuilds.find(function (c) {
                 return c === commit;
-              })) {
-                baselineCommits.push(commit);
-              } else if (oldestCommittedAt === null) {
-                oldestCommittedAt = committedAtSeconds * 1000;
-              } else {
-                oldestCommittedAt = Math.min(oldestCommittedAt, committedAtSeconds * 1000);
-              }
+              });
             });
+            return _context5.abrupt('return', step(client, limit * 2, {
+              firstCommittedAtSeconds: firstCommittedAtSeconds,
+              commitsWithBuilds: [].concat((0, _toConsumableArray3.default)(commitsWithBuilds), (0, _toConsumableArray3.default)(newCommitsWithBuilds)),
+              commitsWithoutBuilds: [].concat((0, _toConsumableArray3.default)(commitsWithoutBuilds), (0, _toConsumableArray3.default)(newCommitsWithoutBuilds))
+            }));
 
-            return _context7.abrupt('return', {
-              baselineCommits: baselineCommits,
-              oldestCommittedAt: oldestCommittedAt
-            });
-
-          case 10:
+          case 23:
           case 'end':
-            return _context7.stop();
+            return _context5.stop();
         }
       }
-    }, _callee7, this);
+    }, _callee5, this);
   }));
 
-  return function getBaselinesFromCommits(_x6) {
+  return function step(_x4, _x5, _x6) {
     return _ref7.apply(this, arguments);
   };
 }();
@@ -1741,101 +1696,52 @@ var getBaselinesFromCommits = function () {
 
 
 var getBaselineCommits = exports.getBaselineCommits = function () {
-  var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(client) {
-    var _ref9, currentCommit, committedAt, recentCommits, _ref10, recentBaselineCommits, oldestCommittedAt, allPossibleCommits, _ref11, baselineCommits;
+  var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(client) {
+    var _ref11, firstBuild, _ref12, commit;
 
-    return _regenerator2.default.wrap(function _callee8$(_context8) {
+    return _regenerator2.default.wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context8.prev = _context8.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
-            _context8.next = 2;
-            return getCommit();
+            _context6.next = 2;
+            return client.runQuery(TesterFirstCommittedAtQuery);
 
           case 2:
-            _ref9 = _context8.sent;
-            currentCommit = _ref9.commit;
-            committedAt = _ref9.committedAt;
-            _context8.next = 7;
-            return getRecentCommits(client, committedAt);
+            _ref11 = _context6.sent;
+            firstBuild = _ref11.app.firstBuild;
+
+            if (firstBuild) {
+              _context6.next = 7;
+              break;
+            }
+
+            debug('App has no builds, returning []');
+            return _context6.abrupt('return', []);
 
           case 7:
-            recentCommits = _context8.sent;
+            _context6.next = 9;
+            return getCommit();
 
-            debug('Found commits: ' + recentCommits);
+          case 9:
+            _ref12 = _context6.sent;
+            commit = _ref12.commit;
+            return _context6.abrupt('return', step(client, FETCH_N_INITIAL_BUILD_COMMITS, {
+              headCommit: commit,
+              firstCommittedAtSeconds: firstBuild.committedAt / 1000,
+              commitsWithBuilds: [],
+              commitsWithoutBuilds: []
+            }));
 
-            // Short-circuit: on first run, there's definitely no baseline!
-
-            if (!(recentCommits.length === 0)) {
-              _context8.next = 11;
-              break;
-            }
-
-            return _context8.abrupt('return', []);
-
-          case 11:
-            if (!recentCommits.find(function (c) {
-              return c === currentCommit;
-            })) {
-              _context8.next = 13;
-              break;
-            }
-
-            return _context8.abrupt('return', [currentCommit]);
-
-          case 13:
-            _context8.next = 15;
-            return getBaselinesFromCommits(recentCommits);
-
-          case 15:
-            _ref10 = _context8.sent;
-            recentBaselineCommits = _ref10.baselineCommits;
-            oldestCommittedAt = _ref10.oldestCommittedAt;
-
-            debug('Baselines from initial commits: ' + recentBaselineCommits + ' [' + oldestCommittedAt + ']');
-
-            // console.log(recentBaselineCommits, oldestCommittedAt);
-            // Important optimization. If we are sure that there aren't any older relevant
-            // builds, we can avoid an extra query
-
-            if (!(oldestCommittedAt === null || recentCommits.length < FETCH_N_INITIAL_BUILD_COMMITS)) {
-              _context8.next = 21;
-              break;
-            }
-
-            return _context8.abrupt('return', recentBaselineCommits);
-
-          case 21:
-            _context8.next = 23;
-            return client.runQuery(TesterGetAllPossibleBuildCommitsQuery, {
-              newestCommittedAt: committedAt,
-              oldestCommittedAt: oldestCommittedAt
-            });
-
-          case 23:
-            allPossibleCommits = _context8.sent.app.buildCommits;
-
-            debug('allPossibleCommits: ' + allPossibleCommits);
-
-            _context8.next = 27;
-            return getBaselinesFromCommits([].concat((0, _toConsumableArray3.default)(recentCommits), (0, _toConsumableArray3.default)(allPossibleCommits)));
-
-          case 27:
-            _ref11 = _context8.sent;
-            baselineCommits = _ref11.baselineCommits;
-
-            debug('allPossible baselineCommits: ' + baselineCommits);
-            return _context8.abrupt('return', baselineCommits);
-
-          case 31:
+          case 12:
           case 'end':
-            return _context8.stop();
+            return _context6.stop();
         }
       }
-    }, _callee8, this);
+    }, _callee6, this);
   }));
 
   return function getBaselineCommits(_x7) {
-    return _ref8.apply(this, arguments);
+    return _ref10.apply(this, arguments);
   };
 }();
 
@@ -1854,12 +1760,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var debug = (0, _debug2.default)('react-chromatic:tester:git');
 
 var FETCH_N_INITIAL_BUILD_COMMITS = exports.FETCH_N_INITIAL_BUILD_COMMITS = 20;
-var MAX_N_FETCHES = exports.MAX_N_FETCHES = 5;
-var LIMIT_HISTORY_TO_N_COMMITS = exports.LIMIT_HISTORY_TO_N_COMMITS = 1000;
 
-var TesterGetRecentBuildCommitsQuery = '\n  query TesterGetRecentBuildCommitsQuery($skip: Int!, $newestCommittedAt: Float!) {\n    app {\n      buildCommits(skip: $skip, limit: ' + FETCH_N_INITIAL_BUILD_COMMITS + ', newestCommittedAt: $newestCommittedAt)\n    }\n  }\n';
+var TesterFirstCommittedAtQuery = '\n  query TesterFirstCommittedAtQuery {\n    app {\n      firstBuild {\n        committedAt\n      }\n    }\n  }\n';
 
-var TesterGetAllPossibleBuildCommitsQuery = '\n  query TesterGetAllPossibleBuildCommitsQuery($newestCommittedAt: Float!, $oldestCommittedAt: Float!) {\n    app {\n      buildCommits(skip: ' + FETCH_N_INITIAL_BUILD_COMMITS + ', newestCommittedAt: $newestCommittedAt, oldestCommittedAt: $oldestCommittedAt)\n    }\n  }\n';
+var TesterHasBuildsWithCommitsQuery = '\n  query TesterHasBuildsWithCommitsQuery($commits: [String!]!) {\n    app {\n      hasBuildsWithCommits(commits: $commits)\n    }\n  }\n';
 
 function commitsForCLI(commits) {
   return commits.map(function (c) {
@@ -1883,7 +1787,7 @@ module.exports = require("babel-runtime/helpers/slicedToArray");
 /* 29 */
 /***/ (function(module, exports) {
 
-module.exports = {"name":"react-chromatic","version":"0.7.12-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"../../node_modules/.bin/babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"../../node_modules/.bin/webpack","build":"../../node_modules/.bin/npm-run-all --serial -l build:**","prepare":"npm run build","dev":"../../node_modules/.bin/npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
+module.exports = {"name":"react-chromatic","version":"0.7.12-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"../../node_modules/.bin/babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"../../node_modules/.bin/webpack","build":"../../node_modules/.bin/npm-run-all --serial -l build:**","prepare":"npm run build","dev":"../../node_modules/.bin/npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","tmp":"^0.0.33","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
 
 /***/ }),
 /* 30 */
