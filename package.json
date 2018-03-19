@@ -1,15 +1,15 @@
 {
   "name": "react-chromatic",
-  "version": "0.7.10-dev",
+  "version": "0.7.12-dev",
   "description": "Visual Testing for React Components",
   "browser": "./dist/client.js",
   "main": "./dist/assets/null-server.js",
   "scripts": {
     "prebuild": "rm -rf ./dist",
-    "build:bin": "babel -s -d ./dist ./src -D --only 'assets,bin'",
-    "build:webpack": "webpack",
-    "build": "npm-run-all --serial -l build:**",
-    "dev": "npm-run-all --parallel -l 'build:** -- --watch'"
+    "build:bin": "../../node_modules/.bin/babel -s -d ./dist ./src -D --only 'assets,bin'",
+    "build:webpack": "../../node_modules/.bin/webpack",
+    "build": "../../node_modules/.bin/npm-run-all --serial -l build:**",
+    "dev": "../../node_modules/.bin/npm-run-all --parallel -l 'build:** -- --watch'"
   },
   "bin": {
     "chromatic": "./dist/bin/chromatic.js"
@@ -37,6 +37,7 @@
     "babel-cli": "^6.26.0",
     "npm-run-all": "^4.0.2",
     "prettier-eslint": "^7.1.0",
+    "tmp": "^0.0.33",
     "webpack": "^3.10.0",
     "webpack-node-externals": "^1.6.0"
   }

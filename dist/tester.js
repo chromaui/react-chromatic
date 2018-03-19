@@ -34,9 +34,6 @@ module.exports =
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
 /******/
-/******/ 	// identity function for calling harmony imports with the correct context
-/******/ 	__webpack_require__.i = function(value) { return value; };
-/******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
@@ -64,20 +61,20 @@ module.exports =
 /******/ 	__webpack_require__.p = "dist";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 20);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/helpers/asyncToGenerator");
+module.exports = require("babel-runtime/regenerator");
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/regenerator");
+module.exports = require("babel-runtime/helpers/asyncToGenerator");
 
 /***/ }),
 /* 2 */
@@ -132,216 +129,62 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _regenerator = __webpack_require__(1);
+var _regenerator = __webpack_require__(0);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
-var _asyncToGenerator2 = __webpack_require__(0);
+var _promise = __webpack_require__(2);
+
+var _promise2 = _interopRequireDefault(_promise);
+
+var _stringify = __webpack_require__(10);
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
+var _asyncToGenerator2 = __webpack_require__(1);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _extends2 = __webpack_require__(7);
+var waitForBuild = function () {
+  var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(client, variables) {
+    var _ref2, build, status, inProgressCount, specCount, changeCount, errorCount;
 
-var _extends3 = _interopRequireDefault(_extends2);
-
-var _classCallCheck2 = __webpack_require__(5);
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = __webpack_require__(6);
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
-var _apolloFetch = __webpack_require__(21);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var GraphQLClient = function () {
-  function GraphQLClient(_ref) {
-    var uri = _ref.uri,
-        jwtToken = _ref.jwtToken,
-        headers = _ref.headers;
-    (0, _classCallCheck3.default)(this, GraphQLClient);
-
-    this.apolloFetch = (0, _apolloFetch.createApolloFetch)({ uri: uri });
-    this.headers = headers;
-
-    if (jwtToken) {
-      this.setJwtToken(jwtToken);
-    }
-  }
-
-  (0, _createClass3.default)(GraphQLClient, [{
-    key: 'setJwtToken',
-    value: function setJwtToken(jwtToken) {
-      var _this = this;
-
-      this.apolloFetch.use(function (_ref2, next) {
-        var options = _ref2.options;
-
-        if (jwtToken) {
-          // eslint-disable-next-line no-param-reassign
-          options.headers = (0, _extends3.default)({}, options.headers, _this.headers, {
-            authorization: 'bearer ' + jwtToken
-          });
-        }
-
-        next();
-      });
-    }
-  }, {
-    key: 'runQuery',
-    value: function () {
-      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(query, variables) {
-        var _ref4, data, errors;
-
-        return _regenerator2.default.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                _context.next = 2;
-                return this.apolloFetch({ query: query, variables: variables });
-
-              case 2:
-                _ref4 = _context.sent;
-                data = _ref4.data;
-                errors = _ref4.errors;
-
-                if (!errors) {
-                  _context.next = 7;
-                  break;
-                }
-
-                throw errors;
-
-              case 7:
-                return _context.abrupt('return', data);
-
-              case 8:
-              case 'end':
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-
-      function runQuery(_x, _x2) {
-        return _ref3.apply(this, arguments);
-      }
-
-      return runQuery;
-    }()
-
-    // Convenience static method
-
-  }], [{
-    key: 'runQuery',
-    value: function () {
-      var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(options, query, variables) {
-        return _regenerator2.default.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                return _context2.abrupt('return', new GraphQLClient(options).runQuery(query, variables));
-
-              case 1:
-              case 'end':
-                return _context2.stop();
-            }
-          }
-        }, _callee2, this);
-      }));
-
-      function runQuery(_x3, _x4, _x5) {
-        return _ref5.apply(this, arguments);
-      }
-
-      return runQuery;
-    }()
-  }]);
-  return GraphQLClient;
-}();
-
-exports.default = GraphQLClient;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-// Note this file differs from our usual convention because it is packaged
-var _process$env = process.env,
-    _process$env$CHROMATI = _process$env.CHROMATIC_SERVER_PORT,
-    CHROMATIC_SERVER_PORT = _process$env$CHROMATI === undefined ? 3004 : _process$env$CHROMATI,
-    _process$env$CHROMATI2 = _process$env.CHROMATIC_INDEX_URL,
-    CHROMATIC_INDEX_URL = _process$env$CHROMATI2 === undefined ? 'https://index.chromaticqa.com' : _process$env$CHROMATI2,
-    _process$env$CHROMATI3 = _process$env.CHROMATIC_TUNNEL_URL,
-    CHROMATIC_TUNNEL_URL = _process$env$CHROMATI3 === undefined ? 'https://tunnel.chromaticqa.com' : _process$env$CHROMATI3,
-    _process$env$CHROMATI4 = _process$env.CHROMATIC_CREATE_TUNNEL,
-    CHROMATIC_CREATE_TUNNEL = _process$env$CHROMATI4 === undefined ? 'true' : _process$env$CHROMATI4,
-    CHROMATIC_APP_CODE = _process$env.CHROMATIC_APP_CODE;
-exports.CHROMATIC_SERVER_PORT = CHROMATIC_SERVER_PORT;
-exports.CHROMATIC_INDEX_URL = CHROMATIC_INDEX_URL;
-exports.CHROMATIC_TUNNEL_URL = CHROMATIC_TUNNEL_URL;
-exports.CHROMATIC_CREATE_TUNNEL = CHROMATIC_CREATE_TUNNEL;
-exports.CHROMATIC_APP_CODE = CHROMATIC_APP_CODE;
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _regenerator = __webpack_require__(1);
-
-var _regenerator2 = _interopRequireDefault(_regenerator);
-
-var _asyncToGenerator2 = __webpack_require__(0);
-
-var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
-
-var _localtunnel = __webpack_require__(29);
-
-var _localtunnel2 = _interopRequireDefault(_localtunnel);
-
-var _denodeify = __webpack_require__(3);
-
-var _denodeify2 = _interopRequireDefault(_denodeify);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = function () {
-  var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(_ref) {
-    var tunnelUrl = _ref.tunnelUrl,
-        port = _ref.port;
     return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            if (port) {
-              _context.next = 2;
+            _context.next = 2;
+            return client.runQuery(TesterBuildQuery, variables);
+
+          case 2:
+            _ref2 = _context.sent;
+            build = _ref2.app.build;
+
+            debug('build:' + (0, _stringify2.default)(build));
+            status = build.status, inProgressCount = build.inProgressCount, specCount = build.specCount, changeCount = build.changeCount, errorCount = build.errorCount;
+
+            if (!(status === 'BUILD_IN_PROGRESS')) {
+              _context.next = 11;
               break;
             }
 
-            throw new Error('Need to pass a port into `openTunnel`');
+            if (inProgressCount !== lastInProgressCount) {
+              lastInProgressCount = inProgressCount;
+              log(inProgressCount + '/' + pluralize(specCount, 'spec') + ' remain to test. ' + ('(' + pluralize(changeCount, 'change') + ', ' + pluralize(errorCount, 'error') + ')'));
+            }
 
-          case 2:
-            return _context.abrupt('return', (0, _denodeify2.default)(_localtunnel2.default)(port, {
-              local_host: 'localhost',
-              host: tunnelUrl
-            }));
+            _context.next = 10;
+            return new _promise2.default(function (resolve) {
+              return setTimeout(resolve, BUILD_POLL_INTERVAL);
+            });
 
-          case 3:
+          case 10:
+            return _context.abrupt('return', waitForBuild(client, variables));
+
+          case 11:
+            return _context.abrupt('return', build);
+
+          case 12:
           case 'end':
             return _context.stop();
         }
@@ -349,351 +192,420 @@ exports.default = function () {
     }, _callee, this);
   }));
 
-  function openTunnel(_x) {
-    return _ref2.apply(this, arguments);
-  }
-
-  return openTunnel;
-}();
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getBaselineCommits = exports.getBranch = exports.getCommit = exports.FETCH_N_INITAL_BUILD_COMMITS = undefined;
-
-var _toConsumableArray2 = __webpack_require__(25);
-
-var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
-
-var _slicedToArray2 = __webpack_require__(24);
-
-var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
-
-var _regenerator = __webpack_require__(1);
-
-var _regenerator2 = _interopRequireDefault(_regenerator);
-
-var _asyncToGenerator2 = __webpack_require__(0);
-
-var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
-
-var execGitCommand = function () {
-  var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(command) {
-    return _regenerator2.default.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            _context.prev = 0;
-            _context.next = 3;
-            return (0, _denodeify2.default)(_child_process.exec)(command);
-
-          case 3:
-            return _context.abrupt('return', _context.sent.trim());
-
-          case 6:
-            _context.prev = 6;
-            _context.t0 = _context['catch'](0);
-
-            // eslint-disable-next-line no-console
-            console.error('Unable to execute git command \'' + command + '\'.\n');
-            if (_context.t0.message && _context.t0.message.match('Not a git repository')) {
-              // eslint-disable-next-line no-console
-              console.error('Chromatic only works in git projects.\n' + 'Contact us at support@hichroma.com if you need to use Chromatic outside of one.\n\n');
-            }
-            throw _context.t0;
-
-          case 11:
-          case 'end':
-            return _context.stop();
-        }
-      }
-    }, _callee, this, [[0, 6]]);
-  }));
-
-  return function execGitCommand(_x) {
+  return function waitForBuild(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();
-
-// NOTE: At some point we should check that the commit has been pushed to the
-// remote and the branch matches with origin/REF, but for now we are naive about
-// adhoc builds.
-
-var getCommit = exports.getCommit = function () {
-  var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
-    var _trim$split, _trim$split2, commit, committedAtSeconds;
-
-    return _regenerator2.default.wrap(function _callee2$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            _context2.next = 2;
-            return execGitCommand('git log -n 1 --format="%H %ct"');
-
-          case 2:
-            _trim$split = _context2.sent.trim().split(' ');
-            _trim$split2 = (0, _slicedToArray3.default)(_trim$split, 2);
-            commit = _trim$split2[0];
-            committedAtSeconds = _trim$split2[1];
-            return _context2.abrupt('return', { commit: commit, committedAt: committedAtSeconds * 1000 });
-
-          case 7:
-          case 'end':
-            return _context2.stop();
-        }
-      }
-    }, _callee2, this);
-  }));
-
-  return function getCommit() {
-    return _ref2.apply(this, arguments);
-  };
-}();
-
-var getBranch = exports.getBranch = function () {
-  var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
-    var branch;
-    return _regenerator2.default.wrap(function _callee3$(_context3) {
-      while (1) {
-        switch (_context3.prev = _context3.next) {
-          case 0:
-            _context3.next = 2;
-            return execGitCommand('git rev-parse --abbrev-ref HEAD');
-
-          case 2:
-            branch = _context3.sent.trim();
-
-            if (!(branch === 'HEAD')) {
-              _context3.next = 5;
-              break;
-            }
-
-            return _context3.abrupt('return', process.env.CI_BRANCH || branch);
-
-          case 5:
-            return _context3.abrupt('return', branch);
-
-          case 6:
-          case 'end':
-            return _context3.stop();
-        }
-      }
-    }, _callee3, this);
-  }));
-
-  return function getBranch() {
-    return _ref3.apply(this, arguments);
-  };
-}();
-
-// We use rev-list to get all the commits that are ancestors of HEAD but not
-// ancestors of any of the <commits>.
-//
-// These commits naturally form a tree that meets up to the complete history of
-// <commits> (call that the "known" history, from chromatic's perspective).
-// git calls the commits in the known history where the tree joins the "boundary".
-// Of the boundary commits:
-//   - Those that are actually members of <commits> correspond to builds that
-//     we want to use as a baseline
-//   - Otherwise they correspond to commits in the known history that we have
-//     commit path to but no known build on that path.
-//
-// We are just going to follow a simple algorithm: on the first pass, grab
-// X commits, check which are boundaries. If there are boundaries not in those
-// commits, choose the *oldest*, and grab all builds that are more recent.
-// In the second pass we do not care which
-
-
-var getBaselinesFromCommits = function () {
-  var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(commits) {
-    var boundaryData, baselineCommits, oldestCommittedAt;
-    return _regenerator2.default.wrap(function _callee4$(_context4) {
-      while (1) {
-        switch (_context4.prev = _context4.next) {
-          case 0:
-            _context4.next = 2;
-            return execGitCommand('git rev-list HEAD --boundary --format=\'%m%H %ct\' --ignore-missing       --not ' + commits.map(function (c) {
-              return c.trim();
-            }).join(' '));
-
-          case 2:
-            boundaryData = _context4.sent;
-            baselineCommits = [];
-            oldestCommittedAt = null;
-
-            boundaryData.trim().split('\n')
-            // rev-list lists each commit like:
-            // commit 4a1c922edd61fa0e9d3cb25d4e205816701557a5
-            // >4a1c922edd61fa0e9d3cb25d4e205816701557a5 1495065352
-            // We want the second line if it matches ("-")
-            .filter(function (l) {
-              return !l.match('commit') && l.match('-');
-            }).forEach(function (rawRow) {
-              var _rawRow$trim$split = rawRow.trim().split(' '),
-                  _rawRow$trim$split2 = (0, _slicedToArray3.default)(_rawRow$trim$split, 2),
-                  commitWithDash = _rawRow$trim$split2[0],
-                  committedAtSeconds = _rawRow$trim$split2[1];
-
-              var commit = commitWithDash.slice(1);
-
-              if (commits.find(function (c) {
-                return c === commit;
-              })) {
-                baselineCommits.push(commit);
-              } else if (oldestCommittedAt === null) {
-                oldestCommittedAt = committedAtSeconds * 1000;
-              } else {
-                oldestCommittedAt = Math.min(oldestCommittedAt, committedAtSeconds * 1000);
-              }
-            });
-
-            return _context4.abrupt('return', {
-              baselineCommits: baselineCommits,
-              oldestCommittedAt: oldestCommittedAt
-            });
-
-          case 7:
-          case 'end':
-            return _context4.stop();
-        }
-      }
-    }, _callee4, this);
-  }));
-
-  return function getBaselinesFromCommits(_x2) {
-    return _ref4.apply(this, arguments);
-  };
-}();
-
-// eslint-disable-next-line import/prefer-default-export
-
-
-var getBaselineCommits = exports.getBaselineCommits = function () {
-  var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(client) {
-    var _ref6, currentCommit, committedAt, recentCommits, _ref7, recentBaselineCommits, oldestCommittedAt, allPossibleCommits, _ref8, baselineCommits;
-
-    return _regenerator2.default.wrap(function _callee5$(_context5) {
-      while (1) {
-        switch (_context5.prev = _context5.next) {
-          case 0:
-            _context5.next = 2;
-            return getCommit();
-
-          case 2:
-            _ref6 = _context5.sent;
-            currentCommit = _ref6.commit;
-            committedAt = _ref6.committedAt;
-            _context5.next = 7;
-            return client.runQuery(TesterGetRecentBuildCommitsQuery, {
-              newestCommittedAt: committedAt
-            });
-
-          case 7:
-            recentCommits = _context5.sent.app.buildCommits;
-
-            debug('First ' + FETCH_N_INITAL_BUILD_COMMITS + ' commits: ' + recentCommits);
-
-            // Short-circuit: on first run, there's definitely no baseline!
-
-            if (!(recentCommits.length === 0)) {
-              _context5.next = 11;
-              break;
-            }
-
-            return _context5.abrupt('return', []);
-
-          case 11:
-            if (!recentCommits.find(function (c) {
-              return c === currentCommit;
-            })) {
-              _context5.next = 13;
-              break;
-            }
-
-            return _context5.abrupt('return', [currentCommit]);
-
-          case 13:
-            _context5.next = 15;
-            return getBaselinesFromCommits(recentCommits);
-
-          case 15:
-            _ref7 = _context5.sent;
-            recentBaselineCommits = _ref7.baselineCommits;
-            oldestCommittedAt = _ref7.oldestCommittedAt;
-
-            debug('Baselines from initial commits: ' + recentBaselineCommits + ' [' + oldestCommittedAt + ']');
-
-            // console.log(recentBaselineCommits, oldestCommittedAt);
-            // Important optimization. If we are sure that there aren't any older relevant
-            // builds, we can avoid an extra query
-
-            if (!(oldestCommittedAt === null || recentCommits.length < FETCH_N_INITAL_BUILD_COMMITS)) {
-              _context5.next = 21;
-              break;
-            }
-
-            return _context5.abrupt('return', recentBaselineCommits);
-
-          case 21:
-            _context5.next = 23;
-            return client.runQuery(TesterGetAllPossibleBuildCommitsQuery, {
-              newestCommittedAt: committedAt,
-              oldestCommittedAt: oldestCommittedAt
-            });
-
-          case 23:
-            allPossibleCommits = _context5.sent.app.buildCommits;
-
-            debug('allPossibleCommits: ' + allPossibleCommits);
-
-            _context5.next = 27;
-            return getBaselinesFromCommits([].concat((0, _toConsumableArray3.default)(recentCommits), (0, _toConsumableArray3.default)(allPossibleCommits)));
-
-          case 27:
-            _ref8 = _context5.sent;
-            baselineCommits = _ref8.baselineCommits;
-
-            debug('allPossible baselineCommits: ' + baselineCommits);
-            return _context5.abrupt('return', baselineCommits);
-
-          case 31:
-          case 'end':
-            return _context5.stop();
-        }
-      }
-    }, _callee5, this);
-  }));
-
-  return function getBaselineCommits(_x3) {
-    return _ref5.apply(this, arguments);
-  };
-}();
-
-var _child_process = __webpack_require__(8);
 
 var _denodeify = __webpack_require__(3);
 
 var _denodeify2 = _interopRequireDefault(_denodeify);
 
+var _nodeAsk = __webpack_require__(11);
+
 var _debug = __webpack_require__(4);
 
 var _debug2 = _interopRequireDefault(_debug);
 
+var _treeKill = __webpack_require__(12);
+
+var _treeKill2 = _interopRequireDefault(_treeKill);
+
+var _runtimes = __webpack_require__(13);
+
+var _runtimes2 = _interopRequireDefault(_runtimes);
+
+var _startApp = __webpack_require__(16);
+
+var _startApp2 = _interopRequireDefault(_startApp);
+
+var _tunnel = __webpack_require__(18);
+
+var _tunnel2 = _interopRequireDefault(_tunnel);
+
+var _packageJson = __webpack_require__(20);
+
+var _GraphQLClient = __webpack_require__(24);
+
+var _GraphQLClient2 = _interopRequireDefault(_GraphQLClient);
+
+var _git = __webpack_require__(26);
+
+var _package = __webpack_require__(29);
+
+var _environment = __webpack_require__(30);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var debug = (0, _debug2.default)('react-chromatic:tester:git');
+var BUILD_POLL_INTERVAL = 1000;
 
-var FETCH_N_INITAL_BUILD_COMMITS = exports.FETCH_N_INITAL_BUILD_COMMITS = 20;
-var TesterGetRecentBuildCommitsQuery = '\n  query TesterGetRecentBuildCommitsQuery($newestCommittedAt: Float!) {\n    app {\n      buildCommits(limit: ' + FETCH_N_INITAL_BUILD_COMMITS + ', newestCommittedAt: $newestCommittedAt)\n    }\n  }\n';
+var TesterCreateAppTokenMutation = '\n  mutation TesterCreateAppTokenMutation($appCode: String!) {\n    createAppToken(code: $appCode)\n  }\n';
 
-var TesterGetAllPossibleBuildCommitsQuery = '\n  query TesterGetAllPossibleBuildCommitsQuery($newestCommittedAt: Float!, $oldestCommittedAt: Float!) {\n    app {\n      buildCommits(skip: ' + FETCH_N_INITAL_BUILD_COMMITS + ', newestCommittedAt: $newestCommittedAt, oldestCommittedAt: $oldestCommittedAt)\n    }\n  }\n';
+var TesterCreateBuildMutation = '\n  mutation TesterCreateBuildMutation($input: CreateBuildInput!, $isolatorUrl: String!) {\n    createBuild(input: $input, isolatorUrl: $isolatorUrl) {\n      id\n      number\n      specCount\n      componentCount\n      webUrl\n    }\n  }\n';
+
+var TesterBuildQuery = '\n  query TesterBuildQuery($buildNumber: Int!) {\n    app {\n      build(number: $buildNumber) {\n        id\n        status\n        inProgressCount: snapshotCount(statuses: [SNAPSHOT_IN_PROGRESS])\n        specCount\n        changeCount: snapshotCount(statuses: [SNAPSHOT_PENDING, SNAPSHOT_ACCEPTED, SNAPSHOT_DENIED])\n        errorCount: snapshotCount(statuses: [SNAPSHOT_CAPTURE_ERROR])\n      }\n    }\n  }\n';
+
+var debug = (0, _debug2.default)('react-chromatic:tester');
+
+function log(msg) {
+  // eslint-disable-next-line no-console
+  console.log('Chromatic Tester: ' + msg);
+}
+
+function pluralize(n, noun, noNumber) {
+  var pluralizedNoun = n === 1 ? noun : noun + 's';
+
+  return noNumber ? pluralizedNoun : n + ' ' + pluralizedNoun;
+}
+
+var lastInProgressCount = void 0;
+
+exports.default = function () {
+  var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(_ref3) {
+    var appCode = _ref3.appCode,
+        scriptName = _ref3.scriptName,
+        _ref3$noStart = _ref3.noStart,
+        noStart = _ref3$noStart === undefined ? false : _ref3$noStart,
+        port = _ref3.port,
+        _ref3$appPath = _ref3.appPath,
+        appPath = _ref3$appPath === undefined ? '/' : _ref3$appPath,
+        url = _ref3.url,
+        _ref3$exitZeroOnChang = _ref3.exitZeroOnChanges,
+        exitZeroOnChanges = _ref3$exitZeroOnChang === undefined ? false : _ref3$exitZeroOnChang,
+        _ref3$verbose = _ref3.verbose,
+        verbose = _ref3$verbose === undefined ? false : _ref3$verbose,
+        _ref3$indexUrl = _ref3.indexUrl,
+        indexUrl = _ref3$indexUrl === undefined ? _environment.CHROMATIC_INDEX_URL : _ref3$indexUrl,
+        _ref3$tunnelUrl = _ref3.tunnelUrl,
+        tunnelUrl = _ref3$tunnelUrl === undefined ? _environment.CHROMATIC_TUNNEL_URL : _ref3$tunnelUrl,
+        _ref3$createTunnel = _ref3.createTunnel,
+        createTunnel = _ref3$createTunnel === undefined ? true : _ref3$createTunnel,
+        _ref3$originalArgv = _ref3.originalArgv,
+        originalArgv = _ref3$originalArgv === undefined ? false : _ref3$originalArgv;
+
+    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, committerEmail, committerName, branch, baselineCommits, appPathWithSlash, appUrl, child, isolatorUrl, tunnel, runtimeSpecs, fromCI, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
+
+    return _regenerator2.default.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            uri = indexUrl + '/graphql';
+            client = new _GraphQLClient2.default({ uri: uri });
+
+            if (appCode) {
+              _context2.next = 4;
+              break;
+            }
+
+            throw new Error('You must provide an app code  -- visit https://www.chromaticqa.com to get your code.' + '\nPass your app code with the `CHROMATIC_APP_CODE` environment variable or the `--app-code` flag.');
+
+          case 4:
+            if (!(!scriptName && !noStart || !port)) {
+              _context2.next = 6;
+              break;
+            }
+
+            throw new Error('You must provide a npm script name (`--script-name`) and port (`--port`) so we can start your app');
+
+          case 6:
+            _context2.prev = 6;
+            _context2.next = 9;
+            return client.runQuery(TesterCreateAppTokenMutation, {
+              appCode: appCode
+            });
+
+          case 9:
+            _ref5 = _context2.sent;
+            jwtToken = _ref5.createAppToken;
+
+            client.setJwtToken(jwtToken);
+            _context2.next = 19;
+            break;
+
+          case 14:
+            _context2.prev = 14;
+            _context2.t0 = _context2['catch'](6);
+
+            if (!(_context2.t0[0] && _context2.t0[0].message && _context2.t0[0].message.match('No app with code'))) {
+              _context2.next = 18;
+              break;
+            }
+
+            throw new Error('Incorrect app code \'' + appCode + '\' -- visit https://www.chromaticqa.com to get your code');
+
+          case 18:
+            throw _context2.t0;
+
+          case 19:
+            _context2.next = 21;
+            return (0, _git.getCommit)();
+
+          case 21:
+            _ref6 = _context2.sent;
+            commit = _ref6.commit;
+            committedAt = _ref6.committedAt;
+            committerEmail = _ref6.committerEmail;
+            committerName = _ref6.committerName;
+            _context2.next = 28;
+            return (0, _git.getBranch)();
+
+          case 28:
+            branch = _context2.sent;
+
+            debug('git info: ' + (0, _stringify2.default)({ commit: commit, committedAt: committedAt, branch: branch }));
+
+            _context2.next = 32;
+            return (0, _git.getBaselineCommits)(client);
+
+          case 32:
+            baselineCommits = _context2.sent;
+
+            debug('Found baselineCommits: ' + baselineCommits);
+
+            appPathWithSlash = appPath[0] === '/' ? appPath : '/' + appPath;
+            appUrl = url || 'http://localhost:' + port + appPathWithSlash;
+            child = void 0;
+
+            if (!(!noStart && !url)) {
+              _context2.next = 45;
+              break;
+            }
+
+            log('Starting app with `npm run ' + scriptName + '`');
+            _context2.next = 41;
+            return (0, _startApp2.default)({ scriptName: scriptName, url: appUrl });
+
+          case 41:
+            child = _context2.sent;
+
+            log('Started app on port ' + port);
+            _context2.next = 50;
+            break;
+
+          case 45:
+            _context2.next = 47;
+            return (0, _startApp.checkResponse)(appUrl);
+
+          case 47:
+            if (_context2.sent) {
+              _context2.next = 49;
+              break;
+            }
+
+            throw new Error('No server responding at ' + appUrl + ' -- make sure you\'ve started it.');
+
+          case 49:
+            log('Detected app on port ' + port);
+
+          case 50:
+            isolatorUrl = appUrl;
+            tunnel = void 0;
+
+            if (!(createTunnel && !url)) {
+              _context2.next = 59;
+              break;
+            }
+
+            log('Opening tunnel to Chromatic capture servers');
+            _context2.next = 56;
+            return (0, _tunnel2.default)({ tunnelUrl: tunnelUrl, port: port });
+
+          case 56:
+            tunnel = _context2.sent;
+
+            debug('Opened tunnel to ' + tunnel.url);
+            isolatorUrl = '' + tunnel.url + appPathWithSlash;
+
+          case 59:
+
+            debug('Connecting to ' + isolatorUrl);
+            log('Uploading and verifying build (this may take a few minutes depending on your connection)');
+            _context2.next = 63;
+            return (0, _runtimes2.default)(isolatorUrl, { verbose: verbose });
+
+          case 63:
+            runtimeSpecs = _context2.sent;
+
+            log('Found ' + runtimeSpecs.length + ' specs');
+
+            fromCI = !!process.env.CI;
+
+            debug('Detected build fromCI:' + fromCI);
+            debug('Detected package version:' + _package.version);
+
+            exitCode = 5;
+            _context2.prev = 69;
+            _context2.next = 72;
+            return client.runQuery(TesterCreateBuildMutation, {
+              input: {
+                branch: branch,
+                commit: commit,
+                committedAt: committedAt,
+                baselineCommits: baselineCommits,
+                runtimeSpecs: runtimeSpecs,
+                fromCI: fromCI,
+                packageVersion: _package.version,
+                committerEmail: committerEmail,
+                committerName: committerName
+              },
+              isolatorUrl: isolatorUrl
+            });
+
+          case 72:
+            _ref7 = _context2.sent;
+            _ref7$createBuild = _ref7.createBuild;
+            number = _ref7$createBuild.number;
+            specCount = _ref7$createBuild.specCount;
+            componentCount = _ref7$createBuild.componentCount;
+            webUrl = _ref7$createBuild.webUrl;
+            onlineHint = 'View it online at ' + webUrl;
+
+            log('Started Build ' + number + ' ' + ('(' + pluralize(componentCount, 'component') + ', ' + pluralize(specCount, 'spec') + ').\n\n' + onlineHint + '.'));
+
+            _context2.next = 82;
+            return waitForBuild(client, {
+              buildNumber: number
+            });
+
+          case 82:
+            _ref8 = _context2.sent;
+            status = _ref8.status;
+            changeCount = _ref8.changeCount;
+            errorCount = _ref8.errorCount;
+            _context2.t1 = status;
+            _context2.next = _context2.t1 === 'BUILD_PASSED' ? 89 : _context2.t1 === 'BUILD_PENDING' ? 92 : _context2.t1 === 'BUILD_ACCEPTED' ? 92 : _context2.t1 === 'BUILD_DENIED' ? 92 : _context2.t1 === 'BUILD_FAILED' ? 96 : _context2.t1 === 'BUILD_TIMED_OUT' ? 99 : _context2.t1 === 'BUILD_ERROR' ? 102 : 105;
+            break;
+
+          case 89:
+            log('Build ' + number + ' passed! ' + onlineHint + '.');
+            exitCode = 0;
+            return _context2.abrupt('break', 106);
+
+          case 92:
+            log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
+            if (!exitZeroOnChanges) {
+              log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case. Read more: http://docs.chromaticqa.com/test');
+            }
+            exitCode = exitZeroOnChanges ? 0 : 1;
+            return _context2.abrupt('break', 106);
+
+          case 96:
+            log('Build ' + number + ' has ' + pluralize(errorCount, 'error') + '. ' + onlineHint + '.');
+            exitCode = 2;
+            return _context2.abrupt('break', 106);
+
+          case 99:
+            log('Build ' + number + ' has timed out. Ensure your machine is connected to the internet and please try again.');
+            exitCode = 3;
+            return _context2.abrupt('break', 106);
+
+          case 102:
+            log('Build ' + number + ' has failed to run. Our apologies. Please try again.');
+            exitCode = 4;
+            return _context2.abrupt('break', 106);
+
+          case 105:
+            throw new Error('Unexpected build status: ' + status);
+
+          case 106:
+            _context2.next = 116;
+            break;
+
+          case 108:
+            _context2.prev = 108;
+            _context2.t2 = _context2['catch'](69);
+
+            if (!(_context2.t2.length && _context2.t2[0] && _context2.t2[0].message.match(/Cannot run a build with no specs./))) {
+              _context2.next = 115;
+              break;
+            }
+
+            log(_context2.t2[0].message);
+            exitCode = 255;
+            _context2.next = 116;
+            break;
+
+          case 115:
+            throw _context2.t2;
+
+          case 116:
+            _context2.prev = 116;
+
+            if (tunnel) {
+              tunnel.close();
+            }
+
+            if (!child) {
+              _context2.next = 121;
+              break;
+            }
+
+            _context2.next = 121;
+            return (0, _denodeify2.default)(_treeKill2.default)(child.pid, 'SIGHUP');
+
+          case 121:
+            return _context2.finish(116);
+
+          case 122:
+            if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
+              _context2.next = 129;
+              break;
+            }
+
+            scriptCommand = ('chromatic test ' + originalArgv.slice(2).join(' ')).replace(/--app-code[= ]\S+/, '');
+            _context2.next = 126;
+            return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
+
+          case 126:
+            confirmed = _context2.sent;
+
+            if (confirmed) {
+              (0, _packageJson.addScriptToPackageJson)('chromatic', scriptCommand);
+              // eslint-disable-next-line no-console
+              console.log('\nAdded script `chromatic`. You can now run it here or in CI with `npm run chromatic` (or `yarn chromatic`)');
+            } else {
+              // eslint-disable-next-line no-console
+              console.log('\nNo problem. You can add it later with:\n{\n  "scripts": {\n    "chromatic": "' + scriptCommand + '"\n  }\n}');
+            }
+
+            // eslint-disable-next-line no-console
+            console.log('\nMake sure you set the `CHROMATIC_APP_CODE` environment variable when running builds (in particular on your CI server).');
+
+          case 129:
+            return _context2.abrupt('return', exitCode);
+
+          case 130:
+          case 'end':
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this, [[6, 14], [69, 108, 116, 122]]);
+  }));
+
+  function runTest(_x3) {
+    return _ref4.apply(this, arguments);
+  }
+
+  return runTest;
+}();
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+module.exports = require("babel-runtime/core-js/json/stringify");
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports) {
+
+module.exports = require("node-ask");
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports) {
+
+module.exports = require("tree-kill");
 
 /***/ }),
 /* 13 */
@@ -706,64 +618,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _values = __webpack_require__(23);
-
-var _values2 = _interopRequireDefault(_values);
-
-exports.checkPackageJson = checkPackageJson;
-exports.addScriptToPackageJson = addScriptToPackageJson;
-
-var _path = __webpack_require__(30);
-
-var _path2 = _interopRequireDefault(_path);
-
-var _jsonfile = __webpack_require__(28);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function checkPackageJson() {
-  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      _ref$appDir = _ref.appDir,
-      appDir = _ref$appDir === undefined ? process.cwd() : _ref$appDir;
-
-  var packageJson = (0, _jsonfile.readFileSync)(_path2.default.resolve(appDir, './package.json'));
-
-  return (0, _values2.default)(packageJson.scripts || {}).find(function (script) {
-    return script.match('chromatic test');
-  });
-}
-
-function addScriptToPackageJson(scriptName, scriptCommand) {
-  var _ref2 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-      _ref2$appDir = _ref2.appDir,
-      appDir = _ref2$appDir === undefined ? process.cwd() : _ref2$appDir;
-
-  var filename = _path2.default.resolve(appDir, './package.json');
-  var packageJson = (0, _jsonfile.readFileSync)(filename);
-
-  if (packageJson[scriptName]) {
-    throw new Error('Script named \'' + scriptName + '\' already exists in package.json');
-  }
-
-  if (!packageJson.scripts) {
-    packageJson.scripts = {};
-  }
-  packageJson.scripts[scriptName] = scriptCommand;
-  (0, _jsonfile.writeFileSync)(filename, packageJson, { spaces: 2 });
-}
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _regenerator = __webpack_require__(1);
+var _regenerator = __webpack_require__(0);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
@@ -771,11 +626,11 @@ var _promise = __webpack_require__(2);
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _keys = __webpack_require__(22);
+var _keys = __webpack_require__(14);
 
 var _keys2 = _interopRequireDefault(_keys);
 
-var _asyncToGenerator2 = __webpack_require__(0);
+var _asyncToGenerator2 = __webpack_require__(1);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
@@ -787,7 +642,7 @@ var _createClass2 = __webpack_require__(6);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _jsdom = __webpack_require__(27);
+var _jsdom = __webpack_require__(15);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -977,7 +832,19 @@ exports.default = function () {
 }();
 
 /***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+module.exports = require("babel-runtime/core-js/object/keys");
+
+/***/ }),
 /* 15 */
+/***/ (function(module, exports) {
+
+module.exports = require("jsdom");
+
+/***/ }),
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -996,11 +863,11 @@ var _promise = __webpack_require__(2);
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _regenerator = __webpack_require__(1);
+var _regenerator = __webpack_require__(0);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
-var _asyncToGenerator2 = __webpack_require__(0);
+var _asyncToGenerator2 = __webpack_require__(1);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
@@ -1125,7 +992,7 @@ var waitForResponse = function () {
 
 var _child_process = __webpack_require__(8);
 
-var _isomorphicFetch = __webpack_require__(26);
+var _isomorphicFetch = __webpack_require__(17);
 
 var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
@@ -1194,28 +1061,81 @@ exports.default = function () {
 }();
 
 /***/ }),
-/* 16 */
-/***/ (function(module, exports) {
-
-module.exports = {"name":"react-chromatic","version":"0.7.10-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"webpack","build":"npm-run-all --serial -l build:**","prepare":"npm run build","dev":"npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
-
-/***/ }),
 /* 17 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/core-js/json/stringify");
+module.exports = require("isomorphic-fetch");
 
 /***/ }),
 /* 18 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = require("node-ask");
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _regenerator = __webpack_require__(0);
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _asyncToGenerator2 = __webpack_require__(1);
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
+var _localtunnel = __webpack_require__(19);
+
+var _localtunnel2 = _interopRequireDefault(_localtunnel);
+
+var _denodeify = __webpack_require__(3);
+
+var _denodeify2 = _interopRequireDefault(_denodeify);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function () {
+  var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(_ref) {
+    var tunnelUrl = _ref.tunnelUrl,
+        port = _ref.port;
+    return _regenerator2.default.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            if (port) {
+              _context.next = 2;
+              break;
+            }
+
+            throw new Error('Need to pass a port into `openTunnel`');
+
+          case 2:
+            return _context.abrupt('return', (0, _denodeify2.default)(_localtunnel2.default)(port, {
+              local_host: 'localhost',
+              host: tunnelUrl
+            }));
+
+          case 3:
+          case 'end':
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+
+  function openTunnel(_x) {
+    return _ref2.apply(this, arguments);
+  }
+
+  return openTunnel;
+}();
 
 /***/ }),
 /* 19 */
 /***/ (function(module, exports) {
 
-module.exports = require("tree-kill");
+module.exports = require("localtunnel");
 
 /***/ }),
 /* 20 */
@@ -1228,520 +1148,673 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _regenerator = __webpack_require__(1);
+var _values = __webpack_require__(21);
 
-var _regenerator2 = _interopRequireDefault(_regenerator);
+var _values2 = _interopRequireDefault(_values);
 
-var _promise = __webpack_require__(2);
+exports.checkPackageJson = checkPackageJson;
+exports.addScriptToPackageJson = addScriptToPackageJson;
 
-var _promise2 = _interopRequireDefault(_promise);
+var _path = __webpack_require__(22);
 
-var _stringify = __webpack_require__(17);
+var _path2 = _interopRequireDefault(_path);
 
-var _stringify2 = _interopRequireDefault(_stringify);
-
-var _asyncToGenerator2 = __webpack_require__(0);
-
-var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
-
-var waitForBuild = function () {
-  var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(client, variables) {
-    var _ref2, build, status, inProgressCount, specCount, changeCount, errorCount;
-
-    return _regenerator2.default.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            _context.next = 2;
-            return client.runQuery(TesterBuildQuery, variables);
-
-          case 2:
-            _ref2 = _context.sent;
-            build = _ref2.app.build;
-
-            debug('build:' + (0, _stringify2.default)(build));
-            status = build.status, inProgressCount = build.inProgressCount, specCount = build.specCount, changeCount = build.changeCount, errorCount = build.errorCount;
-
-            if (!(status === 'BUILD_IN_PROGRESS')) {
-              _context.next = 11;
-              break;
-            }
-
-            if (inProgressCount !== lastInProgressCount) {
-              lastInProgressCount = inProgressCount;
-              log(inProgressCount + '/' + pluralize(specCount, 'spec') + ' remain to test. ' + ('(' + pluralize(changeCount, 'change') + ', ' + pluralize(errorCount, 'error') + ')'));
-            }
-
-            _context.next = 10;
-            return new _promise2.default(function (resolve) {
-              return setTimeout(resolve, BUILD_POLL_INTERVAL);
-            });
-
-          case 10:
-            return _context.abrupt('return', waitForBuild(client, variables));
-
-          case 11:
-            return _context.abrupt('return', build);
-
-          case 12:
-          case 'end':
-            return _context.stop();
-        }
-      }
-    }, _callee, this);
-  }));
-
-  return function waitForBuild(_x, _x2) {
-    return _ref.apply(this, arguments);
-  };
-}();
-
-var _denodeify = __webpack_require__(3);
-
-var _denodeify2 = _interopRequireDefault(_denodeify);
-
-var _nodeAsk = __webpack_require__(18);
-
-var _debug = __webpack_require__(4);
-
-var _debug2 = _interopRequireDefault(_debug);
-
-var _treeKill = __webpack_require__(19);
-
-var _treeKill2 = _interopRequireDefault(_treeKill);
-
-var _runtimes = __webpack_require__(14);
-
-var _runtimes2 = _interopRequireDefault(_runtimes);
-
-var _startApp = __webpack_require__(15);
-
-var _startApp2 = _interopRequireDefault(_startApp);
-
-var _tunnel = __webpack_require__(11);
-
-var _tunnel2 = _interopRequireDefault(_tunnel);
-
-var _packageJson = __webpack_require__(13);
-
-var _GraphQLClient = __webpack_require__(9);
-
-var _GraphQLClient2 = _interopRequireDefault(_GraphQLClient);
-
-var _git = __webpack_require__(12);
-
-var _package = __webpack_require__(16);
-
-var _environment = __webpack_require__(10);
+var _jsonfile = __webpack_require__(23);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var BUILD_POLL_INTERVAL = 1000;
+function checkPackageJson() {
+  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      _ref$appDir = _ref.appDir,
+      appDir = _ref$appDir === undefined ? process.cwd() : _ref$appDir;
 
-var TesterCreateAppTokenMutation = '\n  mutation TesterCreateAppTokenMutation($appCode: String!) {\n    createAppToken(code: $appCode)\n  }\n';
+  var packageJson = (0, _jsonfile.readFileSync)(_path2.default.resolve(appDir, './package.json'));
 
-var TesterCreateBuildMutation = '\n  mutation TesterCreateBuildMutation($input: CreateBuildInput!, $isolatorUrl: String!) {\n    createBuild(input: $input, isolatorUrl: $isolatorUrl) {\n      id\n      number\n      specCount\n      componentCount\n      webUrl\n    }\n  }\n';
-
-var TesterBuildQuery = '\n  query TesterBuildQuery($buildNumber: Int!) {\n    app {\n      build(number: $buildNumber) {\n        id\n        status\n        inProgressCount: snapshotCount(status: [SNAPSHOT_IN_PROGRESS])\n        specCount\n        changeCount: snapshotCount(status: [SNAPSHOT_PENDING, SNAPSHOT_ACCEPTED, SNAPSHOT_DENIED])\n        errorCount: snapshotCount(status: [SNAPSHOT_CAPTURE_ERROR])\n      }\n    }\n  }\n';
-
-var debug = (0, _debug2.default)('react-chromatic:tester');
-
-function log(msg) {
-  // eslint-disable-next-line no-console
-  console.log('Chromatic Tester: ' + msg);
+  return (0, _values2.default)(packageJson.scripts || {}).find(function (script) {
+    return script.match('chromatic test');
+  });
 }
 
-function pluralize(n, noun, noNumber) {
-  var pluralizedNoun = n === 1 ? noun : noun + 's';
-
-  return noNumber ? pluralizedNoun : n + ' ' + pluralizedNoun;
-}
-
-var lastInProgressCount = void 0;
-
-exports.default = function () {
-  var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(_ref3) {
-    var appCode = _ref3.appCode,
-        scriptName = _ref3.scriptName,
-        _ref3$noStart = _ref3.noStart,
-        noStart = _ref3$noStart === undefined ? false : _ref3$noStart,
-        port = _ref3.port,
-        _ref3$appPath = _ref3.appPath,
-        appPath = _ref3$appPath === undefined ? '/' : _ref3$appPath,
-        _ref3$exitZeroOnChang = _ref3.exitZeroOnChanges,
-        exitZeroOnChanges = _ref3$exitZeroOnChang === undefined ? false : _ref3$exitZeroOnChang,
-        _ref3$verbose = _ref3.verbose,
-        verbose = _ref3$verbose === undefined ? false : _ref3$verbose,
-        _ref3$indexUrl = _ref3.indexUrl,
-        indexUrl = _ref3$indexUrl === undefined ? _environment.CHROMATIC_INDEX_URL : _ref3$indexUrl,
-        _ref3$tunnelUrl = _ref3.tunnelUrl,
-        tunnelUrl = _ref3$tunnelUrl === undefined ? _environment.CHROMATIC_TUNNEL_URL : _ref3$tunnelUrl,
-        _ref3$createTunnel = _ref3.createTunnel,
-        createTunnel = _ref3$createTunnel === undefined ? true : _ref3$createTunnel,
-        _ref3$originalArgv = _ref3.originalArgv,
-        originalArgv = _ref3$originalArgv === undefined ? false : _ref3$originalArgv;
-
-    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, branch, baselineCommits, appPathWithSlash, url, child, isolatorUrl, tunnel, runtimeSpecs, fromCI, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
-
-    return _regenerator2.default.wrap(function _callee2$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            uri = indexUrl + '/graphql';
-            client = new _GraphQLClient2.default({ uri: uri });
-
-            if (appCode) {
-              _context2.next = 4;
-              break;
-            }
-
-            throw new Error('You must provide an app code  -- visit https://www.chromaticqa.com to get your code.' + '\nPass your app code with the `CHROMATIC_APP_CODE` environment variable or the `--app-code` flag.');
-
-          case 4:
-            if (!(!scriptName && !noStart || !port)) {
-              _context2.next = 6;
-              break;
-            }
-
-            throw new Error('You must provide a npm script name (`--script-name`) and port (`--port`) so we can start your app');
-
-          case 6:
-            _context2.prev = 6;
-            _context2.next = 9;
-            return client.runQuery(TesterCreateAppTokenMutation, {
-              appCode: appCode
-            });
-
-          case 9:
-            _ref5 = _context2.sent;
-            jwtToken = _ref5.createAppToken;
-
-            client.setJwtToken(jwtToken);
-            _context2.next = 19;
-            break;
-
-          case 14:
-            _context2.prev = 14;
-            _context2.t0 = _context2['catch'](6);
-
-            if (!(_context2.t0[0] && _context2.t0[0].message && _context2.t0[0].message.match('No app with code'))) {
-              _context2.next = 18;
-              break;
-            }
-
-            throw new Error('Incorrect app code \'' + appCode + '\' -- visit https://www.chromaticqa.com to get your code');
-
-          case 18:
-            throw _context2.t0;
-
-          case 19:
-            _context2.next = 21;
-            return (0, _git.getCommit)();
-
-          case 21:
-            _ref6 = _context2.sent;
-            commit = _ref6.commit;
-            committedAt = _ref6.committedAt;
-            _context2.next = 26;
-            return (0, _git.getBranch)();
-
-          case 26:
-            branch = _context2.sent;
-
-            debug('git info: ' + (0, _stringify2.default)({ commit: commit, committedAt: committedAt, branch: branch }));
-
-            _context2.next = 30;
-            return (0, _git.getBaselineCommits)(client);
-
-          case 30:
-            baselineCommits = _context2.sent;
-
-            debug('Found baselineCommits: ' + baselineCommits);
-
-            appPathWithSlash = appPath[0] === '/' ? appPath : '/' + appPath;
-            url = 'http://localhost:' + port + appPathWithSlash;
-            child = void 0;
-
-            if (noStart) {
-              _context2.next = 43;
-              break;
-            }
-
-            log('Starting app with `npm run ' + scriptName + '`');
-            _context2.next = 39;
-            return (0, _startApp2.default)({ scriptName: scriptName, url: url });
-
-          case 39:
-            child = _context2.sent;
-
-            log('Started app on port ' + port);
-            _context2.next = 48;
-            break;
-
-          case 43:
-            _context2.next = 45;
-            return (0, _startApp.checkResponse)(url);
-
-          case 45:
-            if (_context2.sent) {
-              _context2.next = 47;
-              break;
-            }
-
-            throw new Error('No server responding at ' + url + ' -- make sure you\'ve started it.');
-
-          case 47:
-            log('Detected app on port ' + port);
-
-          case 48:
-            isolatorUrl = url;
-            tunnel = void 0;
-
-            if (!createTunnel) {
-              _context2.next = 57;
-              break;
-            }
-
-            log('Opening tunnel to Chromatic capture servers');
-            _context2.next = 54;
-            return (0, _tunnel2.default)({ tunnelUrl: tunnelUrl, port: port });
-
-          case 54:
-            tunnel = _context2.sent;
-
-            debug('Opened tunnel to ' + tunnel.url);
-            isolatorUrl = '' + tunnel.url + appPathWithSlash;
-
-          case 57:
-
-            debug('Connecting to ' + isolatorUrl);
-            log('Uploading and verifying build (this may take a few minutes depending on your connection)');
-            _context2.next = 61;
-            return (0, _runtimes2.default)(isolatorUrl, { verbose: verbose });
-
-          case 61:
-            runtimeSpecs = _context2.sent;
-
-            log('Found ' + runtimeSpecs.length + ' specs');
-
-            fromCI = !!process.env.CI;
-
-            debug('Detected build fromCI:' + fromCI);
-            debug('Detected package version:' + _package.version);
-
-            exitCode = 5;
-            _context2.prev = 67;
-            _context2.next = 70;
-            return client.runQuery(TesterCreateBuildMutation, {
-              input: {
-                branch: branch,
-                commit: commit,
-                committedAt: committedAt,
-                baselineCommits: baselineCommits,
-                runtimeSpecs: runtimeSpecs,
-                fromCI: fromCI,
-                packageVersion: _package.version
-              },
-              isolatorUrl: isolatorUrl
-            });
-
-          case 70:
-            _ref7 = _context2.sent;
-            _ref7$createBuild = _ref7.createBuild;
-            number = _ref7$createBuild.number;
-            specCount = _ref7$createBuild.specCount;
-            componentCount = _ref7$createBuild.componentCount;
-            webUrl = _ref7$createBuild.webUrl;
-            onlineHint = 'View it online at ' + webUrl;
-
-            log('Started Build ' + number + ' ' + ('(' + pluralize(componentCount, 'component') + ', ' + pluralize(specCount, 'spec') + ').\n\n' + onlineHint + '.'));
-
-            _context2.next = 80;
-            return waitForBuild(client, {
-              buildNumber: number
-            });
-
-          case 80:
-            _ref8 = _context2.sent;
-            status = _ref8.status;
-            changeCount = _ref8.changeCount;
-            errorCount = _ref8.errorCount;
-            _context2.t1 = status;
-            _context2.next = _context2.t1 === 'BUILD_PASSED' ? 87 : _context2.t1 === 'BUILD_PENDING' ? 90 : _context2.t1 === 'BUILD_ACCEPTED' ? 90 : _context2.t1 === 'BUILD_DENIED' ? 90 : _context2.t1 === 'BUILD_FAILED' ? 94 : _context2.t1 === 'BUILD_TIMED_OUT' ? 97 : _context2.t1 === 'BUILD_ERROR' ? 100 : 103;
-            break;
-
-          case 87:
-            log('Build ' + number + ' passed! ' + onlineHint + '.');
-            exitCode = 0;
-            return _context2.abrupt('break', 104);
-
-          case 90:
-            log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
-            if (!exitZeroOnChanges) {
-              log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case. Read more: http://docs.chromaticqa.com/setup_ci');
-            }
-            exitCode = exitZeroOnChanges ? 0 : 1;
-            return _context2.abrupt('break', 104);
-
-          case 94:
-            log('Build ' + number + ' has ' + pluralize(errorCount, 'error') + '. ' + onlineHint + '.');
-            exitCode = 2;
-            return _context2.abrupt('break', 104);
-
-          case 97:
-            log('Build ' + number + ' has timed out. Ensure your machine is connected to the internet and please try again.');
-            exitCode = 3;
-            return _context2.abrupt('break', 104);
-
-          case 100:
-            log('Build ' + number + ' has failed to run. Our apologies. Please try again.');
-            exitCode = 4;
-            return _context2.abrupt('break', 104);
-
-          case 103:
-            throw new Error('Unexpected build status: ' + status);
-
-          case 104:
-            _context2.next = 114;
-            break;
-
-          case 106:
-            _context2.prev = 106;
-            _context2.t2 = _context2['catch'](67);
-
-            if (!(_context2.t2.length && _context2.t2[0] && _context2.t2[0].message.match(/Cannot run a build with no specs./))) {
-              _context2.next = 113;
-              break;
-            }
-
-            log(_context2.t2[0].message);
-            exitCode = 255;
-            _context2.next = 114;
-            break;
-
-          case 113:
-            throw _context2.t2;
-
-          case 114:
-            _context2.prev = 114;
-
-            if (tunnel) {
-              tunnel.close();
-            }
-
-            if (!child) {
-              _context2.next = 119;
-              break;
-            }
-
-            _context2.next = 119;
-            return (0, _denodeify2.default)(_treeKill2.default)(child.pid, 'SIGHUP');
-
-          case 119:
-            return _context2.finish(114);
-
-          case 120:
-            if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
-              _context2.next = 127;
-              break;
-            }
-
-            scriptCommand = ('chromatic test ' + originalArgv.slice(2).join(' ')).replace(/--app-code[= ]\S+/, '');
-            _context2.next = 124;
-            return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
-
-          case 124:
-            confirmed = _context2.sent;
-
-            if (confirmed) {
-              (0, _packageJson.addScriptToPackageJson)('chromatic', scriptCommand);
-              // eslint-disable-next-line no-console
-              console.log('\nAdded script `chromatic`. You can now run it here or in CI with `npm run chromatic` (or `yarn chromatic`)');
-            } else {
-              // eslint-disable-next-line no-console
-              console.log('\nNo problem. You can add it later with:\n{\n  "scripts": {\n    "chromatic": "' + scriptCommand + '"\n  }\n}');
-            }
-
-            // eslint-disable-next-line no-console
-            console.log('\nMake sure you set the `CHROMATIC_APP_CODE` environment variable when running builds (in particular on your CI server).');
-
-          case 127:
-            return _context2.abrupt('return', exitCode);
-
-          case 128:
-          case 'end':
-            return _context2.stop();
-        }
-      }
-    }, _callee2, this, [[6, 14], [67, 106, 114, 120]]);
-  }));
-
-  function runTest(_x3) {
-    return _ref4.apply(this, arguments);
+function addScriptToPackageJson(scriptName, scriptCommand) {
+  var _ref2 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+      _ref2$appDir = _ref2.appDir,
+      appDir = _ref2$appDir === undefined ? process.cwd() : _ref2$appDir;
+
+  var filename = _path2.default.resolve(appDir, './package.json');
+  var packageJson = (0, _jsonfile.readFileSync)(filename);
+
+  if (packageJson[scriptName]) {
+    throw new Error('Script named \'' + scriptName + '\' already exists in package.json');
   }
 
-  return runTest;
-}();
+  if (!packageJson.scripts) {
+    packageJson.scripts = {};
+  }
+  packageJson.scripts[scriptName] = scriptCommand;
+  (0, _jsonfile.writeFileSync)(filename, packageJson, { spaces: 2 });
+}
 
 /***/ }),
 /* 21 */
 /***/ (function(module, exports) {
 
-module.exports = require("apollo-fetch");
+module.exports = require("babel-runtime/core-js/object/values");
 
 /***/ }),
 /* 22 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/core-js/object/keys");
+module.exports = require("path");
 
 /***/ }),
 /* 23 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/core-js/object/values");
+module.exports = require("jsonfile");
 
 /***/ }),
 /* 24 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = require("babel-runtime/helpers/slicedToArray");
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _regenerator = __webpack_require__(0);
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _asyncToGenerator2 = __webpack_require__(1);
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
+var _extends2 = __webpack_require__(7);
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _classCallCheck2 = __webpack_require__(5);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__(6);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _apolloFetch = __webpack_require__(25);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var GraphQLClient = function () {
+  function GraphQLClient(_ref) {
+    var uri = _ref.uri,
+        jwtToken = _ref.jwtToken,
+        headers = _ref.headers;
+    (0, _classCallCheck3.default)(this, GraphQLClient);
+
+    this.apolloFetch = (0, _apolloFetch.createApolloFetch)({ uri: uri });
+    this.headers = headers;
+
+    if (jwtToken) {
+      this.setJwtToken(jwtToken);
+    }
+  }
+
+  (0, _createClass3.default)(GraphQLClient, [{
+    key: 'setJwtToken',
+    value: function setJwtToken(jwtToken) {
+      var _this = this;
+
+      this.apolloFetch.use(function (_ref2, next) {
+        var options = _ref2.options;
+
+        if (jwtToken) {
+          // eslint-disable-next-line no-param-reassign
+          options.headers = (0, _extends3.default)({}, options.headers, _this.headers, {
+            authorization: 'bearer ' + jwtToken
+          });
+        }
+
+        next();
+      });
+    }
+  }, {
+    key: 'runQuery',
+    value: function () {
+      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(query, variables) {
+        var _ref4, data, errors;
+
+        return _regenerator2.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return this.apolloFetch({ query: query, variables: variables });
+
+              case 2:
+                _ref4 = _context.sent;
+                data = _ref4.data;
+                errors = _ref4.errors;
+
+                if (!errors) {
+                  _context.next = 7;
+                  break;
+                }
+
+                throw errors;
+
+              case 7:
+                return _context.abrupt('return', data);
+
+              case 8:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function runQuery(_x, _x2) {
+        return _ref3.apply(this, arguments);
+      }
+
+      return runQuery;
+    }()
+
+    // Convenience static method
+
+  }], [{
+    key: 'runQuery',
+    value: function () {
+      var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(options, query, variables) {
+        return _regenerator2.default.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                return _context2.abrupt('return', new GraphQLClient(options).runQuery(query, variables));
+
+              case 1:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function runQuery(_x3, _x4, _x5) {
+        return _ref5.apply(this, arguments);
+      }
+
+      return runQuery;
+    }()
+  }]);
+  return GraphQLClient;
+}();
+
+exports.default = GraphQLClient;
 
 /***/ }),
 /* 25 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/helpers/toConsumableArray");
+module.exports = require("apollo-fetch");
 
 /***/ }),
 /* 26 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = require("isomorphic-fetch");
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getBaselineCommits = exports.getBranch = exports.getCommit = exports.FETCH_N_INITIAL_BUILD_COMMITS = undefined;
+
+var _toConsumableArray2 = __webpack_require__(27);
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
+var _slicedToArray2 = __webpack_require__(28);
+
+var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
+
+var _regenerator = __webpack_require__(0);
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _asyncToGenerator2 = __webpack_require__(1);
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
+var execGitCommand = function () {
+  var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(command) {
+    return _regenerator2.default.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+            _context.next = 3;
+            return (0, _denodeify2.default)(_child_process.exec)(command);
+
+          case 3:
+            return _context.abrupt('return', _context.sent.trim());
+
+          case 6:
+            _context.prev = 6;
+            _context.t0 = _context['catch'](0);
+
+            // eslint-disable-next-line no-console
+            if (_context.t0.message && _context.t0.message.match('Not a git repository')) {
+              console.error('Unable to execute git command \'' + command + '\'.\n');
+              // eslint-disable-next-line no-console
+              console.error('Chromatic only works in git projects.\n' + 'Contact us at support@hichroma.com if you need to use Chromatic outside of one.\n\n');
+            }
+            throw _context.t0;
+
+          case 10:
+          case 'end':
+            return _context.stop();
+        }
+      }
+    }, _callee, this, [[0, 6]]);
+  }));
+
+  return function execGitCommand(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+// NOTE: At some point we should check that the commit has been pushed to the
+// remote and the branch matches with origin/REF, but for now we are naive about
+// adhoc builds.
+
+// We could cache this, but it's probably pretty quick
+var getCommit = exports.getCommit = function () {
+  var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
+    var _split, _split2, commit, committedAtSeconds, committerEmail, committerName;
+
+    return _regenerator2.default.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.next = 2;
+            return execGitCommand('git log -n 1 --format="%H,%ct,%ce,%cn"');
+
+          case 2:
+            _split = _context2.sent.split(',');
+            _split2 = (0, _slicedToArray3.default)(_split, 4);
+            commit = _split2[0];
+            committedAtSeconds = _split2[1];
+            committerEmail = _split2[2];
+            committerName = _split2[3];
+            return _context2.abrupt('return', { commit: commit, committedAt: committedAtSeconds * 1000, committerEmail: committerEmail, committerName: committerName });
+
+          case 9:
+          case 'end':
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this);
+  }));
+
+  return function getCommit() {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+var getBranch = exports.getBranch = function () {
+  var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
+    var branch;
+    return _regenerator2.default.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.next = 2;
+            return execGitCommand('git rev-parse --abbrev-ref HEAD');
+
+          case 2:
+            branch = _context3.sent;
+
+            if (!(branch === 'HEAD')) {
+              _context3.next = 5;
+              break;
+            }
+
+            return _context3.abrupt('return', process.env.CI_BRANCH || branch);
+
+          case 5:
+            return _context3.abrupt('return', branch);
+
+          case 6:
+          case 'end':
+            return _context3.stop();
+        }
+      }
+    }, _callee3, this);
+  }));
+
+  return function getBranch() {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+// git rev-list in a basic form gives us a list of commits reaching back to
+// `firstCommittedAtSeconds` (i.e. when the first build of this app happened)
+// in reverse chronological order.
+//
+// A simplified version of what we are doing here is just finding the first
+// commit in that list that has a build. We only want to send `limit` to
+// the server in this pass (although we may already know some commits that do
+// or do not have builds from earlier passes). So we just pick the first `limit`
+// commits from the command, filtering out `commitsWith[out]Builds`.
+//
+// However, it's not quite that simple -- because of branching. However,
+// passing commits after `--not` in to `git rev-list` *occludes* all the ancestors
+// of those commits. This is exactly what we need once we find one or more commits
+// that do have builds: a list of the ancestors of HEAD that are not accestors of
+// `commitsWithBuilds`.
+//
+// The other complexity is that if we know a few `commitsWithBuilds` from the server
+// we don't know immediately which of those are the nearer ancestor to HEAD
+// (and thus shoudl be used as the baseline).
+// However, the `--boundary` argument will tell us exactly where we stop in the
+// history in travelling back from HEAD.
+//
+// If we stop at a commit that has a build, then it is a baseline!
+// If we stop at a commit that *does not* have a build, that means that commit
+// branched off another commit that *is* an ancestor of a commit that does have a build.
+// [If this sentence is confusing, see the 'partial' test for some clarity]
+// So also long as we've checked every commit on the path back to that commit, we can stop.
+var nextCommitsAndBoundaries = function () {
+  var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(limit, _ref4) {
+    var firstCommittedAtSeconds = _ref4.firstCommittedAtSeconds,
+        commitsWithBuilds = _ref4.commitsWithBuilds,
+        commitsWithoutBuilds = _ref4.commitsWithoutBuilds;
+    var command, commits, boundaryCommits, nextCommits;
+    return _regenerator2.default.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            // We want the next limit commits that aren't "covered" by `commitsWithBuilds`
+            // This will print out all commits in `commitsWithoutBuilds` (except if they are covered),
+            // so we ask enough that we'll definitely get `limit` unknown commits
+            command = 'git rev-list HEAD --boundary --since ' + firstCommittedAtSeconds + '       -n ' + (limit + commitsWithoutBuilds.length) + ' --not ' + commitsForCLI(commitsWithBuilds);
+
+            debug('running ' + command);
+            _context4.next = 4;
+            return execGitCommand(command);
+
+          case 4:
+            _context4.t0 = function (c) {
+              return !!c;
+            };
+
+            commits = _context4.sent.split('\n').filter(_context4.t0);
+
+            debug('command output: ' + commits);
+
+            // Boundary commits are listed with a `-` in front of the hash
+            boundaryCommits = commits.filter(function (c) {
+              return c[0] === '-';
+            }).map(function (c) {
+              return c.slice(1);
+            })
+            // We want the commitsWithBuilds on the boundary. There may be others on the boundary.
+            .filter(function (c) {
+              return commitsWithBuilds.includes(c);
+            });
+            nextCommits = commits
+            // Both boundary and non boundary commits are candidates for builds
+            .map(function (c) {
+              return c[0] === '-' ? c.slice(1) : c;
+            })
+            // No sense in checking commits we already know about
+            .filter(function (c) {
+              return !commitsWithBuilds.includes(c);
+            }).filter(function (c) {
+              return !commitsWithoutBuilds.includes(c);
+            }).slice(0, limit);
+            return _context4.abrupt('return', {
+              nextCommits: nextCommits,
+              boundaryCommits: boundaryCommits
+            });
+
+          case 10:
+          case 'end':
+            return _context4.stop();
+        }
+      }
+    }, _callee4, this);
+  }));
+
+  return function nextCommitsAndBoundaries(_x2, _x3) {
+    return _ref5.apply(this, arguments);
+  };
+}();
+
+// Exponentially iterate `limit` up to infinity to find baselines
+
+
+var step = function () {
+  var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(client, limit, _ref6) {
+    var headCommit = _ref6.headCommit,
+        firstCommittedAtSeconds = _ref6.firstCommittedAtSeconds,
+        commitsWithBuilds = _ref6.commitsWithBuilds,
+        commitsWithoutBuilds = _ref6.commitsWithoutBuilds;
+
+    var _ref8, nextCommits, boundaryCommits, _ref9, newCommitsWithBuilds, newCommitsWithoutBuilds;
+
+    return _regenerator2.default.wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            debug('step: checking ' + limit + ' up to ' + firstCommittedAtSeconds);
+            debug('step: commitsWithBuilds: ' + commitsWithBuilds);
+            debug('step: commitsWithoutBuilds: ' + commitsWithoutBuilds);
+
+            _context5.next = 5;
+            return nextCommitsAndBoundaries(limit, {
+              firstCommittedAtSeconds: firstCommittedAtSeconds,
+              commitsWithBuilds: commitsWithBuilds,
+              commitsWithoutBuilds: commitsWithoutBuilds
+            });
+
+          case 5:
+            _ref8 = _context5.sent;
+            nextCommits = _ref8.nextCommits;
+            boundaryCommits = _ref8.boundaryCommits;
+
+
+            debug('step: nextCommits: ' + nextCommits);
+            debug('step: boundaryCommits: ' + boundaryCommits);
+
+            // No more commits uncovered by boundaryCommits!
+
+            if (!(nextCommits.length === 0)) {
+              _context5.next = 13;
+              break;
+            }
+
+            debug('step: no nextCommits; we are done');
+            return _context5.abrupt('return', boundaryCommits);
+
+          case 13:
+            _context5.next = 15;
+            return client.runQuery(TesterHasBuildsWithCommitsQuery, {
+              commits: nextCommits
+            });
+
+          case 15:
+            _ref9 = _context5.sent;
+            newCommitsWithBuilds = _ref9.app.hasBuildsWithCommits;
+
+            debug('step: newCommitsWithBuilds: ' + newCommitsWithBuilds);
+
+            // Special case -- if there is an existing build for the current HEAD,
+            // we can short circuit any more work; also this is important because
+            // `git rev-list --boundary` doesn't treat HEAD as a boundary
+
+            if (!newCommitsWithBuilds.find(function (c) {
+              return c === headCommit;
+            })) {
+              _context5.next = 21;
+              break;
+            }
+
+            debug('step: HEAD has a build; short circuiting');
+            return _context5.abrupt('return', [headCommit]);
+
+          case 21:
+            newCommitsWithoutBuilds = nextCommits.filter(function (commit) {
+              return !newCommitsWithBuilds.find(function (c) {
+                return c === commit;
+              });
+            });
+            return _context5.abrupt('return', step(client, limit * 2, {
+              firstCommittedAtSeconds: firstCommittedAtSeconds,
+              commitsWithBuilds: [].concat((0, _toConsumableArray3.default)(commitsWithBuilds), (0, _toConsumableArray3.default)(newCommitsWithBuilds)),
+              commitsWithoutBuilds: [].concat((0, _toConsumableArray3.default)(commitsWithoutBuilds), (0, _toConsumableArray3.default)(newCommitsWithoutBuilds))
+            }));
+
+          case 23:
+          case 'end':
+            return _context5.stop();
+        }
+      }
+    }, _callee5, this);
+  }));
+
+  return function step(_x4, _x5, _x6) {
+    return _ref7.apply(this, arguments);
+  };
+}();
+
+// eslint-disable-next-line import/prefer-default-export
+
+
+var getBaselineCommits = exports.getBaselineCommits = function () {
+  var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(client) {
+    var _ref11, firstBuild, _ref12, commit;
+
+    return _regenerator2.default.wrap(function _callee6$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+            _context6.next = 2;
+            return client.runQuery(TesterFirstCommittedAtQuery);
+
+          case 2:
+            _ref11 = _context6.sent;
+            firstBuild = _ref11.app.firstBuild;
+
+            if (firstBuild) {
+              _context6.next = 7;
+              break;
+            }
+
+            debug('App has no builds, returning []');
+            return _context6.abrupt('return', []);
+
+          case 7:
+            _context6.next = 9;
+            return getCommit();
+
+          case 9:
+            _ref12 = _context6.sent;
+            commit = _ref12.commit;
+            return _context6.abrupt('return', step(client, FETCH_N_INITIAL_BUILD_COMMITS, {
+              headCommit: commit,
+              firstCommittedAtSeconds: firstBuild.committedAt / 1000,
+              commitsWithBuilds: [],
+              commitsWithoutBuilds: []
+            }));
+
+          case 12:
+          case 'end':
+            return _context6.stop();
+        }
+      }
+    }, _callee6, this);
+  }));
+
+  return function getBaselineCommits(_x7) {
+    return _ref10.apply(this, arguments);
+  };
+}();
+
+var _child_process = __webpack_require__(8);
+
+var _denodeify = __webpack_require__(3);
+
+var _denodeify2 = _interopRequireDefault(_denodeify);
+
+var _debug = __webpack_require__(4);
+
+var _debug2 = _interopRequireDefault(_debug);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var debug = (0, _debug2.default)('react-chromatic:tester:git');
+
+var FETCH_N_INITIAL_BUILD_COMMITS = exports.FETCH_N_INITIAL_BUILD_COMMITS = 20;
+
+var TesterFirstCommittedAtQuery = '\n  query TesterFirstCommittedAtQuery {\n    app {\n      firstBuild {\n        committedAt\n      }\n    }\n  }\n';
+
+var TesterHasBuildsWithCommitsQuery = '\n  query TesterHasBuildsWithCommitsQuery($commits: [String!]!) {\n    app {\n      hasBuildsWithCommits(commits: $commits)\n    }\n  }\n';
+
+function commitsForCLI(commits) {
+  return commits.map(function (c) {
+    return c.trim();
+  }).join(' ');
+}
 
 /***/ }),
 /* 27 */
 /***/ (function(module, exports) {
 
-module.exports = require("jsdom");
+module.exports = require("babel-runtime/helpers/toConsumableArray");
 
 /***/ }),
 /* 28 */
 /***/ (function(module, exports) {
 
-module.exports = require("jsonfile");
+module.exports = require("babel-runtime/helpers/slicedToArray");
 
 /***/ }),
 /* 29 */
 /***/ (function(module, exports) {
 
-module.exports = require("localtunnel");
+module.exports = {"name":"react-chromatic","version":"0.7.12-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"../../node_modules/.bin/babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"../../node_modules/.bin/webpack","build":"../../node_modules/.bin/npm-run-all --serial -l build:**","prepare":"npm run build","dev":"../../node_modules/.bin/npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","tmp":"^0.0.33","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
 
 /***/ }),
 /* 30 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = require("path");
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+// Note this file differs from our usual convention because it is packaged
+var _process$env = process.env,
+    _process$env$CHROMATI = _process$env.CHROMATIC_SERVER_PORT,
+    CHROMATIC_SERVER_PORT = _process$env$CHROMATI === undefined ? 3004 : _process$env$CHROMATI,
+    _process$env$CHROMATI2 = _process$env.CHROMATIC_INDEX_URL,
+    CHROMATIC_INDEX_URL = _process$env$CHROMATI2 === undefined ? 'https://index.chromaticqa.com' : _process$env$CHROMATI2,
+    _process$env$CHROMATI3 = _process$env.CHROMATIC_TUNNEL_URL,
+    CHROMATIC_TUNNEL_URL = _process$env$CHROMATI3 === undefined ? 'https://tunnel.chromaticqa.com' : _process$env$CHROMATI3,
+    _process$env$CHROMATI4 = _process$env.CHROMATIC_CREATE_TUNNEL,
+    CHROMATIC_CREATE_TUNNEL = _process$env$CHROMATI4 === undefined ? 'true' : _process$env$CHROMATI4,
+    CHROMATIC_APP_CODE = _process$env.CHROMATIC_APP_CODE;
+exports.CHROMATIC_SERVER_PORT = CHROMATIC_SERVER_PORT;
+exports.CHROMATIC_INDEX_URL = CHROMATIC_INDEX_URL;
+exports.CHROMATIC_TUNNEL_URL = CHROMATIC_TUNNEL_URL;
+exports.CHROMATIC_CREATE_TUNNEL = CHROMATIC_CREATE_TUNNEL;
+exports.CHROMATIC_APP_CODE = CHROMATIC_APP_CODE;
 
 /***/ })
 /******/ ]);
