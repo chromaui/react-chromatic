@@ -37,6 +37,7 @@
     "babel-cli": "^6.26.0",
     "npm-run-all": "^4.0.2",
     "prettier-eslint": "^7.1.0",
+    "tmp": "^0.0.33",
     "webpack": "^3.10.0",
     "webpack-node-externals": "^1.6.0"
   }
