@@ -270,6 +270,7 @@ exports.default = function () {
         _ref3$appPath = _ref3.appPath,
         appPath = _ref3$appPath === undefined ? '/' : _ref3$appPath,
         url = _ref3.url,
+        only = _ref3.only,
         _ref3$exitZeroOnChang = _ref3.exitZeroOnChanges,
         exitZeroOnChanges = _ref3$exitZeroOnChang === undefined ? false : _ref3$exitZeroOnChang,
         _ref3$verbose = _ref3.verbose,
@@ -283,7 +284,7 @@ exports.default = function () {
         _ref3$originalArgv = _ref3.originalArgv,
         originalArgv = _ref3$originalArgv === undefined ? false : _ref3$originalArgv;
 
-    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, committerEmail, committerName, branch, baselineCommits, appPathWithSlash, appUrl, child, isolatorUrl, tunnel, runtimeSpecs, fromCI, exitCode, _ref7, _ref7$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref8, status, changeCount, errorCount, scriptCommand, confirmed;
+    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, committerEmail, committerName, branch, baselineCommits, appPathWithSlash, appUrl, child, isolatorUrl, tunnel, predicate, match, runtimeSpecs, fromCI, exitCode, _ref8, _ref8$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref9, status, changeCount, errorCount, scriptCommand, confirmed;
 
     return _regenerator2.default.wrap(function _callee2$(_context2) {
       while (1) {
@@ -420,11 +421,42 @@ exports.default = function () {
 
             debug('Connecting to ' + isolatorUrl);
             log('Uploading and verifying build (this may take a few minutes depending on your connection)');
-            _context2.next = 63;
+
+            predicate = function predicate() {
+              return true;
+            };
+
+            if (!only) {
+              _context2.next = 68;
+              break;
+            }
+
+            match = only.match(/(.*):([^:]*)/);
+
+            if (match) {
+              _context2.next = 66;
+              break;
+            }
+
+            throw new Error('--only argument must provided in the from "componentName:specName"');
+
+          case 66:
+            log('Running only the \'' + match[1] + '\' spec of \'' + match[2] + '\'');
+
+            predicate = function predicate(_ref7) {
+              var name = _ref7.name,
+                  componentName = _ref7.componentName,
+                  otherComponentName = _ref7.component.name;
+              return name === match[2] && (componentName || otherComponentName) === match[1];
+            };
+
+          case 68:
+            _context2.next = 70;
             return (0, _runtimes2.default)(isolatorUrl, { verbose: verbose });
 
-          case 63:
-            runtimeSpecs = _context2.sent;
+          case 70:
+            _context2.t1 = predicate;
+            runtimeSpecs = _context2.sent.filter(_context2.t1);
 
             log('Found ' + runtimeSpecs.length + ' specs');
 
@@ -434,8 +466,8 @@ exports.default = function () {
             debug('Detected package version:' + _package.version);
 
             exitCode = 5;
-            _context2.prev = 69;
-            _context2.next = 72;
+            _context2.prev = 77;
+            _context2.next = 80;
             return client.runQuery(TesterCreateBuildMutation, {
               input: {
                 branch: branch,
@@ -451,112 +483,112 @@ exports.default = function () {
               isolatorUrl: isolatorUrl
             });
 
-          case 72:
-            _ref7 = _context2.sent;
-            _ref7$createBuild = _ref7.createBuild;
-            number = _ref7$createBuild.number;
-            specCount = _ref7$createBuild.specCount;
-            componentCount = _ref7$createBuild.componentCount;
-            webUrl = _ref7$createBuild.webUrl;
+          case 80:
+            _ref8 = _context2.sent;
+            _ref8$createBuild = _ref8.createBuild;
+            number = _ref8$createBuild.number;
+            specCount = _ref8$createBuild.specCount;
+            componentCount = _ref8$createBuild.componentCount;
+            webUrl = _ref8$createBuild.webUrl;
             onlineHint = 'View it online at ' + webUrl;
 
             log('Started Build ' + number + ' ' + ('(' + pluralize(componentCount, 'component') + ', ' + pluralize(specCount, 'spec') + ').\n\n' + onlineHint + '.'));
 
-            _context2.next = 82;
+            _context2.next = 90;
             return waitForBuild(client, {
               buildNumber: number
             });
 
-          case 82:
-            _ref8 = _context2.sent;
-            status = _ref8.status;
-            changeCount = _ref8.changeCount;
-            errorCount = _ref8.errorCount;
-            _context2.t1 = status;
-            _context2.next = _context2.t1 === 'BUILD_PASSED' ? 89 : _context2.t1 === 'BUILD_PENDING' ? 92 : _context2.t1 === 'BUILD_ACCEPTED' ? 92 : _context2.t1 === 'BUILD_DENIED' ? 92 : _context2.t1 === 'BUILD_FAILED' ? 96 : _context2.t1 === 'BUILD_TIMED_OUT' ? 99 : _context2.t1 === 'BUILD_ERROR' ? 102 : 105;
+          case 90:
+            _ref9 = _context2.sent;
+            status = _ref9.status;
+            changeCount = _ref9.changeCount;
+            errorCount = _ref9.errorCount;
+            _context2.t2 = status;
+            _context2.next = _context2.t2 === 'BUILD_PASSED' ? 97 : _context2.t2 === 'BUILD_PENDING' ? 100 : _context2.t2 === 'BUILD_ACCEPTED' ? 100 : _context2.t2 === 'BUILD_DENIED' ? 100 : _context2.t2 === 'BUILD_FAILED' ? 104 : _context2.t2 === 'BUILD_TIMED_OUT' ? 107 : _context2.t2 === 'BUILD_ERROR' ? 110 : 113;
             break;
 
-          case 89:
+          case 97:
             log('Build ' + number + ' passed! ' + onlineHint + '.');
             exitCode = 0;
-            return _context2.abrupt('break', 106);
+            return _context2.abrupt('break', 114);
 
-          case 92:
+          case 100:
             log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
             if (!exitZeroOnChanges) {
               log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case. Read more: http://docs.chromaticqa.com/test');
             }
             exitCode = exitZeroOnChanges ? 0 : 1;
-            return _context2.abrupt('break', 106);
+            return _context2.abrupt('break', 114);
 
-          case 96:
+          case 104:
             log('Build ' + number + ' has ' + pluralize(errorCount, 'error') + '. ' + onlineHint + '.');
             exitCode = 2;
-            return _context2.abrupt('break', 106);
+            return _context2.abrupt('break', 114);
 
-          case 99:
+          case 107:
             log('Build ' + number + ' has timed out. Ensure your machine is connected to the internet and please try again.');
             exitCode = 3;
-            return _context2.abrupt('break', 106);
+            return _context2.abrupt('break', 114);
 
-          case 102:
+          case 110:
             log('Build ' + number + ' has failed to run. Our apologies. Please try again.');
             exitCode = 4;
-            return _context2.abrupt('break', 106);
+            return _context2.abrupt('break', 114);
 
-          case 105:
+          case 113:
             throw new Error('Unexpected build status: ' + status);
 
-          case 106:
-            _context2.next = 116;
+          case 114:
+            _context2.next = 124;
             break;
-
-          case 108:
-            _context2.prev = 108;
-            _context2.t2 = _context2['catch'](69);
-
-            if (!(_context2.t2.length && _context2.t2[0] && _context2.t2[0].message.match(/Cannot run a build with no specs./))) {
-              _context2.next = 115;
-              break;
-            }
-
-            log(_context2.t2[0].message);
-            exitCode = 255;
-            _context2.next = 116;
-            break;
-
-          case 115:
-            throw _context2.t2;
 
           case 116:
             _context2.prev = 116;
+            _context2.t3 = _context2['catch'](77);
+
+            if (!(_context2.t3.length && _context2.t3[0] && _context2.t3[0].message.match(/Cannot run a build with no specs./))) {
+              _context2.next = 123;
+              break;
+            }
+
+            log(_context2.t3[0].message);
+            exitCode = 255;
+            _context2.next = 124;
+            break;
+
+          case 123:
+            throw _context2.t3;
+
+          case 124:
+            _context2.prev = 124;
 
             if (tunnel) {
               tunnel.close();
             }
 
             if (!child) {
-              _context2.next = 121;
-              break;
-            }
-
-            _context2.next = 121;
-            return (0, _denodeify2.default)(_treeKill2.default)(child.pid, 'SIGHUP');
-
-          case 121:
-            return _context2.finish(116);
-
-          case 122:
-            if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
               _context2.next = 129;
               break;
             }
 
+            _context2.next = 129;
+            return (0, _denodeify2.default)(_treeKill2.default)(child.pid, 'SIGHUP');
+
+          case 129:
+            return _context2.finish(124);
+
+          case 130:
+            if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
+              _context2.next = 137;
+              break;
+            }
+
             scriptCommand = ('chromatic test ' + originalArgv.slice(2).join(' ')).replace(/--app-code[= ]\S+/, '');
-            _context2.next = 126;
+            _context2.next = 134;
             return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
 
-          case 126:
+          case 134:
             confirmed = _context2.sent;
 
             if (confirmed) {
@@ -571,15 +603,15 @@ exports.default = function () {
             // eslint-disable-next-line no-console
             console.log('\nMake sure you set the `CHROMATIC_APP_CODE` environment variable when running builds (in particular on your CI server).');
 
-          case 129:
+          case 137:
             return _context2.abrupt('return', exitCode);
 
-          case 130:
+          case 138:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[6, 14], [69, 108, 116, 122]]);
+    }, _callee2, this, [[6, 14], [77, 116, 124, 130]]);
   }));
 
   function runTest(_x3) {
@@ -1541,7 +1573,7 @@ var nextCommitsAndBoundaries = function () {
             // We want the next limit commits that aren't "covered" by `commitsWithBuilds`
             // This will print out all commits in `commitsWithoutBuilds` (except if they are covered),
             // so we ask enough that we'll definitely get `limit` unknown commits
-            command = 'git rev-list HEAD --boundary --since ' + (firstCommittedAtSeconds - 1) + '       -n ' + (limit + commitsWithoutBuilds.length) + ' --not ' + commitsForCLI(commitsWithBuilds);
+            command = 'git rev-list HEAD --boundary --since ' + firstCommittedAtSeconds + '       -n ' + (limit + commitsWithoutBuilds.length) + ' --not ' + commitsForCLI(commitsWithBuilds);
 
             debug('running ' + command);
             _context4.next = 4;
