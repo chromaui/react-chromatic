@@ -34,9 +34,6 @@ module.exports =
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
 /******/
-/******/ 	// identity function for calling harmony imports with the correct context
-/******/ 	__webpack_require__.i = function(value) { return value; };
-/******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
@@ -64,7 +61,7 @@ module.exports =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -83,16 +80,59 @@ module.exports = require("babel-runtime/helpers/toConsumableArray");
 /* 2 */
 /***/ (function(module, exports) {
 
-module.exports = require("ejson");
+module.exports = require("react");
 
 /***/ }),
 /* 3 */
 /***/ (function(module, exports) {
 
-module.exports = require("react");
+module.exports = require("ejson");
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _isolator = __webpack_require__(5);
+
+var _isolator2 = _interopRequireDefault(_isolator);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var hasSetup = false; /* eslint-env browser */
+
+function configure() {
+  var runtimes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+  if (hasSetup) {
+    throw new Error('Chromatic already configured.');
+  }
+  hasSetup = true;
+
+  if (runtimes === []) {
+    throw new Error('Chromatic must be configured with at least one runtime. http://docs.chromaticqa.com/runtime-api');
+  }
+
+  // If we are rendered in an iframe, (by ourself), then we need to clear
+  // the screen right away, rather than waiting for a spec
+  var isIsolator = document.location.hash.match('__chromatic_isolator__');
+
+  (0, _isolator2.default)({
+    runtimes: [].concat(runtimes), // allow passing a single runtime
+    clearScreen: isIsolator
+  });
+}
+
+exports.default = configure;
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -110,21 +150,21 @@ var _toConsumableArray2 = __webpack_require__(1);
 
 var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
-var _extends2 = __webpack_require__(12);
+var _extends2 = __webpack_require__(6);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
 exports.default = configure;
 
-var _react = __webpack_require__(3);
+var _react = __webpack_require__(2);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = __webpack_require__(14);
+var _reactDom = __webpack_require__(7);
 
-var _render = __webpack_require__(6);
+var _render = __webpack_require__(8);
 
-var _serialize = __webpack_require__(7);
+var _serialize = __webpack_require__(11);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -247,72 +287,19 @@ function configure(_ref) {
 }
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
+/* 6 */
+/***/ (function(module, exports) {
 
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _classCallCheck2 = __webpack_require__(10);
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = __webpack_require__(11);
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
-var _ejson = __webpack_require__(2);
-
-var _ejson2 = _interopRequireDefault(_ejson);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Callback = function () {
-  function Callback(name) {
-    (0, _classCallCheck3.default)(this, Callback);
-
-    // super('throw new Error("I shouldn\'t have been called!");');
-    this.name = name;
-  }
-
-  (0, _createClass3.default)(Callback, [{
-    key: 'toString',
-    value: function toString() {
-      return 'function ' + this.name + '()';
-    }
-  }, {
-    key: 'toJSONValue',
-    value: function toJSONValue() {
-      return this.name;
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-
-  }, {
-    key: 'typeName',
-    value: function typeName() {
-      return 'ChromaticCallback';
-    }
-  }]);
-  return Callback;
-}();
-
-// eslint-disable-next-line no-underscore-dangle
-
-
-exports.default = Callback;
-if (!_ejson2.default._getTypes().ChromaticCallback) {
-  _ejson2.default.addType('ChromaticCallback', function (name) {
-    return new Callback(name);
-  });
-}
+module.exports = require("babel-runtime/helpers/extends");
 
 /***/ }),
-/* 6 */
+/* 7 */
+/***/ (function(module, exports) {
+
+module.exports = require("react-dom");
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -335,13 +322,13 @@ var _objectWithoutProperties2 = __webpack_require__(0);
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
-var _typeof2 = __webpack_require__(13);
+var _typeof2 = __webpack_require__(10);
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
 exports.default = renderSpec;
 
-var _react = __webpack_require__(3);
+var _react = __webpack_require__(2);
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -432,7 +419,19 @@ function renderSpec(_ref3) {
 }
 
 /***/ }),
-/* 7 */
+/* 9 */
+/***/ (function(module, exports) {
+
+module.exports = require("babel-runtime/core-js/object/keys");
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+module.exports = require("babel-runtime/helpers/typeof");
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -443,9 +442,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Callback = exports.parse = exports.stringify = undefined;
 
-var _ejson = __webpack_require__(2);
+var _ejson = __webpack_require__(3);
 
-var _Callback = __webpack_require__(5);
+var _Callback = __webpack_require__(12);
 
 var _Callback2 = _interopRequireDefault(_Callback);
 
@@ -458,7 +457,7 @@ exports.Callback = _Callback2.default;
 // Ensure this has been registered
 
 /***/ }),
-/* 8 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -468,73 +467,71 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _isolator = __webpack_require__(4);
+var _classCallCheck2 = __webpack_require__(13);
 
-var _isolator2 = _interopRequireDefault(_isolator);
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__(14);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _ejson = __webpack_require__(3);
+
+var _ejson2 = _interopRequireDefault(_ejson);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var hasSetup = false; /* eslint-env browser */
+var Callback = function () {
+  function Callback(name) {
+    (0, _classCallCheck3.default)(this, Callback);
 
-function configure() {
-  var runtimes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-  if (hasSetup) {
-    throw new Error('Chromatic already configured.');
-  }
-  hasSetup = true;
-
-  if (runtimes === []) {
-    throw new Error('Chromatic must be configured with at least one runtime. http://docs.chromaticqa.com/runtime-api');
+    // super('throw new Error("I shouldn\'t have been called!");');
+    this.name = name;
   }
 
-  // If we are rendered in an iframe, (by ourself), then we need to clear
-  // the screen right away, rather than waiting for a spec
-  var isIsolator = document.location.hash.match('__chromatic_isolator__');
+  (0, _createClass3.default)(Callback, [{
+    key: 'toString',
+    value: function toString() {
+      return 'function ' + this.name + '()';
+    }
+  }, {
+    key: 'toJSONValue',
+    value: function toJSONValue() {
+      return this.name;
+    }
 
-  (0, _isolator2.default)({
-    runtimes: [].concat(runtimes), // allow passing a single runtime
-    clearScreen: isIsolator
+    // eslint-disable-next-line class-methods-use-this
+
+  }, {
+    key: 'typeName',
+    value: function typeName() {
+      return 'ChromaticCallback';
+    }
+  }]);
+  return Callback;
+}();
+
+// eslint-disable-next-line no-underscore-dangle
+
+
+exports.default = Callback;
+if (!_ejson2.default._getTypes().ChromaticCallback) {
+  _ejson2.default.addType('ChromaticCallback', function (name) {
+    return new Callback(name);
   });
 }
-
-exports.default = configure;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports) {
-
-module.exports = require("babel-runtime/core-js/object/keys");
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-module.exports = require("babel-runtime/helpers/classCallCheck");
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports) {
-
-module.exports = require("babel-runtime/helpers/createClass");
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports) {
-
-module.exports = require("babel-runtime/helpers/extends");
 
 /***/ }),
 /* 13 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/helpers/typeof");
+module.exports = require("babel-runtime/helpers/classCallCheck");
 
 /***/ }),
 /* 14 */
 /***/ (function(module, exports) {
 
-module.exports = require("react-dom");
+module.exports = require("babel-runtime/helpers/createClass");
 
 /***/ })
 /******/ ]);
