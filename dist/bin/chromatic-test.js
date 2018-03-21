@@ -38,7 +38,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // Ensure NODE_ENV is set
 process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
-_commander2.default.option('-a, --app-code [code]', 'the code for your app, get from chromaticqa.com').option('-s, --script-name [name]', 'The npm script that starts your app/storybook.').option('-S, --do-not-start', "Don't attempt to start; use if your app is already running", false).option('-p, --port [port]', 'What port does your app serve?').option('--app-path [path]', 'URI path component to access Chromatic within the target app').option('--storybook-addon', 'Autodetect config for storybook addon setup', false).option('--url [url]', 'App is already running at url').option('--exit-zero-on-changes', "Use a 0 exit code if changes are detected (i.e. don't stop the build)", false).option('--debug', 'Output more debugging information', false).parse(process.argv);
+_commander2.default.option('-a, --app-code [code]', 'the code for your app, get from chromaticqa.com').option('-s, --script-name [name]', 'The npm script that starts your app/storybook.').option('-S, --do-not-start', "Don't attempt to start; use if your app is already running", false).option('-p, --port [port]', 'What port does your app serve?').option('--app-path [path]', 'URI path component to access Chromatic within the target app').option('--storybook-addon', 'Autodetect config for storybook addon setup', false).option('--url [url]', 'App is already running at url').option('--only [component:spec]', 'Only run a single spec').option('--exit-zero-on-changes', "Use a 0 exit code if changes are detected (i.e. don't stop the build)", false).option('--debug', 'Output more debugging information', false).parse(process.argv);
 
 function findOption(storybookScript, shortName, longName) {
   var parts = storybookScript.split(/[\s+|=]/);
@@ -87,6 +87,7 @@ var commanderOptions = {
   port: _commander2.default.port,
   appPath: _commander2.default.appPath,
   url: _commander2.default.url,
+  only: _commander2.default.only,
   exitZeroOnChanges: _commander2.default.exitZeroOnChanges,
   verbose: _commander2.default.debug,
   createTunnel: _environment.CHROMATIC_CREATE_TUNNEL !== 'false',
