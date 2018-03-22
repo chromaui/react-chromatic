@@ -1602,11 +1602,11 @@ var nextCommits = function () {
   };
 }();
 
-// Which of the listed commits are "maximally descedent":
-// ie c in commits such that there are no descedents of c in commits.
+// Which of the listed commits are "maximally descendent":
+// ie c in commits such that there are no descendents of c in commits.
 
 
-var maximallyDescedentCommits = function () {
+var maximallyDescendentCommits = function () {
   var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(commits) {
     var parentCommits, command, maxCommits;
     return _regenerator2.default.wrap(function _callee5$(_context5) {
@@ -1654,7 +1654,7 @@ var maximallyDescedentCommits = function () {
     }, _callee5, this);
   }));
 
-  return function maximallyDescedentCommits(_x4) {
+  return function maximallyDescendentCommits(_x4) {
     return _ref6.apply(this, arguments);
   };
 }();
@@ -1789,7 +1789,7 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
             debug('Final commitsWithBuilds: ' + commitsWithBuilds);
 
             // For any pair A,B of builds, there is no point in using B if it is an ancestor of A.
-            return _context7.abrupt('return', maximallyDescedentCommits(commitsWithBuilds));
+            return _context7.abrupt('return', maximallyDescendentCommits(commitsWithBuilds));
 
           case 18:
           case 'end':
