@@ -1537,6 +1537,40 @@ var getBranch = exports.getBranch = function () {
   };
 }();
 
+// Check if a commit exists in the repository
+
+
+var commitExists = function () {
+  var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(commit) {
+    return _regenerator2.default.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            _context4.prev = 0;
+            _context4.next = 3;
+            return execGitCommand('git cat-file -e ' + commit + '^{commit}');
+
+          case 3:
+            return _context4.abrupt('return', true);
+
+          case 6:
+            _context4.prev = 6;
+            _context4.t0 = _context4['catch'](0);
+            return _context4.abrupt('return', false);
+
+          case 9:
+          case 'end':
+            return _context4.stop();
+        }
+      }
+    }, _callee4, this, [[0, 6]]);
+  }));
+
+  return function commitExists(_x2) {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
 // git rev-list in a basic form gives us a list of commits reaching back to
 // `firstCommittedAtSeconds` (i.e. when the first build of this app happened)
 // in reverse chronological order.
@@ -1554,14 +1588,14 @@ var getBranch = exports.getBranch = function () {
 // `commitsWithBuilds`.
 //
 var nextCommits = function () {
-  var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(limit, _ref4) {
-    var firstCommittedAtSeconds = _ref4.firstCommittedAtSeconds,
-        commitsWithBuilds = _ref4.commitsWithBuilds,
-        commitsWithoutBuilds = _ref4.commitsWithoutBuilds;
+  var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(limit, _ref5) {
+    var firstCommittedAtSeconds = _ref5.firstCommittedAtSeconds,
+        commitsWithBuilds = _ref5.commitsWithBuilds,
+        commitsWithoutBuilds = _ref5.commitsWithoutBuilds;
     var command, commits;
-    return _regenerator2.default.wrap(function _callee4$(_context4) {
+    return _regenerator2.default.wrap(function _callee5$(_context5) {
       while (1) {
-        switch (_context4.prev = _context4.next) {
+        switch (_context5.prev = _context5.next) {
           case 0:
             // We want the next limit commits that aren't "covered" by `commitsWithBuilds`
             // This will print out all commits in `commitsWithoutBuilds` (except if they are covered),
@@ -1569,19 +1603,19 @@ var nextCommits = function () {
             command = 'git rev-list HEAD --since ' + firstCommittedAtSeconds + '       -n ' + (limit + commitsWithoutBuilds.length) + ' --not ' + commitsForCLI(commitsWithBuilds);
 
             debug('running ' + command);
-            _context4.next = 4;
+            _context5.next = 4;
             return execGitCommand(command);
 
           case 4:
-            _context4.t0 = function (c) {
+            _context5.t0 = function (c) {
               return !!c;
             };
 
-            commits = _context4.sent.split('\n').filter(_context4.t0);
+            commits = _context5.sent.split('\n').filter(_context5.t0);
 
             debug('command output: ' + commits);
 
-            return _context4.abrupt('return', commits
+            return _context5.abrupt('return', commits
             // No sense in checking commits we already know about
             .filter(function (c) {
               return !commitsWithBuilds.includes(c);
@@ -1591,14 +1625,14 @@ var nextCommits = function () {
 
           case 8:
           case 'end':
-            return _context4.stop();
+            return _context5.stop();
         }
       }
-    }, _callee4, this);
+    }, _callee5, this);
   }));
 
-  return function nextCommits(_x2, _x3) {
-    return _ref5.apply(this, arguments);
+  return function nextCommits(_x3, _x4) {
+    return _ref6.apply(this, arguments);
   };
 }();
 
@@ -1607,18 +1641,18 @@ var nextCommits = function () {
 
 
 var maximallyDescendentCommits = function () {
-  var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(commits) {
+  var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(commits) {
     var parentCommits, command, maxCommits;
-    return _regenerator2.default.wrap(function _callee5$(_context5) {
+    return _regenerator2.default.wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
             if (!(commits.length === 0)) {
-              _context5.next = 2;
+              _context6.next = 2;
               break;
             }
 
-            return _context5.abrupt('return', commits);
+            return _context6.abrupt('return', commits);
 
           case 2:
 
@@ -1632,30 +1666,30 @@ var maximallyDescendentCommits = function () {
             command = 'git rev-list ' + commitsForCLI(commits) + ' --not ' + commitsForCLI(parentCommits);
 
             debug('running ' + command);
-            _context5.next = 7;
+            _context6.next = 7;
             return execGitCommand(command);
 
           case 7:
-            _context5.t0 = function (c) {
+            _context6.t0 = function (c) {
               return !!c;
             };
 
-            maxCommits = _context5.sent.split('\n').filter(_context5.t0);
+            maxCommits = _context6.sent.split('\n').filter(_context6.t0);
 
             debug('command output: ' + maxCommits);
 
-            return _context5.abrupt('return', maxCommits);
+            return _context6.abrupt('return', maxCommits);
 
           case 11:
           case 'end':
-            return _context5.stop();
+            return _context6.stop();
         }
       }
-    }, _callee5, this);
+    }, _callee6, this);
   }));
 
-  return function maximallyDescendentCommits(_x4) {
-    return _ref6.apply(this, arguments);
+  return function maximallyDescendentCommits(_x5) {
+    return _ref7.apply(this, arguments);
   };
 }();
 
@@ -1663,22 +1697,22 @@ var maximallyDescendentCommits = function () {
 
 
 var step = function () {
-  var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(client, limit, _ref7) {
-    var firstCommittedAtSeconds = _ref7.firstCommittedAtSeconds,
-        commitsWithBuilds = _ref7.commitsWithBuilds,
-        commitsWithoutBuilds = _ref7.commitsWithoutBuilds;
+  var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(client, limit, _ref8) {
+    var firstCommittedAtSeconds = _ref8.firstCommittedAtSeconds,
+        commitsWithBuilds = _ref8.commitsWithBuilds,
+        commitsWithoutBuilds = _ref8.commitsWithoutBuilds;
 
-    var candidateCommits, _ref9, newCommitsWithBuilds, newCommitsWithoutBuilds;
+    var candidateCommits, _ref10, newCommitsWithBuilds, newCommitsWithoutBuilds;
 
-    return _regenerator2.default.wrap(function _callee6$(_context6) {
+    return _regenerator2.default.wrap(function _callee7$(_context7) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
             debug('step: checking ' + limit + ' up to ' + firstCommittedAtSeconds);
             debug('step: commitsWithBuilds: ' + commitsWithBuilds);
             debug('step: commitsWithoutBuilds: ' + commitsWithoutBuilds);
 
-            _context6.next = 5;
+            _context7.next = 5;
             return nextCommits(limit, {
               firstCommittedAtSeconds: firstCommittedAtSeconds,
               commitsWithBuilds: commitsWithBuilds,
@@ -1686,7 +1720,7 @@ var step = function () {
             });
 
           case 5:
-            candidateCommits = _context6.sent;
+            candidateCommits = _context7.sent;
 
 
             debug('step: candidateCommits: ' + candidateCommits);
@@ -1694,22 +1728,22 @@ var step = function () {
             // No more commits uncovered commitsWithBuilds!
 
             if (!(candidateCommits.length === 0)) {
-              _context6.next = 10;
+              _context7.next = 10;
               break;
             }
 
             debug('step: no candidateCommits; we are done');
-            return _context6.abrupt('return', commitsWithBuilds);
+            return _context7.abrupt('return', commitsWithBuilds);
 
           case 10:
-            _context6.next = 12;
+            _context7.next = 12;
             return client.runQuery(TesterHasBuildsWithCommitsQuery, {
               commits: candidateCommits
             });
 
           case 12:
-            _ref9 = _context6.sent;
-            newCommitsWithBuilds = _ref9.app.hasBuildsWithCommits;
+            _ref10 = _context7.sent;
+            newCommitsWithBuilds = _ref10.app.hasBuildsWithCommits;
 
             debug('step: newCommitsWithBuilds: ' + newCommitsWithBuilds);
 
@@ -1718,7 +1752,7 @@ var step = function () {
                 return c === commit;
               });
             });
-            return _context6.abrupt('return', step(client, limit * 2, {
+            return _context7.abrupt('return', step(client, limit * 2, {
               firstCommittedAtSeconds: firstCommittedAtSeconds,
               commitsWithBuilds: [].concat((0, _toConsumableArray3.default)(commitsWithBuilds), (0, _toConsumableArray3.default)(newCommitsWithBuilds)),
               commitsWithoutBuilds: [].concat((0, _toConsumableArray3.default)(commitsWithoutBuilds), (0, _toConsumableArray3.default)(newCommitsWithoutBuilds))
@@ -1726,14 +1760,14 @@ var step = function () {
 
           case 17:
           case 'end':
-            return _context6.stop();
+            return _context7.stop();
         }
       }
-    }, _callee6, this);
+    }, _callee7, this);
   }));
 
-  return function step(_x5, _x6, _x7) {
-    return _ref8.apply(this, arguments);
+  return function step(_x6, _x7, _x8) {
+    return _ref9.apply(this, arguments);
   };
 }();
 
@@ -1741,66 +1775,101 @@ var step = function () {
 
 
 var getBaselineCommits = exports.getBaselineCommits = function () {
-  var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(client) {
-    var branch, _ref11, _ref11$app, firstBuild, lastBuild, commitsWithBuilds;
+  var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(client) {
+    var branch, _ref12, _ref12$app, firstBuild, lastBuild, initialCommitsWithBuilds, extraBaselineCommits, commitsWithBuilds;
 
-    return _regenerator2.default.wrap(function _callee7$(_context7) {
+    return _regenerator2.default.wrap(function _callee8$(_context8) {
       while (1) {
-        switch (_context7.prev = _context7.next) {
+        switch (_context8.prev = _context8.next) {
           case 0:
-            _context7.next = 2;
+            _context8.next = 2;
             return getBranch();
 
           case 2:
-            branch = _context7.sent;
-            _context7.next = 5;
+            branch = _context8.sent;
+            _context8.next = 5;
             return client.runQuery(TesterFirstCommittedAtQuery, {
               branch: branch
             });
 
           case 5:
-            _ref11 = _context7.sent;
-            _ref11$app = _ref11.app;
-            firstBuild = _ref11$app.firstBuild;
-            lastBuild = _ref11$app.lastBuild;
+            _ref12 = _context8.sent;
+            _ref12$app = _ref12.app;
+            firstBuild = _ref12$app.firstBuild;
+            lastBuild = _ref12$app.lastBuild;
 
             debug('App firstBuild: ' + firstBuild + ', lastBuild: ' + lastBuild);
 
             if (firstBuild) {
-              _context7.next = 13;
+              _context8.next = 13;
               break;
             }
 
             debug('App has no builds, returning []');
-            return _context7.abrupt('return', []);
+            return _context8.abrupt('return', []);
 
           case 13:
-            _context7.next = 15;
+            initialCommitsWithBuilds = [];
+            extraBaselineCommits = [];
+
+            if (!lastBuild) {
+              _context8.next = 24;
+              break;
+            }
+
+            _context8.next = 18;
+            return commitExists(lastBuild.commit);
+
+          case 18:
+            if (!_context8.sent) {
+              _context8.next = 22;
+              break;
+            }
+
+            initialCommitsWithBuilds.push(lastBuild.commit);
+            _context8.next = 24;
+            break;
+
+          case 22:
+            debug('Last build commit not in index, blindly appending to baselines');
+            extraBaselineCommits.push(lastBuild.commit);
+
+          case 24:
+            _context8.next = 26;
             return step(client, FETCH_N_INITIAL_BUILD_COMMITS, {
               firstCommittedAtSeconds: firstBuild.committedAt / 1000,
-              commitsWithBuilds: lastBuild ? [lastBuild.commit] : [],
+              commitsWithBuilds: initialCommitsWithBuilds,
               commitsWithoutBuilds: []
             });
 
-          case 15:
-            commitsWithBuilds = _context7.sent;
+          case 26:
+            commitsWithBuilds = _context8.sent;
 
 
             debug('Final commitsWithBuilds: ' + commitsWithBuilds);
 
             // For any pair A,B of builds, there is no point in using B if it is an ancestor of A.
-            return _context7.abrupt('return', maximallyDescendentCommits(commitsWithBuilds));
+            _context8.t0 = [];
+            _context8.t1 = extraBaselineCommits;
+            _context8.t2 = _toConsumableArray3.default;
+            _context8.next = 33;
+            return maximallyDescendentCommits(commitsWithBuilds);
 
-          case 18:
+          case 33:
+            _context8.t3 = _context8.sent;
+            _context8.t4 = (0, _context8.t2)(_context8.t3);
+            return _context8.abrupt('return', _context8.t0.concat.call(_context8.t0, _context8.t1, _context8.t4));
+
+          case 36:
           case 'end':
-            return _context7.stop();
+            return _context8.stop();
         }
       }
-    }, _callee7, this);
+    }, _callee8, this);
   }));
 
-  return function getBaselineCommits(_x8) {
-    return _ref10.apply(this, arguments);
+  return function getBaselineCommits(_x9) {
+    return _ref11.apply(this, arguments);
   };
 }();
 
