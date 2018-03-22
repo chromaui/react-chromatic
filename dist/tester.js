@@ -301,7 +301,7 @@ exports.default = function () {
             throw new Error('You must provide an app code  -- visit https://www.chromaticqa.com to get your code.' + '\nPass your app code with the `CHROMATIC_APP_CODE` environment variable or the `--app-code` flag.');
 
           case 4:
-            if (!(!scriptName && !noStart || !port)) {
+            if (!((!scriptName && !noStart || !port) && !url)) {
               _context2.next = 6;
               break;
             }
