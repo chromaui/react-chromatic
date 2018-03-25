@@ -243,7 +243,7 @@ var TesterCreateAppTokenMutation = '\n  mutation TesterCreateAppTokenMutation($a
 
 var TesterCreateBuildMutation = '\n  mutation TesterCreateBuildMutation($input: CreateBuildInput!, $isolatorUrl: String!) {\n    createBuild(input: $input, isolatorUrl: $isolatorUrl) {\n      id\n      number\n      specCount\n      componentCount\n      webUrl\n    }\n  }\n';
 
-var TesterBuildQuery = '\n  query TesterBuildQuery($buildNumber: Int!) {\n    app {\n      build(number: $buildNumber) {\n        id\n        status\n        inProgressCount: snapshotCount(statuses: [SNAPSHOT_IN_PROGRESS])\n        specCount\n        changeCount: snapshotCount(statuses: [SNAPSHOT_PENDING, SNAPSHOT_ACCEPTED, SNAPSHOT_DENIED])\n        errorCount: snapshotCount(statuses: [SNAPSHOT_CAPTURE_ERROR])\n      }\n    }\n  }\n';
+var TesterBuildQuery = '\n  query TesterBuildQuery($buildNumber: Int!) {\n    app {\n      build(number: $buildNumber) {\n        id\n        status\n        autoAcceptChanges\n        inProgressCount: snapshotCount(statuses: [SNAPSHOT_IN_PROGRESS])\n        specCount\n        changeCount: snapshotCount(statuses: [SNAPSHOT_PENDING, SNAPSHOT_ACCEPTED, SNAPSHOT_DENIED])\n        errorCount: snapshotCount(statuses: [SNAPSHOT_CAPTURE_ERROR])\n      }\n    }\n  }\n';
 
 var debug = (0, _debug2.default)('react-chromatic:tester');
 
@@ -271,6 +271,8 @@ exports.default = function () {
         appPath = _ref3$appPath === undefined ? '/' : _ref3$appPath,
         url = _ref3.url,
         only = _ref3.only,
+        _ref3$autoAcceptChang = _ref3.autoAcceptChanges,
+        autoAcceptChanges = _ref3$autoAcceptChang === undefined ? false : _ref3$autoAcceptChang,
         _ref3$exitZeroOnChang = _ref3.exitZeroOnChanges,
         exitZeroOnChanges = _ref3$exitZeroOnChang === undefined ? false : _ref3$exitZeroOnChang,
         _ref3$verbose = _ref3.verbose,
@@ -284,7 +286,7 @@ exports.default = function () {
         _ref3$originalArgv = _ref3.originalArgv,
         originalArgv = _ref3$originalArgv === undefined ? false : _ref3$originalArgv;
 
-    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, committerEmail, committerName, branch, baselineCommits, appPathWithSlash, appUrl, child, isolatorUrl, tunnel, predicate, match, runtimeSpecs, fromCI, exitCode, _ref8, _ref8$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref9, status, changeCount, errorCount, scriptCommand, confirmed;
+    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, committerEmail, committerName, branch, baselineCommits, appPathWithSlash, appUrl, child, isolatorUrl, tunnel, predicate, match, runtimeSpecs, fromCI, exitCode, _ref8, _ref8$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref9, status, buildAutoAcceptChanges, changeCount, errorCount, scriptCommand, confirmed;
 
     return _regenerator2.default.wrap(function _callee2$(_context2) {
       while (1) {
@@ -301,7 +303,7 @@ exports.default = function () {
             throw new Error('You must provide an app code  -- visit https://www.chromaticqa.com to get your code.' + '\nPass your app code with the `CHROMATIC_APP_CODE` environment variable or the `--app-code` flag.');
 
           case 4:
-            if (!(!scriptName && !noStart || !port)) {
+            if (!((!scriptName && !noStart || !port) && !url)) {
               _context2.next = 6;
               break;
             }
@@ -470,6 +472,7 @@ exports.default = function () {
             _context2.next = 80;
             return client.runQuery(TesterCreateBuildMutation, {
               input: {
+                autoAcceptChanges: autoAcceptChanges,
                 branch: branch,
                 commit: commit,
                 committedAt: committedAt,
@@ -502,93 +505,94 @@ exports.default = function () {
           case 90:
             _ref9 = _context2.sent;
             status = _ref9.status;
+            buildAutoAcceptChanges = _ref9.autoAcceptChanges;
             changeCount = _ref9.changeCount;
             errorCount = _ref9.errorCount;
             _context2.t2 = status;
-            _context2.next = _context2.t2 === 'BUILD_PASSED' ? 97 : _context2.t2 === 'BUILD_PENDING' ? 100 : _context2.t2 === 'BUILD_ACCEPTED' ? 100 : _context2.t2 === 'BUILD_DENIED' ? 100 : _context2.t2 === 'BUILD_FAILED' ? 104 : _context2.t2 === 'BUILD_TIMED_OUT' ? 107 : _context2.t2 === 'BUILD_ERROR' ? 110 : 113;
+            _context2.next = _context2.t2 === 'BUILD_PASSED' ? 98 : _context2.t2 === 'BUILD_ACCEPTED' ? 101 : _context2.t2 === 'BUILD_PENDING' ? 101 : _context2.t2 === 'BUILD_DENIED' ? 101 : _context2.t2 === 'BUILD_FAILED' ? 105 : _context2.t2 === 'BUILD_TIMED_OUT' ? 108 : _context2.t2 === 'BUILD_ERROR' ? 111 : 114;
             break;
 
-          case 97:
+          case 98:
             log('Build ' + number + ' passed! ' + onlineHint + '.');
             exitCode = 0;
-            return _context2.abrupt('break', 114);
+            return _context2.abrupt('break', 115);
 
-          case 100:
+          case 101:
             log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
-            if (!exitZeroOnChanges) {
-              log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case. Read more: http://docs.chromaticqa.com/test');
+            exitCode = exitZeroOnChanges || buildAutoAcceptChanges ? 0 : 1;
+            if (exitCode !== 0) {
+              log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case.\n  Alternatively, pass --auto-accept-changes if you want changed builds to pass on this branch.\n  Read more: http://docs.chromaticqa.com/test');
             }
-            exitCode = exitZeroOnChanges ? 0 : 1;
-            return _context2.abrupt('break', 114);
+            return _context2.abrupt('break', 115);
 
-          case 104:
+          case 105:
             log('Build ' + number + ' has ' + pluralize(errorCount, 'error') + '. ' + onlineHint + '.');
             exitCode = 2;
-            return _context2.abrupt('break', 114);
+            return _context2.abrupt('break', 115);
 
-          case 107:
+          case 108:
             log('Build ' + number + ' has timed out. Ensure your machine is connected to the internet and please try again.');
             exitCode = 3;
-            return _context2.abrupt('break', 114);
+            return _context2.abrupt('break', 115);
 
-          case 110:
+          case 111:
             log('Build ' + number + ' has failed to run. Our apologies. Please try again.');
             exitCode = 4;
-            return _context2.abrupt('break', 114);
-
-          case 113:
-            throw new Error('Unexpected build status: ' + status);
+            return _context2.abrupt('break', 115);
 
           case 114:
-            _context2.next = 124;
+            throw new Error('Unexpected build status: ' + status);
+
+          case 115:
+            _context2.next = 125;
             break;
 
-          case 116:
-            _context2.prev = 116;
+          case 117:
+            _context2.prev = 117;
             _context2.t3 = _context2['catch'](77);
 
             if (!(_context2.t3.length && _context2.t3[0] && _context2.t3[0].message.match(/Cannot run a build with no specs./))) {
-              _context2.next = 123;
+              _context2.next = 124;
               break;
             }
 
             log(_context2.t3[0].message);
             exitCode = 255;
-            _context2.next = 124;
+            _context2.next = 125;
             break;
 
-          case 123:
+          case 124:
             throw _context2.t3;
 
-          case 124:
-            _context2.prev = 124;
+          case 125:
+            _context2.prev = 125;
 
             if (tunnel) {
               tunnel.close();
             }
 
             if (!child) {
-              _context2.next = 129;
+              _context2.next = 130;
               break;
             }
 
-            _context2.next = 129;
+            _context2.next = 130;
             return (0, _denodeify2.default)(_treeKill2.default)(child.pid, 'SIGHUP');
 
-          case 129:
-            return _context2.finish(124);
-
           case 130:
+            return _context2.finish(125);
+
+          case 131:
             if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
-              _context2.next = 137;
+              _context2.next = 138;
               break;
             }
 
             scriptCommand = ('chromatic test ' + originalArgv.slice(2).join(' ')).replace(/--app-code[= ]\S+/, '');
-            _context2.next = 134;
+            _context2.next = 135;
             return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
 
-          case 134:
+          case 135:
             confirmed = _context2.sent;
 
             if (confirmed) {
@@ -603,15 +607,15 @@ exports.default = function () {
             // eslint-disable-next-line no-console
             console.log('\nMake sure you set the `CHROMATIC_APP_CODE` environment variable when running builds (in particular on your CI server).');
 
-          case 137:
+          case 138:
             return _context2.abrupt('return', exitCode);
 
-          case 138:
+          case 139:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[6, 14], [77, 116, 124, 130]]);
+    }, _callee2, this, [[6, 14], [77, 117, 125, 131]]);
   }));
 
   function runTest(_x3) {
