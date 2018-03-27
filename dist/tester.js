@@ -61,7 +61,7 @@ module.exports =
 /******/ 	__webpack_require__.p = "dist";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 9);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -92,34 +92,46 @@ module.exports = require("denodeify");
 /* 4 */
 /***/ (function(module, exports) {
 
-module.exports = require("debug");
+module.exports = require("babel-runtime/core-js/json/stringify");
 
 /***/ }),
 /* 5 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/helpers/classCallCheck");
+module.exports = require("debug");
 
 /***/ }),
 /* 6 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/helpers/createClass");
+module.exports = require("babel-runtime/helpers/toConsumableArray");
 
 /***/ }),
 /* 7 */
 /***/ (function(module, exports) {
 
-module.exports = require("babel-runtime/helpers/extends");
+module.exports = require("babel-runtime/helpers/classCallCheck");
 
 /***/ }),
 /* 8 */
 /***/ (function(module, exports) {
 
-module.exports = require("child_process");
+module.exports = require("babel-runtime/helpers/createClass");
 
 /***/ }),
 /* 9 */
+/***/ (function(module, exports) {
+
+module.exports = require("babel-runtime/helpers/extends");
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+module.exports = require("child_process");
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -137,7 +149,7 @@ var _promise = __webpack_require__(2);
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _stringify = __webpack_require__(10);
+var _stringify = __webpack_require__(4);
 
 var _stringify2 = _interopRequireDefault(_stringify);
 
@@ -201,35 +213,35 @@ var _denodeify = __webpack_require__(3);
 
 var _denodeify2 = _interopRequireDefault(_denodeify);
 
-var _nodeAsk = __webpack_require__(11);
+var _nodeAsk = __webpack_require__(12);
 
-var _debug = __webpack_require__(4);
+var _debug = __webpack_require__(5);
 
 var _debug2 = _interopRequireDefault(_debug);
 
-var _treeKill = __webpack_require__(12);
+var _treeKill = __webpack_require__(13);
 
 var _treeKill2 = _interopRequireDefault(_treeKill);
 
-var _runtimes = __webpack_require__(13);
+var _runtimes = __webpack_require__(14);
 
 var _runtimes2 = _interopRequireDefault(_runtimes);
 
-var _startApp = __webpack_require__(16);
+var _startApp = __webpack_require__(17);
 
 var _startApp2 = _interopRequireDefault(_startApp);
 
-var _tunnel = __webpack_require__(18);
+var _tunnel = __webpack_require__(19);
 
 var _tunnel2 = _interopRequireDefault(_tunnel);
 
-var _packageJson = __webpack_require__(20);
+var _packageJson = __webpack_require__(21);
 
-var _GraphQLClient = __webpack_require__(24);
+var _GraphQLClient = __webpack_require__(25);
 
 var _GraphQLClient2 = _interopRequireDefault(_GraphQLClient);
 
-var _git = __webpack_require__(26);
+var _git = __webpack_require__(27);
 
 var _package = __webpack_require__(29);
 
@@ -626,25 +638,19 @@ exports.default = function () {
 }();
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-module.exports = require("babel-runtime/core-js/json/stringify");
-
-/***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 module.exports = require("node-ask");
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 module.exports = require("tree-kill");
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -658,11 +664,19 @@ var _regenerator = __webpack_require__(0);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
+var _toConsumableArray2 = __webpack_require__(6);
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
+var _stringify = __webpack_require__(4);
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
 var _promise = __webpack_require__(2);
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _keys = __webpack_require__(14);
+var _keys = __webpack_require__(15);
 
 var _keys2 = _interopRequireDefault(_keys);
 
@@ -670,15 +684,15 @@ var _asyncToGenerator2 = __webpack_require__(1);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _classCallCheck2 = __webpack_require__(5);
+var _classCallCheck2 = __webpack_require__(7);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(6);
+var _createClass2 = __webpack_require__(8);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _jsdom = __webpack_require__(15);
+var _jsdom = __webpack_require__(16);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -815,7 +829,7 @@ exports.default = function () {
               return dom.window.document.addEventListener('DOMContentLoaded', function () {
                 var separator = '=========================';
 
-                if (!dom.window.__chromaticRuntimeSpecs__) {
+                if (!dom.window.__chromaticRuntimeSpecs__ && !dom.window.__STORYBOOK_CLIENT_API__) {
                   console.error('Didn\'t find \'window.__chromaticRuntimeSpecs__\' at ' + url + '.\n' + 'Have you installed the Chromatic widget or addon correctly?\n');
 
                   if (!verbose && logs.length) {
@@ -846,7 +860,27 @@ exports.default = function () {
                   console.error('\n' + separator + '\nThis may lead to some stories not working right or getting detected by Chromatic' + '\nWe suggest you fix the errors, but we will continue anyway..\n');
                 }
 
-                var specs = dom.window.__chromaticRuntimeSpecs__();
+                var specs = void 0;
+                if (dom.window.__chromaticRuntimeSpecs__) {
+                  specs = dom.window.__chromaticRuntimeSpecs__();
+                } else {
+                  specs = dom.window.__STORYBOOK_CLIENT_API__.getStorybook().map(function (_ref5) {
+                    var kind = _ref5.kind,
+                        stories = _ref5.stories;
+                    return stories.map(function (_ref6) {
+                      var name = _ref6.name;
+                      return {
+                        runtime: 'storybook-no-addon',
+                        component: { name: kind },
+                        name: name,
+                        input: (0, _stringify2.default)({ kind: kind, name: name })
+                      };
+                    });
+                  }).reduce(function (a, b) {
+                    return [].concat((0, _toConsumableArray3.default)(a), (0, _toConsumableArray3.default)(b));
+                  }, []);
+                }
+
                 dom.window.close();
                 resolve(specs);
               });
@@ -868,19 +902,19 @@ exports.default = function () {
 }();
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = require("babel-runtime/core-js/object/keys");
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = require("jsdom");
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -891,7 +925,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.checkResponse = undefined;
 
-var _extends2 = __webpack_require__(7);
+var _extends2 = __webpack_require__(9);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
@@ -1026,9 +1060,9 @@ var waitForResponse = function () {
   };
 }();
 
-var _child_process = __webpack_require__(8);
+var _child_process = __webpack_require__(10);
 
-var _isomorphicFetch = __webpack_require__(17);
+var _isomorphicFetch = __webpack_require__(18);
 
 var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
@@ -1097,13 +1131,13 @@ exports.default = function () {
 }();
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports) {
 
 module.exports = require("isomorphic-fetch");
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1121,7 +1155,7 @@ var _asyncToGenerator2 = __webpack_require__(1);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _localtunnel = __webpack_require__(19);
+var _localtunnel = __webpack_require__(20);
 
 var _localtunnel2 = _interopRequireDefault(_localtunnel);
 
@@ -1168,13 +1202,13 @@ exports.default = function () {
 }();
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports) {
 
 module.exports = require("localtunnel");
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1184,18 +1218,18 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _values = __webpack_require__(21);
+var _values = __webpack_require__(22);
 
 var _values2 = _interopRequireDefault(_values);
 
 exports.checkPackageJson = checkPackageJson;
 exports.addScriptToPackageJson = addScriptToPackageJson;
 
-var _path = __webpack_require__(22);
+var _path = __webpack_require__(23);
 
 var _path2 = _interopRequireDefault(_path);
 
-var _jsonfile = __webpack_require__(23);
+var _jsonfile = __webpack_require__(24);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1231,25 +1265,25 @@ function addScriptToPackageJson(scriptName, scriptCommand) {
 }
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports) {
 
 module.exports = require("babel-runtime/core-js/object/values");
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports) {
 
 module.exports = require("path");
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports) {
 
 module.exports = require("jsonfile");
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1267,19 +1301,19 @@ var _asyncToGenerator2 = __webpack_require__(1);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _extends2 = __webpack_require__(7);
+var _extends2 = __webpack_require__(9);
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _classCallCheck2 = __webpack_require__(5);
+var _classCallCheck2 = __webpack_require__(7);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(6);
+var _createClass2 = __webpack_require__(8);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _apolloFetch = __webpack_require__(25);
+var _apolloFetch = __webpack_require__(26);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1392,13 +1426,13 @@ var GraphQLClient = function () {
 exports.default = GraphQLClient;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports) {
 
 module.exports = require("apollo-fetch");
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1409,7 +1443,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getBaselineCommits = exports.getBranch = exports.getCommit = exports.FETCH_N_INITIAL_BUILD_COMMITS = undefined;
 
-var _toConsumableArray2 = __webpack_require__(27);
+var _toConsumableArray2 = __webpack_require__(6);
 
 var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
@@ -1781,13 +1815,13 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
   };
 }();
 
-var _child_process = __webpack_require__(8);
+var _child_process = __webpack_require__(10);
 
 var _denodeify = __webpack_require__(3);
 
 var _denodeify2 = _interopRequireDefault(_denodeify);
 
-var _debug = __webpack_require__(4);
+var _debug = __webpack_require__(5);
 
 var _debug2 = _interopRequireDefault(_debug);
 
@@ -1806,12 +1840,6 @@ function commitsForCLI(commits) {
     return c.trim();
   }).join(' ');
 }
-
-/***/ }),
-/* 27 */
-/***/ (function(module, exports) {
-
-module.exports = require("babel-runtime/helpers/toConsumableArray");
 
 /***/ }),
 /* 28 */
