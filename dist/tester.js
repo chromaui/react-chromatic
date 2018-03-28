@@ -1611,7 +1611,7 @@ var nextCommitsAndBoundaries = function () {
             // We want the next limit commits that aren't "covered" by `commitsWithBuilds`
             // This will print out all commits in `commitsWithoutBuilds` (except if they are covered),
             // so we ask enough that we'll definitely get `limit` unknown commits
-            command = 'git rev-list HEAD --boundary --since ' + firstCommittedAtSeconds + '       -n ' + (limit + commitsWithoutBuilds.length) + ' --not ' + commitsForCLI(commitsWithBuilds);
+            command = 'git rev-list HEAD --boundary       ' + (firstCommittedAtSeconds ? '--since ' + firstCommittedAtSeconds : '') + '       -n ' + (limit + commitsWithoutBuilds.length) + ' --not ' + commitsForCLI(commitsWithBuilds);
 
             debug('running ' + command);
             _context4.next = 4;
@@ -1797,7 +1797,7 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
             commit = _ref12.commit;
             return _context6.abrupt('return', step(client, FETCH_N_INITIAL_BUILD_COMMITS, {
               headCommit: commit,
-              firstCommittedAtSeconds: firstBuild.committedAt / 1000,
+              firstCommittedAtSeconds: firstBuild.committedAt && firstBuild.committedAt / 1000,
               commitsWithBuilds: [],
               commitsWithoutBuilds: []
             }));
