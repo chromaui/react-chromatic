@@ -1,3 +1,7 @@
+# 0.8.1 - 2017-03-28
+
+* Fix a small bug in the git algorithm for old Chromatic projects.
+
 # 0.8.0 - 2017-03-28
 
 * Reworked the git baseline detection algorithm to use a different technique that should be more reliable across many different modes of usage.
