@@ -1,4 +1,18 @@
-# 0.7.11 - 2017-02-22
+# 0.8.1 - 2017-03-28
+
+* Fix a small bug in the git algorithm for old Chromatic projects.
+
+# 0.8.0 - 2017-03-28
+
+* Reworked the git baseline detection algorithm to use a different technique that should be more reliable across many different modes of usage.
+
+* Gather stories from Storybook 3.4 without requiring direct installation.
+
+* Added `--auto-accept-changes` to avoid approvals on certain branches
+
+* Added `--only` flag to run a single story
+
+# 0.7.11 - 2017-03-15
 
 * Handle the case where the last few Chromatic builds were run against commits which are no longer in the repository (due to rebasing or squashing). This could cause the tool to crash or fail to find a baseline for a build.
 
