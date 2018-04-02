@@ -21,6 +21,7 @@
     "debug": "^3.0.1",
     "denodeify": "^1.2.1",
     "ejson": "^2.1.2",
+    "env-ci": "^1.5.0",
     "es6-error": "^4.0.2",
     "isomorphic-fetch": "^2.2.1",
     "jsdom": "^11.5.1",
