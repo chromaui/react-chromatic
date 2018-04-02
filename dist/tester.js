@@ -243,9 +243,9 @@ var _GraphQLClient2 = _interopRequireDefault(_GraphQLClient);
 
 var _git = __webpack_require__(27);
 
-var _package = __webpack_require__(29);
+var _package = __webpack_require__(30);
 
-var _environment = __webpack_require__(30);
+var _environment = __webpack_require__(31);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1553,7 +1553,7 @@ var getBranch = exports.getBranch = function () {
               break;
             }
 
-            return _context3.abrupt('return', process.env.CI_BRANCH || branch);
+            return _context3.abrupt('return', (0, _envCi2.default)().branch || branch);
 
           case 5:
             return _context3.abrupt('return', branch);
@@ -1773,26 +1773,34 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            _context6.next = 2;
-            return client.runQuery(TesterFirstCommittedAtQuery);
+            if (!(process.env.TRAVIS_EVENT_TYPE === 'pr')) {
+              _context6.next = 2;
+              break;
+            }
+
+            throw new Error('Chromatic needs to run on Travis `push` builds.\n    \n  This is a `pr` build, and so Chromatic will not work on this build.\n  Read more: http://docs.chromaticqa.com/setup_ci#travis');
 
           case 2:
+            _context6.next = 4;
+            return client.runQuery(TesterFirstCommittedAtQuery);
+
+          case 4:
             _ref11 = _context6.sent;
             firstBuild = _ref11.app.firstBuild;
 
             if (firstBuild) {
-              _context6.next = 7;
+              _context6.next = 9;
               break;
             }
 
             debug('App has no builds, returning []');
             return _context6.abrupt('return', []);
 
-          case 7:
-            _context6.next = 9;
+          case 9:
+            _context6.next = 11;
             return getCommit();
 
-          case 9:
+          case 11:
             _ref12 = _context6.sent;
             commit = _ref12.commit;
             return _context6.abrupt('return', step(client, FETCH_N_INITIAL_BUILD_COMMITS, {
@@ -1802,7 +1810,7 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
               commitsWithoutBuilds: []
             }));
 
-          case 12:
+          case 14:
           case 'end':
             return _context6.stop();
         }
@@ -1824,6 +1832,10 @@ var _denodeify2 = _interopRequireDefault(_denodeify);
 var _debug = __webpack_require__(5);
 
 var _debug2 = _interopRequireDefault(_debug);
+
+var _envCi = __webpack_require__(29);
+
+var _envCi2 = _interopRequireDefault(_envCi);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1851,10 +1863,16 @@ module.exports = require("babel-runtime/helpers/slicedToArray");
 /* 29 */
 /***/ (function(module, exports) {
 
-module.exports = {"name":"react-chromatic","version":"0.8.2-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"../../node_modules/.bin/babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"../../node_modules/.bin/webpack","build":"../../node_modules/.bin/npm-run-all --serial -l build:**","prepare":"npm run build","dev":"../../node_modules/.bin/npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","tmp":"^0.0.33","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
+module.exports = require("env-ci");
 
 /***/ }),
 /* 30 */
+/***/ (function(module, exports) {
+
+module.exports = {"name":"react-chromatic","version":"0.8.2-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"../../node_modules/.bin/babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"../../node_modules/.bin/webpack","build":"../../node_modules/.bin/npm-run-all --serial -l build:**","prepare":"npm run build","dev":"../../node_modules/.bin/npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","env-ci":"^1.5.0","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","tmp":"^0.0.33","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
+
+/***/ }),
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
