@@ -1773,7 +1773,7 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            if (!(process.env.TRAVIS_EVENT_TYPE === 'pr')) {
+            if (!(process.env.TRAVIS_EVENT_TYPE === 'pull_request')) {
               _context6.next = 2;
               break;
             }
