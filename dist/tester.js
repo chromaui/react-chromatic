@@ -1476,8 +1476,8 @@ var execGitCommand = function () {
             _context.prev = 6;
             _context.t0 = _context['catch'](0);
 
-            // eslint-disable-next-line no-console
             if (_context.t0.message && _context.t0.message.match('Not a git repository')) {
+              // eslint-disable-next-line no-console
               console.error('Unable to execute git command \'' + command + '\'.\n');
               // eslint-disable-next-line no-console
               console.error('Chromatic only works in git projects.\n' + 'Contact us at support@hichroma.com if you need to use Chromatic outside of one.\n\n');
@@ -1571,6 +1571,40 @@ var getBranch = exports.getBranch = function () {
   };
 }();
 
+// Check if a commit exists in the repository
+
+
+var commitExists = function () {
+  var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(commit) {
+    return _regenerator2.default.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            _context4.prev = 0;
+            _context4.next = 3;
+            return execGitCommand('git cat-file -e ' + commit + '^{commit}');
+
+          case 3:
+            return _context4.abrupt('return', true);
+
+          case 6:
+            _context4.prev = 6;
+            _context4.t0 = _context4['catch'](0);
+            return _context4.abrupt('return', false);
+
+          case 9:
+          case 'end':
+            return _context4.stop();
+        }
+      }
+    }, _callee4, this, [[0, 6]]);
+  }));
+
+  return function commitExists(_x2) {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
 // git rev-list in a basic form gives us a list of commits reaching back to
 // `firstCommittedAtSeconds` (i.e. when the first build of this app happened)
 // in reverse chronological order.
@@ -1587,169 +1621,43 @@ var getBranch = exports.getBranch = function () {
 // that do have builds: a list of the ancestors of HEAD that are not accestors of
 // `commitsWithBuilds`.
 //
-// The other complexity is that if we know a few `commitsWithBuilds` from the server
-// we don't know immediately which of those are the nearer ancestor to HEAD
-// (and thus shoudl be used as the baseline).
-// However, the `--boundary` argument will tell us exactly where we stop in the
-// history in travelling back from HEAD.
-//
-// If we stop at a commit that has a build, then it is a baseline!
-// If we stop at a commit that *does not* have a build, that means that commit
-// branched off another commit that *is* an ancestor of a commit that does have a build.
-// [If this sentence is confusing, see the 'partial' test for some clarity]
-// So also long as we've checked every commit on the path back to that commit, we can stop.
-var nextCommitsAndBoundaries = function () {
-  var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(limit, _ref4) {
-    var firstCommittedAtSeconds = _ref4.firstCommittedAtSeconds,
-        commitsWithBuilds = _ref4.commitsWithBuilds,
-        commitsWithoutBuilds = _ref4.commitsWithoutBuilds;
-    var command, commits, boundaryCommits, nextCommits;
-    return _regenerator2.default.wrap(function _callee4$(_context4) {
+var nextCommits = function () {
+  var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(limit, _ref5) {
+    var firstCommittedAtSeconds = _ref5.firstCommittedAtSeconds,
+        commitsWithBuilds = _ref5.commitsWithBuilds,
+        commitsWithoutBuilds = _ref5.commitsWithoutBuilds;
+    var command, commits;
+    return _regenerator2.default.wrap(function _callee5$(_context5) {
       while (1) {
-        switch (_context4.prev = _context4.next) {
+        switch (_context5.prev = _context5.next) {
           case 0:
             // We want the next limit commits that aren't "covered" by `commitsWithBuilds`
             // This will print out all commits in `commitsWithoutBuilds` (except if they are covered),
             // so we ask enough that we'll definitely get `limit` unknown commits
-            command = 'git rev-list HEAD --boundary       ' + (firstCommittedAtSeconds ? '--since ' + firstCommittedAtSeconds : '') + '       -n ' + (limit + commitsWithoutBuilds.length) + ' --not ' + commitsForCLI(commitsWithBuilds);
+            command = 'git rev-list HEAD       ' + (firstCommittedAtSeconds ? '--since ' + firstCommittedAtSeconds : '') + '       -n ' + (limit + commitsWithoutBuilds.length) + ' --not ' + commitsForCLI(commitsWithBuilds);
 
             debug('running ' + command);
-            _context4.next = 4;
+            _context5.next = 4;
             return execGitCommand(command);
 
           case 4:
-            _context4.t0 = function (c) {
+            _context5.t0 = function (c) {
               return !!c;
             };
 
-            commits = _context4.sent.split('\n').filter(_context4.t0);
+            commits = _context5.sent.split('\n').filter(_context5.t0);
 
             debug('command output: ' + commits);
 
-            // Boundary commits are listed with a `-` in front of the hash
-            boundaryCommits = commits.filter(function (c) {
-              return c[0] === '-';
-            }).map(function (c) {
-              return c.slice(1);
-            })
-            // We want the commitsWithBuilds on the boundary. There may be others on the boundary.
-            .filter(function (c) {
-              return commitsWithBuilds.includes(c);
-            });
-            nextCommits = commits
-            // Both boundary and non boundary commits are candidates for builds
-            .map(function (c) {
-              return c[0] === '-' ? c.slice(1) : c;
-            })
+            return _context5.abrupt('return', commits
             // No sense in checking commits we already know about
             .filter(function (c) {
               return !commitsWithBuilds.includes(c);
             }).filter(function (c) {
               return !commitsWithoutBuilds.includes(c);
-            }).slice(0, limit);
-            return _context4.abrupt('return', {
-              nextCommits: nextCommits,
-              boundaryCommits: boundaryCommits
-            });
+            }).slice(0, limit));
 
-          case 10:
-          case 'end':
-            return _context4.stop();
-        }
-      }
-    }, _callee4, this);
-  }));
-
-  return function nextCommitsAndBoundaries(_x2, _x3) {
-    return _ref5.apply(this, arguments);
-  };
-}();
-
-// Exponentially iterate `limit` up to infinity to find baselines
-
-
-var step = function () {
-  var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(client, limit, _ref6) {
-    var headCommit = _ref6.headCommit,
-        firstCommittedAtSeconds = _ref6.firstCommittedAtSeconds,
-        commitsWithBuilds = _ref6.commitsWithBuilds,
-        commitsWithoutBuilds = _ref6.commitsWithoutBuilds;
-
-    var _ref8, nextCommits, boundaryCommits, _ref9, newCommitsWithBuilds, newCommitsWithoutBuilds;
-
-    return _regenerator2.default.wrap(function _callee5$(_context5) {
-      while (1) {
-        switch (_context5.prev = _context5.next) {
-          case 0:
-            debug('step: checking ' + limit + ' up to ' + firstCommittedAtSeconds);
-            debug('step: commitsWithBuilds: ' + commitsWithBuilds);
-            debug('step: commitsWithoutBuilds: ' + commitsWithoutBuilds);
-
-            _context5.next = 5;
-            return nextCommitsAndBoundaries(limit, {
-              firstCommittedAtSeconds: firstCommittedAtSeconds,
-              commitsWithBuilds: commitsWithBuilds,
-              commitsWithoutBuilds: commitsWithoutBuilds
-            });
-
-          case 5:
-            _ref8 = _context5.sent;
-            nextCommits = _ref8.nextCommits;
-            boundaryCommits = _ref8.boundaryCommits;
-
-
-            debug('step: nextCommits: ' + nextCommits);
-            debug('step: boundaryCommits: ' + boundaryCommits);
-
-            // No more commits uncovered by boundaryCommits!
-
-            if (!(nextCommits.length === 0)) {
-              _context5.next = 13;
-              break;
-            }
-
-            debug('step: no nextCommits; we are done');
-            return _context5.abrupt('return', boundaryCommits);
-
-          case 13:
-            _context5.next = 15;
-            return client.runQuery(TesterHasBuildsWithCommitsQuery, {
-              commits: nextCommits
-            });
-
-          case 15:
-            _ref9 = _context5.sent;
-            newCommitsWithBuilds = _ref9.app.hasBuildsWithCommits;
-
-            debug('step: newCommitsWithBuilds: ' + newCommitsWithBuilds);
-
-            // Special case -- if there is an existing build for the current HEAD,
-            // we can short circuit any more work; also this is important because
-            // `git rev-list --boundary` doesn't treat HEAD as a boundary
-
-            if (!newCommitsWithBuilds.find(function (c) {
-              return c === headCommit;
-            })) {
-              _context5.next = 21;
-              break;
-            }
-
-            debug('step: HEAD has a build; short circuiting');
-            return _context5.abrupt('return', [headCommit]);
-
-          case 21:
-            newCommitsWithoutBuilds = nextCommits.filter(function (commit) {
-              return !newCommitsWithBuilds.find(function (c) {
-                return c === commit;
-              });
-            });
-            return _context5.abrupt('return', step(client, limit * 2, {
-              firstCommittedAtSeconds: firstCommittedAtSeconds,
-              commitsWithBuilds: [].concat((0, _toConsumableArray3.default)(commitsWithBuilds), (0, _toConsumableArray3.default)(newCommitsWithBuilds)),
-              commitsWithoutBuilds: [].concat((0, _toConsumableArray3.default)(commitsWithoutBuilds), (0, _toConsumableArray3.default)(newCommitsWithoutBuilds))
-            }));
-
-          case 23:
+          case 8:
           case 'end':
             return _context5.stop();
         }
@@ -1757,52 +1665,56 @@ var step = function () {
     }, _callee5, this);
   }));
 
-  return function step(_x4, _x5, _x6) {
-    return _ref7.apply(this, arguments);
+  return function nextCommits(_x3, _x4) {
+    return _ref6.apply(this, arguments);
   };
 }();
 
-// eslint-disable-next-line import/prefer-default-export
+// Which of the listed commits are "maximally descendent":
+// ie c in commits such that there are no descendents of c in commits.
 
 
-var getBaselineCommits = exports.getBaselineCommits = function () {
-  var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(client) {
-    var _ref11, firstBuild, _ref12, commit;
-
+var maximallyDescendentCommits = function () {
+  var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(commits) {
+    var parentCommits, command, maxCommits;
     return _regenerator2.default.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            _context6.next = 2;
-            return client.runQuery(TesterFirstCommittedAtQuery);
-
-          case 2:
-            _ref11 = _context6.sent;
-            firstBuild = _ref11.app.firstBuild;
-
-            if (firstBuild) {
-              _context6.next = 7;
+            if (!(commits.length === 0)) {
+              _context6.next = 2;
               break;
             }
 
-            debug('App has no builds, returning []');
-            return _context6.abrupt('return', []);
+            return _context6.abrupt('return', commits);
+
+          case 2:
+
+            // <commit>^@ expands to all parents of commit
+            parentCommits = commits.map(function (c) {
+              return c + '^@';
+            });
+            // List the tree from <commits> not including the tree from <parentCommits>
+            // This just filters any commits that are ancestors of other commits
+
+            command = 'git rev-list ' + commitsForCLI(commits) + ' --not ' + commitsForCLI(parentCommits);
+
+            debug('running ' + command);
+            _context6.next = 7;
+            return execGitCommand(command);
 
           case 7:
-            _context6.next = 9;
-            return getCommit();
+            _context6.t0 = function (c) {
+              return !!c;
+            };
 
-          case 9:
-            _ref12 = _context6.sent;
-            commit = _ref12.commit;
-            return _context6.abrupt('return', step(client, FETCH_N_INITIAL_BUILD_COMMITS, {
-              headCommit: commit,
-              firstCommittedAtSeconds: firstBuild.committedAt && firstBuild.committedAt / 1000,
-              commitsWithBuilds: [],
-              commitsWithoutBuilds: []
-            }));
+            maxCommits = _context6.sent.split('\n').filter(_context6.t0);
 
-          case 12:
+            debug('command output: ' + maxCommits);
+
+            return _context6.abrupt('return', maxCommits);
+
+          case 11:
           case 'end':
             return _context6.stop();
         }
@@ -1810,8 +1722,188 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
     }, _callee6, this);
   }));
 
-  return function getBaselineCommits(_x7) {
-    return _ref10.apply(this, arguments);
+  return function maximallyDescendentCommits(_x5) {
+    return _ref7.apply(this, arguments);
+  };
+}();
+
+// Exponentially iterate `limit` up to infinity to find a "covering" set of commits with builds
+
+
+var step = function () {
+  var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(client, limit, _ref8) {
+    var firstCommittedAtSeconds = _ref8.firstCommittedAtSeconds,
+        commitsWithBuilds = _ref8.commitsWithBuilds,
+        commitsWithoutBuilds = _ref8.commitsWithoutBuilds;
+
+    var candidateCommits, _ref10, newCommitsWithBuilds, newCommitsWithoutBuilds;
+
+    return _regenerator2.default.wrap(function _callee7$(_context7) {
+      while (1) {
+        switch (_context7.prev = _context7.next) {
+          case 0:
+            debug('step: checking ' + limit + ' up to ' + firstCommittedAtSeconds);
+            debug('step: commitsWithBuilds: ' + commitsWithBuilds);
+            debug('step: commitsWithoutBuilds: ' + commitsWithoutBuilds);
+
+            _context7.next = 5;
+            return nextCommits(limit, {
+              firstCommittedAtSeconds: firstCommittedAtSeconds,
+              commitsWithBuilds: commitsWithBuilds,
+              commitsWithoutBuilds: commitsWithoutBuilds
+            });
+
+          case 5:
+            candidateCommits = _context7.sent;
+
+
+            debug('step: candidateCommits: ' + candidateCommits);
+
+            // No more commits uncovered commitsWithBuilds!
+
+            if (!(candidateCommits.length === 0)) {
+              _context7.next = 10;
+              break;
+            }
+
+            debug('step: no candidateCommits; we are done');
+            return _context7.abrupt('return', commitsWithBuilds);
+
+          case 10:
+            _context7.next = 12;
+            return client.runQuery(TesterHasBuildsWithCommitsQuery, {
+              commits: candidateCommits
+            });
+
+          case 12:
+            _ref10 = _context7.sent;
+            newCommitsWithBuilds = _ref10.app.hasBuildsWithCommits;
+
+            debug('step: newCommitsWithBuilds: ' + newCommitsWithBuilds);
+
+            newCommitsWithoutBuilds = candidateCommits.filter(function (commit) {
+              return !newCommitsWithBuilds.find(function (c) {
+                return c === commit;
+              });
+            });
+            return _context7.abrupt('return', step(client, limit * 2, {
+              firstCommittedAtSeconds: firstCommittedAtSeconds,
+              commitsWithBuilds: [].concat((0, _toConsumableArray3.default)(commitsWithBuilds), (0, _toConsumableArray3.default)(newCommitsWithBuilds)),
+              commitsWithoutBuilds: [].concat((0, _toConsumableArray3.default)(commitsWithoutBuilds), (0, _toConsumableArray3.default)(newCommitsWithoutBuilds))
+            }));
+
+          case 17:
+          case 'end':
+            return _context7.stop();
+        }
+      }
+    }, _callee7, this);
+  }));
+
+  return function step(_x6, _x7, _x8) {
+    return _ref9.apply(this, arguments);
+  };
+}();
+
+// eslint-disable-next-line import/prefer-default-export
+
+
+var getBaselineCommits = exports.getBaselineCommits = function () {
+  var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(client) {
+    var branch, _ref12, _ref12$app, firstBuild, lastBuild, initialCommitsWithBuilds, extraBaselineCommits, commitsWithBuilds;
+
+    return _regenerator2.default.wrap(function _callee8$(_context8) {
+      while (1) {
+        switch (_context8.prev = _context8.next) {
+          case 0:
+            _context8.next = 2;
+            return getBranch();
+
+          case 2:
+            branch = _context8.sent;
+            _context8.next = 5;
+            return client.runQuery(TesterFirstCommittedAtQuery, {
+              branch: branch
+            });
+
+          case 5:
+            _ref12 = _context8.sent;
+            _ref12$app = _ref12.app;
+            firstBuild = _ref12$app.firstBuild;
+            lastBuild = _ref12$app.lastBuild;
+
+            debug('App firstBuild: ' + firstBuild + ', lastBuild: ' + lastBuild);
+
+            if (firstBuild) {
+              _context8.next = 13;
+              break;
+            }
+
+            debug('App has no builds, returning []');
+            return _context8.abrupt('return', []);
+
+          case 13:
+            initialCommitsWithBuilds = [];
+            extraBaselineCommits = [];
+
+            if (!lastBuild) {
+              _context8.next = 24;
+              break;
+            }
+
+            _context8.next = 18;
+            return commitExists(lastBuild.commit);
+
+          case 18:
+            if (!_context8.sent) {
+              _context8.next = 22;
+              break;
+            }
+
+            initialCommitsWithBuilds.push(lastBuild.commit);
+            _context8.next = 24;
+            break;
+
+          case 22:
+            debug('Last build commit not in index, blindly appending to baselines');
+            extraBaselineCommits.push(lastBuild.commit);
+
+          case 24:
+            _context8.next = 26;
+            return step(client, FETCH_N_INITIAL_BUILD_COMMITS, {
+              firstCommittedAtSeconds: firstBuild.committedAt && firstBuild.committedAt / 1000,
+              commitsWithBuilds: initialCommitsWithBuilds,
+              commitsWithoutBuilds: []
+            });
+
+          case 26:
+            commitsWithBuilds = _context8.sent;
+
+
+            debug('Final commitsWithBuilds: ' + commitsWithBuilds);
+
+            // For any pair A,B of builds, there is no point in using B if it is an ancestor of A.
+            _context8.t0 = [];
+            _context8.t1 = extraBaselineCommits;
+            _context8.t2 = _toConsumableArray3.default;
+            _context8.next = 33;
+            return maximallyDescendentCommits(commitsWithBuilds);
+
+          case 33:
+            _context8.t3 = _context8.sent;
+            _context8.t4 = (0, _context8.t2)(_context8.t3);
+            return _context8.abrupt('return', _context8.t0.concat.call(_context8.t0, _context8.t1, _context8.t4));
+
+          case 36:
+          case 'end':
+            return _context8.stop();
+        }
+      }
+    }, _callee8, this);
+  }));
+
+  return function getBaselineCommits(_x9) {
+    return _ref11.apply(this, arguments);
   };
 }();
 
@@ -1831,7 +1923,7 @@ var debug = (0, _debug2.default)('react-chromatic:tester:git');
 
 var FETCH_N_INITIAL_BUILD_COMMITS = exports.FETCH_N_INITIAL_BUILD_COMMITS = 20;
 
-var TesterFirstCommittedAtQuery = '\n  query TesterFirstCommittedAtQuery {\n    app {\n      firstBuild {\n        committedAt\n      }\n    }\n  }\n';
+var TesterFirstCommittedAtQuery = '\n  query TesterFirstCommittedAtQuery($branch: String!) {\n    app {\n      firstBuild(sortByCommittedAt: true) {\n        committedAt\n      }\n      lastBuild(branch: $branch, sortByCommittedAt: true) {\n        commit\n      }\n    }\n  }\n';
 
 var TesterHasBuildsWithCommitsQuery = '\n  query TesterHasBuildsWithCommitsQuery($commits: [String!]!) {\n    app {\n      hasBuildsWithCommits(commits: $commits)\n    }\n  }\n';
 
