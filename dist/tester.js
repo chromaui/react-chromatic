@@ -1845,8 +1845,10 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
           case 13:
             initialCommitsWithBuilds = [];
             extraBaselineCommits = [];
+            // Don't do any special branching logic for builds on `HEAD`, this is fairly meaningless
+            // (CI systems that have been pushed tags can not set a branch)
 
-            if (!lastBuild) {
+            if (!(branch !== 'HEAD' && lastBuild)) {
               _context8.next = 24;
               break;
             }
