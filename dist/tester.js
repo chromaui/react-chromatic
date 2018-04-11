@@ -474,7 +474,8 @@ exports.default = function () {
 
             log('Found ' + runtimeSpecs.length + ' specs');
 
-            fromCI = !!process.env.CI;
+            // REPOSITORY_URL is for netlify: https://www.netlify.com/docs/continuous-deployment/
+            fromCI = !!process.env.CI || !!process.env.REPOSITORY_URL;
 
             debug('Detected build fromCI:' + fromCI);
             debug('Detected package version:' + _package.version);
@@ -1553,7 +1554,7 @@ var getBranch = exports.getBranch = function () {
               break;
             }
 
-            return _context3.abrupt('return', process.env.CI_BRANCH || branch);
+            return _context3.abrupt('return', process.env.CI_BRANCH || process.env.BRANCH || branch);
 
           case 5:
             return _context3.abrupt('return', branch);
