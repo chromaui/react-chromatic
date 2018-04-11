@@ -1810,7 +1810,7 @@ var step = function () {
 
 var getBaselineCommits = exports.getBaselineCommits = function () {
   var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(client) {
-    var branch, _ref12, _ref12$app, firstBuild, lastBuild, initialCommitsWithBuilds, extraBaselineCommits, commitsWithBuilds;
+    var branch, _ref12, committedAt, _ref13, _ref13$app, firstBuild, lastBuild, initialCommitsWithBuilds, extraBaselineCommits, commitsWithBuilds;
 
     return _regenerator2.default.wrap(function _callee8$(_context8) {
       while (1) {
@@ -1822,63 +1822,70 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
           case 2:
             branch = _context8.sent;
             _context8.next = 5;
+            return getCommit();
+
+          case 5:
+            _ref12 = _context8.sent;
+            committedAt = _ref12.committedAt;
+            _context8.next = 9;
             return client.runQuery(TesterFirstCommittedAtQuery, {
               branch: branch
             });
 
-          case 5:
-            _ref12 = _context8.sent;
-            _ref12$app = _ref12.app;
-            firstBuild = _ref12$app.firstBuild;
-            lastBuild = _ref12$app.lastBuild;
+          case 9:
+            _ref13 = _context8.sent;
+            _ref13$app = _ref13.app;
+            firstBuild = _ref13$app.firstBuild;
+            lastBuild = _ref13$app.lastBuild;
 
             debug('App firstBuild: ' + firstBuild + ', lastBuild: ' + lastBuild);
 
             if (firstBuild) {
-              _context8.next = 13;
+              _context8.next = 17;
               break;
             }
 
             debug('App has no builds, returning []');
             return _context8.abrupt('return', []);
 
-          case 13:
+          case 17:
             initialCommitsWithBuilds = [];
             extraBaselineCommits = [];
+
             // Don't do any special branching logic for builds on `HEAD`, this is fairly meaningless
             // (CI systems that have been pushed tags can not set a branch)
 
-            if (!(branch !== 'HEAD' && lastBuild)) {
-              _context8.next = 24;
+            if (!(branch !== 'HEAD' && lastBuild && lastBuild.committedAt <= committedAt)) {
+              _context8.next = 28;
               break;
             }
 
-            _context8.next = 18;
+            _context8.next = 22;
             return commitExists(lastBuild.commit);
 
-          case 18:
+          case 22:
             if (!_context8.sent) {
-              _context8.next = 22;
+              _context8.next = 26;
               break;
             }
 
             initialCommitsWithBuilds.push(lastBuild.commit);
-            _context8.next = 24;
+            _context8.next = 28;
             break;
 
-          case 22:
+          case 26:
             debug('Last build commit not in index, blindly appending to baselines');
             extraBaselineCommits.push(lastBuild.commit);
 
-          case 24:
-            _context8.next = 26;
+          case 28:
+            _context8.next = 30;
             return step(client, FETCH_N_INITIAL_BUILD_COMMITS, {
               firstCommittedAtSeconds: firstBuild.committedAt && firstBuild.committedAt / 1000,
               commitsWithBuilds: initialCommitsWithBuilds,
               commitsWithoutBuilds: []
             });
 
-          case 26:
+          case 30:
             commitsWithBuilds = _context8.sent;
 
 
@@ -1888,15 +1895,15 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
             _context8.t0 = [];
             _context8.t1 = extraBaselineCommits;
             _context8.t2 = _toConsumableArray3.default;
-            _context8.next = 33;
+            _context8.next = 37;
             return maximallyDescendentCommits(commitsWithBuilds);
 
-          case 33:
+          case 37:
             _context8.t3 = _context8.sent;
             _context8.t4 = (0, _context8.t2)(_context8.t3);
             return _context8.abrupt('return', _context8.t0.concat.call(_context8.t0, _context8.t1, _context8.t4));
 
-          case 36:
+          case 40:
           case 'end':
             return _context8.stop();
         }
@@ -1925,7 +1932,7 @@ var debug = (0, _debug2.default)('react-chromatic:tester:git');
 
 var FETCH_N_INITIAL_BUILD_COMMITS = exports.FETCH_N_INITIAL_BUILD_COMMITS = 20;
 
-var TesterFirstCommittedAtQuery = '\n  query TesterFirstCommittedAtQuery($branch: String!) {\n    app {\n      firstBuild(sortByCommittedAt: true) {\n        committedAt\n      }\n      lastBuild(branch: $branch, sortByCommittedAt: true) {\n        commit\n      }\n    }\n  }\n';
+var TesterFirstCommittedAtQuery = '\n  query TesterFirstCommittedAtQuery($branch: String!) {\n    app {\n      firstBuild(sortByCommittedAt: true) {\n        committedAt\n      }\n      lastBuild(branch: $branch, sortByCommittedAt: true) {\n        commit\n        committedAt\n      }\n    }\n  }\n';
 
 var TesterHasBuildsWithCommitsQuery = '\n  query TesterHasBuildsWithCommitsQuery($commits: [String!]!) {\n    app {\n      hasBuildsWithCommits(commits: $commits)\n    }\n  }\n';
 
