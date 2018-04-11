@@ -243,9 +243,9 @@ var _GraphQLClient2 = _interopRequireDefault(_GraphQLClient);
 
 var _git = __webpack_require__(27);
 
-var _package = __webpack_require__(29);
+var _package = __webpack_require__(30);
 
-var _environment = __webpack_require__(30);
+var _environment = __webpack_require__(31);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -474,7 +474,8 @@ exports.default = function () {
 
             log('Found ' + runtimeSpecs.length + ' specs');
 
-            fromCI = !!process.env.CI;
+            // REPOSITORY_URL is for netlify: https://www.netlify.com/docs/continuous-deployment/
+            fromCI = !!process.env.CI || !!process.env.REPOSITORY_URL;
 
             debug('Detected build fromCI:' + fromCI);
             debug('Detected package version:' + _package.version);
@@ -1553,7 +1554,7 @@ var getBranch = exports.getBranch = function () {
               break;
             }
 
-            return _context3.abrupt('return', process.env.CI_BRANCH || branch);
+            return _context3.abrupt('return', (0, _envCi2.default)().branch || process.env.BRANCH || branch);
 
           case 5:
             return _context3.abrupt('return', branch);
@@ -1810,7 +1811,7 @@ var step = function () {
 
 var getBaselineCommits = exports.getBaselineCommits = function () {
   var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(client) {
-    var branch, _ref12, _ref12$app, firstBuild, lastBuild, initialCommitsWithBuilds, extraBaselineCommits, commitsWithBuilds;
+    var branch, _ref12, committedAt, _ref13, _ref13$app, firstBuild, lastBuild, initialCommitsWithBuilds, extraBaselineCommits, commitsWithBuilds;
 
     return _regenerator2.default.wrap(function _callee8$(_context8) {
       while (1) {
@@ -1822,61 +1823,70 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
           case 2:
             branch = _context8.sent;
             _context8.next = 5;
+            return getCommit();
+
+          case 5:
+            _ref12 = _context8.sent;
+            committedAt = _ref12.committedAt;
+            _context8.next = 9;
             return client.runQuery(TesterFirstCommittedAtQuery, {
               branch: branch
             });
 
-          case 5:
-            _ref12 = _context8.sent;
-            _ref12$app = _ref12.app;
-            firstBuild = _ref12$app.firstBuild;
-            lastBuild = _ref12$app.lastBuild;
+          case 9:
+            _ref13 = _context8.sent;
+            _ref13$app = _ref13.app;
+            firstBuild = _ref13$app.firstBuild;
+            lastBuild = _ref13$app.lastBuild;
 
             debug('App firstBuild: ' + firstBuild + ', lastBuild: ' + lastBuild);
 
             if (firstBuild) {
-              _context8.next = 13;
+              _context8.next = 17;
               break;
             }
 
             debug('App has no builds, returning []');
             return _context8.abrupt('return', []);
 
-          case 13:
+          case 17:
             initialCommitsWithBuilds = [];
             extraBaselineCommits = [];
 
-            if (!lastBuild) {
-              _context8.next = 24;
+            // Don't do any special branching logic for builds on `HEAD`, this is fairly meaningless
+            // (CI systems that have been pushed tags can not set a branch)
+
+            if (!(branch !== 'HEAD' && lastBuild && lastBuild.committedAt <= committedAt)) {
+              _context8.next = 28;
               break;
             }
 
-            _context8.next = 18;
+            _context8.next = 22;
             return commitExists(lastBuild.commit);
 
-          case 18:
+          case 22:
             if (!_context8.sent) {
-              _context8.next = 22;
+              _context8.next = 26;
               break;
             }
 
             initialCommitsWithBuilds.push(lastBuild.commit);
-            _context8.next = 24;
+            _context8.next = 28;
             break;
 
-          case 22:
+          case 26:
             debug('Last build commit not in index, blindly appending to baselines');
             extraBaselineCommits.push(lastBuild.commit);
 
-          case 24:
-            _context8.next = 26;
+          case 28:
+            _context8.next = 30;
             return step(client, FETCH_N_INITIAL_BUILD_COMMITS, {
               firstCommittedAtSeconds: firstBuild.committedAt && firstBuild.committedAt / 1000,
               commitsWithBuilds: initialCommitsWithBuilds,
               commitsWithoutBuilds: []
             });
 
-          case 26:
+          case 30:
             commitsWithBuilds = _context8.sent;
 
 
@@ -1886,15 +1896,15 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
             _context8.t0 = [];
             _context8.t1 = extraBaselineCommits;
             _context8.t2 = _toConsumableArray3.default;
-            _context8.next = 33;
+            _context8.next = 37;
             return maximallyDescendentCommits(commitsWithBuilds);
 
-          case 33:
+          case 37:
             _context8.t3 = _context8.sent;
             _context8.t4 = (0, _context8.t2)(_context8.t3);
             return _context8.abrupt('return', _context8.t0.concat.call(_context8.t0, _context8.t1, _context8.t4));
 
-          case 36:
+          case 40:
           case 'end':
             return _context8.stop();
         }
@@ -1917,13 +1927,17 @@ var _debug = __webpack_require__(5);
 
 var _debug2 = _interopRequireDefault(_debug);
 
+var _envCi = __webpack_require__(29);
+
+var _envCi2 = _interopRequireDefault(_envCi);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var debug = (0, _debug2.default)('react-chromatic:tester:git');
 
 var FETCH_N_INITIAL_BUILD_COMMITS = exports.FETCH_N_INITIAL_BUILD_COMMITS = 20;
 
-var TesterFirstCommittedAtQuery = '\n  query TesterFirstCommittedAtQuery($branch: String!) {\n    app {\n      firstBuild(sortByCommittedAt: true) {\n        committedAt\n      }\n      lastBuild(branch: $branch, sortByCommittedAt: true) {\n        commit\n      }\n    }\n  }\n';
+var TesterFirstCommittedAtQuery = '\n  query TesterFirstCommittedAtQuery($branch: String!) {\n    app {\n      firstBuild(sortByCommittedAt: true) {\n        committedAt\n      }\n      lastBuild(branch: $branch, sortByCommittedAt: true) {\n        commit\n        committedAt\n      }\n    }\n  }\n';
 
 var TesterHasBuildsWithCommitsQuery = '\n  query TesterHasBuildsWithCommitsQuery($commits: [String!]!) {\n    app {\n      hasBuildsWithCommits(commits: $commits)\n    }\n  }\n';
 
@@ -1943,10 +1957,16 @@ module.exports = require("babel-runtime/helpers/slicedToArray");
 /* 29 */
 /***/ (function(module, exports) {
 
-module.exports = {"name":"react-chromatic","version":"0.8.2-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"../../node_modules/.bin/babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"../../node_modules/.bin/webpack","build":"../../node_modules/.bin/npm-run-all --serial -l build:**","prepare":"npm run build","dev":"../../node_modules/.bin/npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","tmp":"^0.0.33","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
+module.exports = require("env-ci");
 
 /***/ }),
 /* 30 */
+/***/ (function(module, exports) {
+
+module.exports = {"name":"react-chromatic","version":"0.8.2-beta.0","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"../../node_modules/.bin/babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"../../node_modules/.bin/webpack","build":"../../node_modules/.bin/npm-run-all --serial -l build:**","prepare":"npm run build","dev":"../../node_modules/.bin/npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","env-ci":"^1.5.0","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","tmp":"^0.0.33","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
+
+/***/ }),
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
