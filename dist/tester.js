@@ -223,29 +223,33 @@ var _treeKill = __webpack_require__(13);
 
 var _treeKill2 = _interopRequireDefault(_treeKill);
 
-var _runtimes = __webpack_require__(14);
+var _envCi = __webpack_require__(14);
+
+var _envCi2 = _interopRequireDefault(_envCi);
+
+var _runtimes = __webpack_require__(15);
 
 var _runtimes2 = _interopRequireDefault(_runtimes);
 
-var _startApp = __webpack_require__(17);
+var _startApp = __webpack_require__(18);
 
 var _startApp2 = _interopRequireDefault(_startApp);
 
-var _tunnel = __webpack_require__(19);
+var _tunnel = __webpack_require__(20);
 
 var _tunnel2 = _interopRequireDefault(_tunnel);
 
-var _packageJson = __webpack_require__(21);
+var _packageJson = __webpack_require__(22);
 
-var _GraphQLClient = __webpack_require__(25);
+var _GraphQLClient = __webpack_require__(26);
 
 var _GraphQLClient2 = _interopRequireDefault(_GraphQLClient);
 
-var _git = __webpack_require__(27);
+var _git = __webpack_require__(28);
 
-var _package = __webpack_require__(29);
+var _package = __webpack_require__(30);
 
-var _environment = __webpack_require__(30);
+var _environment = __webpack_require__(31);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -298,7 +302,7 @@ exports.default = function () {
         _ref3$originalArgv = _ref3.originalArgv,
         originalArgv = _ref3$originalArgv === undefined ? false : _ref3$originalArgv;
 
-    var uri, client, _ref5, jwtToken, _ref6, commit, committedAt, committerEmail, committerName, branch, baselineCommits, appPathWithSlash, appUrl, child, isolatorUrl, tunnel, predicate, match, runtimeSpecs, fromCI, exitCode, _ref8, _ref8$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref9, status, buildAutoAcceptChanges, changeCount, errorCount, scriptCommand, confirmed;
+    var uri, client, _process$env, TRAVIS_EVENT_TYPE, TRAVIS_PULL_REQUEST_SLUG, TRAVIS_REPO_SLUG, _ref5, jwtToken, _ref6, commit, committedAt, committerEmail, committerName, branch, isTravisPrBuild, baselineCommits, appPathWithSlash, appUrl, child, isolatorUrl, tunnel, predicate, match, runtimeSpecs, fromCI, exitCode, _ref8, _ref8$createBuild, number, specCount, componentCount, webUrl, onlineHint, _ref9, status, buildAutoAcceptChanges, changeCount, errorCount, scriptCommand, confirmed;
 
     return _regenerator2.default.wrap(function _callee2$(_context2) {
       while (1) {
@@ -306,73 +310,99 @@ exports.default = function () {
           case 0:
             uri = indexUrl + '/graphql';
             client = new _GraphQLClient2.default({ uri: uri });
+            _process$env = process.env, TRAVIS_EVENT_TYPE = _process$env.TRAVIS_EVENT_TYPE, TRAVIS_PULL_REQUEST_SLUG = _process$env.TRAVIS_PULL_REQUEST_SLUG, TRAVIS_REPO_SLUG = _process$env.TRAVIS_REPO_SLUG;
 
+            if (!(TRAVIS_EVENT_TYPE === 'pull_request' && TRAVIS_PULL_REQUEST_SLUG === TRAVIS_REPO_SLUG)) {
+              _context2.next = 6;
+              break;
+            }
+
+            console.log('Didn\'t run Chromatic as this is a Travis PR build for an internal PR.\n\nPlease check the corresponding Travis push build. If you have not enabled push builds, please do so.\nhttp://docs.chromaticqa.com/setup_ci#travis\n');
+            return _context2.abrupt('return', 0);
+
+          case 6:
             if (appCode) {
-              _context2.next = 4;
+              _context2.next = 8;
               break;
             }
 
             throw new Error('You must provide an app code  -- visit https://www.chromaticqa.com to get your code.' + '\nPass your app code with the `CHROMATIC_APP_CODE` environment variable or the `--app-code` flag.');
 
-          case 4:
+          case 8:
             if (!((!scriptName && !noStart || !port) && !url)) {
-              _context2.next = 6;
+              _context2.next = 10;
               break;
             }
 
             throw new Error('You must provide a npm script name (`--script-name`) and port (`--port`) so we can start your app');
 
-          case 6:
-            _context2.prev = 6;
-            _context2.next = 9;
+          case 10:
+            _context2.prev = 10;
+            _context2.next = 13;
             return client.runQuery(TesterCreateAppTokenMutation, {
               appCode: appCode
             });
 
-          case 9:
+          case 13:
             _ref5 = _context2.sent;
             jwtToken = _ref5.createAppToken;
 
             client.setJwtToken(jwtToken);
-            _context2.next = 19;
+            _context2.next = 23;
             break;
 
-          case 14:
-            _context2.prev = 14;
-            _context2.t0 = _context2['catch'](6);
+          case 18:
+            _context2.prev = 18;
+            _context2.t0 = _context2['catch'](10);
 
             if (!(_context2.t0[0] && _context2.t0[0].message && _context2.t0[0].message.match('No app with code'))) {
-              _context2.next = 18;
+              _context2.next = 22;
               break;
             }
 
             throw new Error('Incorrect app code \'' + appCode + '\' -- visit https://www.chromaticqa.com to get your code');
 
-          case 18:
+          case 22:
             throw _context2.t0;
 
-          case 19:
-            _context2.next = 21;
+          case 23:
+            _context2.next = 25;
             return (0, _git.getCommit)();
 
-          case 21:
+          case 25:
             _ref6 = _context2.sent;
             commit = _ref6.commit;
             committedAt = _ref6.committedAt;
             committerEmail = _ref6.committerEmail;
             committerName = _ref6.committerName;
-            _context2.next = 28;
+            _context2.next = 32;
             return (0, _git.getBranch)();
 
-          case 28:
+          case 32:
             branch = _context2.sent;
+            isTravisPrBuild = process.env.TRAVIS_EVENT_TYPE === 'pull_request';
+
+            // Travis PR builds are weird, we want to ensure we mark build against the commit that was
+            // merged from, rather than the resulting "psuedo" merge commit that doesn't stick around in the
+            // history of the project (so approvals will get lost). We also have to ensure we use the right branch.
+
+            if (isTravisPrBuild) {
+              commit = process.env.TRAVIS_PULL_REQUEST_SHA;
+              branch = process.env.TRAVIS_PULL_REQUEST_BRANCH;
+            }
+
+            // On certain CI systems, a branch is not checked out (instead a detached head) is used for the commit.
+            if (branch === 'HEAD') {
+              // $BRANCH is for netlify: https://www.netlify.com/docs/continuous-deployment/
+              branch = (0, _envCi2.default)().branch || process.env.BRANCH || branch;
+            }
 
             debug('git info: ' + (0, _stringify2.default)({ commit: commit, committedAt: committedAt, branch: branch }));
 
-            _context2.next = 32;
+            _context2.next = 39;
             return (0, _git.getBaselineCommits)(client);
 
-          case 32:
+          case 39:
             baselineCommits = _context2.sent;
 
             debug('Found baselineCommits: ' + baselineCommits);
@@ -382,56 +412,56 @@ exports.default = function () {
             child = void 0;
 
             if (!(!noStart && !url)) {
-              _context2.next = 45;
+              _context2.next = 52;
               break;
             }
 
             log('Starting app with `npm run ' + scriptName + '`');
-            _context2.next = 41;
+            _context2.next = 48;
             return (0, _startApp2.default)({ scriptName: scriptName, url: appUrl });
 
-          case 41:
+          case 48:
             child = _context2.sent;
 
             log('Started app on port ' + port);
-            _context2.next = 50;
+            _context2.next = 57;
             break;
 
-          case 45:
-            _context2.next = 47;
+          case 52:
+            _context2.next = 54;
             return (0, _startApp.checkResponse)(appUrl);
 
-          case 47:
+          case 54:
             if (_context2.sent) {
-              _context2.next = 49;
+              _context2.next = 56;
               break;
             }
 
             throw new Error('No server responding at ' + appUrl + ' -- make sure you\'ve started it.');
 
-          case 49:
+          case 56:
             log('Detected app on port ' + port);
 
-          case 50:
+          case 57:
             isolatorUrl = appUrl;
             tunnel = void 0;
 
             if (!(createTunnel && !url)) {
-              _context2.next = 59;
+              _context2.next = 66;
               break;
             }
 
             log('Opening tunnel to Chromatic capture servers');
-            _context2.next = 56;
+            _context2.next = 63;
             return (0, _tunnel2.default)({ tunnelUrl: tunnelUrl, port: port });
 
-          case 56:
+          case 63:
             tunnel = _context2.sent;
 
             debug('Opened tunnel to ' + tunnel.url);
             isolatorUrl = '' + tunnel.url + appPathWithSlash;
 
-          case 59:
+          case 66:
 
             debug('Connecting to ' + isolatorUrl);
             log('Uploading and verifying build (this may take a few minutes depending on your connection)');
@@ -441,21 +471,21 @@ exports.default = function () {
             };
 
             if (!only) {
-              _context2.next = 68;
+              _context2.next = 75;
               break;
             }
 
             match = only.match(/(.*):([^:]*)/);
 
             if (match) {
-              _context2.next = 66;
+              _context2.next = 73;
               break;
             }
 
             throw new Error('--only argument must provided in the from "componentName:specName"');
 
-          case 66:
-            log('Running only the \'' + match[1] + '\' spec of \'' + match[2] + '\'');
+          case 73:
+            log('Running only spec \'' + match[2] + '\' of component \'' + match[1] + '\'');
 
             predicate = function predicate(_ref7) {
               var name = _ref7.name,
@@ -464,24 +494,34 @@ exports.default = function () {
               return name === match[2] && (componentName || otherComponentName) === match[1];
             };
 
-          case 68:
-            _context2.next = 70;
+          case 75:
+            _context2.next = 77;
             return (0, _runtimes2.default)(isolatorUrl, { verbose: verbose });
 
-          case 70:
+          case 77:
             _context2.t1 = predicate;
             runtimeSpecs = _context2.sent.filter(_context2.t1);
 
+            if (!(runtimeSpecs.length === 0)) {
+              _context2.next = 81;
+              break;
+            }
+
+            throw new Error('Cannot run a build with no specs. Please add some specs!');
+
+          case 81:
+
             log('Found ' + runtimeSpecs.length + ' specs');
 
-            fromCI = !!process.env.CI;
+            // REPOSITORY_URL is for netlify: https://www.netlify.com/docs/continuous-deployment/
+            fromCI = !!process.env.CI || !!process.env.REPOSITORY_URL;
 
             debug('Detected build fromCI:' + fromCI);
             debug('Detected package version:' + _package.version);
 
             exitCode = 5;
-            _context2.prev = 77;
-            _context2.next = 80;
+            _context2.prev = 86;
+            _context2.next = 89;
             return client.runQuery(TesterCreateBuildMutation, {
               input: {
                 autoAcceptChanges: autoAcceptChanges,
@@ -491,6 +531,7 @@ exports.default = function () {
                 baselineCommits: baselineCommits,
                 runtimeSpecs: runtimeSpecs,
                 fromCI: fromCI,
+                isTravisPrBuild: isTravisPrBuild,
                 packageVersion: _package.version,
                 committerEmail: committerEmail,
                 committerName: committerName
@@ -498,7 +539,7 @@ exports.default = function () {
               isolatorUrl: isolatorUrl
             });
 
-          case 80:
+          case 89:
             _ref8 = _context2.sent;
             _ref8$createBuild = _ref8.createBuild;
             number = _ref8$createBuild.number;
@@ -509,102 +550,102 @@ exports.default = function () {
 
             log('Started Build ' + number + ' ' + ('(' + pluralize(componentCount, 'component') + ', ' + pluralize(specCount, 'spec') + ').\n\n' + onlineHint + '.'));
 
-            _context2.next = 90;
+            _context2.next = 99;
             return waitForBuild(client, {
               buildNumber: number
             });
 
-          case 90:
+          case 99:
             _ref9 = _context2.sent;
             status = _ref9.status;
             buildAutoAcceptChanges = _ref9.autoAcceptChanges;
             changeCount = _ref9.changeCount;
             errorCount = _ref9.errorCount;
             _context2.t2 = status;
-            _context2.next = _context2.t2 === 'BUILD_PASSED' ? 98 : _context2.t2 === 'BUILD_ACCEPTED' ? 101 : _context2.t2 === 'BUILD_PENDING' ? 101 : _context2.t2 === 'BUILD_DENIED' ? 101 : _context2.t2 === 'BUILD_FAILED' ? 105 : _context2.t2 === 'BUILD_TIMED_OUT' ? 108 : _context2.t2 === 'BUILD_ERROR' ? 111 : 114;
+            _context2.next = _context2.t2 === 'BUILD_PASSED' ? 107 : _context2.t2 === 'BUILD_ACCEPTED' ? 110 : _context2.t2 === 'BUILD_PENDING' ? 110 : _context2.t2 === 'BUILD_DENIED' ? 110 : _context2.t2 === 'BUILD_FAILED' ? 114 : _context2.t2 === 'BUILD_TIMED_OUT' ? 117 : _context2.t2 === 'BUILD_ERROR' ? 120 : 123;
             break;
 
-          case 98:
+          case 107:
             log('Build ' + number + ' passed! ' + onlineHint + '.');
             exitCode = 0;
-            return _context2.abrupt('break', 115);
+            return _context2.abrupt('break', 124);
 
-          case 101:
+          case 110:
             log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
             exitCode = exitZeroOnChanges || buildAutoAcceptChanges ? 0 : 1;
             if (exitCode !== 0) {
               log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case.\n  Alternatively, pass --auto-accept-changes if you want changed builds to pass on this branch.\n  Read more: http://docs.chromaticqa.com/test');
             }
-            return _context2.abrupt('break', 115);
-
-          case 105:
-            log('Build ' + number + ' has ' + pluralize(errorCount, 'error') + '. ' + onlineHint + '.');
-            exitCode = 2;
-            return _context2.abrupt('break', 115);
-
-          case 108:
-            log('Build ' + number + ' has timed out. Ensure your machine is connected to the internet and please try again.');
-            exitCode = 3;
-            return _context2.abrupt('break', 115);
-
-          case 111:
-            log('Build ' + number + ' has failed to run. Our apologies. Please try again.');
-            exitCode = 4;
-            return _context2.abrupt('break', 115);
+            return _context2.abrupt('break', 124);
 
           case 114:
-            throw new Error('Unexpected build status: ' + status);
-
-          case 115:
-            _context2.next = 125;
-            break;
+            log('Build ' + number + ' has ' + pluralize(errorCount, 'error') + '. ' + onlineHint + '.');
+            exitCode = 2;
+            return _context2.abrupt('break', 124);
 
           case 117:
-            _context2.prev = 117;
-            _context2.t3 = _context2['catch'](77);
+            log('Build ' + number + ' has timed out. Ensure your machine is connected to the internet and please try again.');
+            exitCode = 3;
+            return _context2.abrupt('break', 124);
+
+          case 120:
+            log('Build ' + number + ' has failed to run. Our apologies. Please try again.');
+            exitCode = 4;
+            return _context2.abrupt('break', 124);
+
+          case 123:
+            throw new Error('Unexpected build status: ' + status);
+
+          case 124:
+            _context2.next = 134;
+            break;
+
+          case 126:
+            _context2.prev = 126;
+            _context2.t3 = _context2['catch'](86);
 
             if (!(_context2.t3.length && _context2.t3[0] && _context2.t3[0].message.match(/Cannot run a build with no specs./))) {
-              _context2.next = 124;
+              _context2.next = 133;
               break;
             }
 
             log(_context2.t3[0].message);
             exitCode = 255;
-            _context2.next = 125;
+            _context2.next = 134;
             break;
 
-          case 124:
+          case 133:
             throw _context2.t3;
 
-          case 125:
-            _context2.prev = 125;
+          case 134:
+            _context2.prev = 134;
 
             if (tunnel) {
               tunnel.close();
             }
 
             if (!child) {
-              _context2.next = 130;
+              _context2.next = 139;
               break;
             }
 
-            _context2.next = 130;
+            _context2.next = 139;
             return (0, _denodeify2.default)(_treeKill2.default)(child.pid, 'SIGHUP');
 
-          case 130:
-            return _context2.finish(125);
+          case 139:
+            return _context2.finish(134);
 
-          case 131:
+          case 140:
             if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
-              _context2.next = 138;
+              _context2.next = 147;
               break;
             }
 
             scriptCommand = ('chromatic test ' + originalArgv.slice(2).join(' ')).replace(/--app-code[= ]\S+/, '');
-            _context2.next = 135;
+            _context2.next = 144;
             return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
 
-          case 135:
+          case 144:
             confirmed = _context2.sent;
 
             if (confirmed) {
@@ -619,15 +660,15 @@ exports.default = function () {
             // eslint-disable-next-line no-console
             console.log('\nMake sure you set the `CHROMATIC_APP_CODE` environment variable when running builds (in particular on your CI server).');
 
-          case 138:
+          case 147:
             return _context2.abrupt('return', exitCode);
 
-          case 139:
+          case 148:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[6, 14], [77, 117, 125, 131]]);
+    }, _callee2, this, [[10, 18], [86, 126, 134, 140]]);
   }));
 
   function runTest(_x3) {
@@ -651,6 +692,12 @@ module.exports = require("tree-kill");
 
 /***/ }),
 /* 14 */
+/***/ (function(module, exports) {
+
+module.exports = require("env-ci");
+
+/***/ }),
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -676,7 +723,7 @@ var _promise = __webpack_require__(2);
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _keys = __webpack_require__(15);
+var _keys = __webpack_require__(16);
 
 var _keys2 = _interopRequireDefault(_keys);
 
@@ -692,7 +739,7 @@ var _createClass2 = __webpack_require__(8);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _jsdom = __webpack_require__(16);
+var _jsdom = __webpack_require__(17);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -902,19 +949,19 @@ exports.default = function () {
 }();
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = require("babel-runtime/core-js/object/keys");
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports) {
 
 module.exports = require("jsdom");
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1062,7 +1109,7 @@ var waitForResponse = function () {
 
 var _child_process = __webpack_require__(10);
 
-var _isomorphicFetch = __webpack_require__(18);
+var _isomorphicFetch = __webpack_require__(19);
 
 var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
@@ -1131,13 +1178,13 @@ exports.default = function () {
 }();
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
 module.exports = require("isomorphic-fetch");
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1155,7 +1202,7 @@ var _asyncToGenerator2 = __webpack_require__(1);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _localtunnel = __webpack_require__(20);
+var _localtunnel = __webpack_require__(21);
 
 var _localtunnel2 = _interopRequireDefault(_localtunnel);
 
@@ -1202,13 +1249,13 @@ exports.default = function () {
 }();
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports) {
 
 module.exports = require("localtunnel");
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1218,18 +1265,18 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _values = __webpack_require__(22);
+var _values = __webpack_require__(23);
 
 var _values2 = _interopRequireDefault(_values);
 
 exports.checkPackageJson = checkPackageJson;
 exports.addScriptToPackageJson = addScriptToPackageJson;
 
-var _path = __webpack_require__(23);
+var _path = __webpack_require__(24);
 
 var _path2 = _interopRequireDefault(_path);
 
-var _jsonfile = __webpack_require__(24);
+var _jsonfile = __webpack_require__(25);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1265,25 +1312,25 @@ function addScriptToPackageJson(scriptName, scriptCommand) {
 }
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports) {
 
 module.exports = require("babel-runtime/core-js/object/values");
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports) {
 
 module.exports = require("path");
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports) {
 
 module.exports = require("jsonfile");
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1313,7 +1360,7 @@ var _createClass2 = __webpack_require__(8);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _apolloFetch = __webpack_require__(26);
+var _apolloFetch = __webpack_require__(27);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1426,13 +1473,13 @@ var GraphQLClient = function () {
 exports.default = GraphQLClient;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports) {
 
 module.exports = require("apollo-fetch");
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1447,7 +1494,7 @@ var _toConsumableArray2 = __webpack_require__(6);
 
 var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
-var _slicedToArray2 = __webpack_require__(28);
+var _slicedToArray2 = __webpack_require__(29);
 
 var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
 
@@ -1476,8 +1523,8 @@ var execGitCommand = function () {
             _context.prev = 6;
             _context.t0 = _context['catch'](0);
 
-            // eslint-disable-next-line no-console
             if (_context.t0.message && _context.t0.message.match('Not a git repository')) {
+              // eslint-disable-next-line no-console
               console.error('Unable to execute git command \'' + command + '\'.\n');
               // eslint-disable-next-line no-console
               console.error('Chromatic only works in git projects.\n' + 'Contact us at support@hichroma.com if you need to use Chromatic outside of one.\n\n');
@@ -1537,28 +1584,13 @@ var getCommit = exports.getCommit = function () {
 
 var getBranch = exports.getBranch = function () {
   var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
-    var branch;
     return _regenerator2.default.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            _context3.next = 2;
-            return execGitCommand('git rev-parse --abbrev-ref HEAD');
+            return _context3.abrupt('return', execGitCommand('git rev-parse --abbrev-ref HEAD'));
 
-          case 2:
-            branch = _context3.sent;
-
-            if (!(branch === 'HEAD')) {
-              _context3.next = 5;
-              break;
-            }
-
-            return _context3.abrupt('return', process.env.CI_BRANCH || branch);
-
-          case 5:
-            return _context3.abrupt('return', branch);
-
-          case 6:
+          case 1:
           case 'end':
             return _context3.stop();
         }
@@ -1568,6 +1600,40 @@ var getBranch = exports.getBranch = function () {
 
   return function getBranch() {
     return _ref3.apply(this, arguments);
+  };
+}();
+
+// Check if a commit exists in the repository
+
+
+var commitExists = function () {
+  var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(commit) {
+    return _regenerator2.default.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            _context4.prev = 0;
+            _context4.next = 3;
+            return execGitCommand('git cat-file -e ' + commit + '^{commit}');
+
+          case 3:
+            return _context4.abrupt('return', true);
+
+          case 6:
+            _context4.prev = 6;
+            _context4.t0 = _context4['catch'](0);
+            return _context4.abrupt('return', false);
+
+          case 9:
+          case 'end':
+            return _context4.stop();
+        }
+      }
+    }, _callee4, this, [[0, 6]]);
+  }));
+
+  return function commitExists(_x2) {
+    return _ref4.apply(this, arguments);
   };
 }();
 
@@ -1587,169 +1653,43 @@ var getBranch = exports.getBranch = function () {
 // that do have builds: a list of the ancestors of HEAD that are not accestors of
 // `commitsWithBuilds`.
 //
-// The other complexity is that if we know a few `commitsWithBuilds` from the server
-// we don't know immediately which of those are the nearer ancestor to HEAD
-// (and thus shoudl be used as the baseline).
-// However, the `--boundary` argument will tell us exactly where we stop in the
-// history in travelling back from HEAD.
-//
-// If we stop at a commit that has a build, then it is a baseline!
-// If we stop at a commit that *does not* have a build, that means that commit
-// branched off another commit that *is* an ancestor of a commit that does have a build.
-// [If this sentence is confusing, see the 'partial' test for some clarity]
-// So also long as we've checked every commit on the path back to that commit, we can stop.
-var nextCommitsAndBoundaries = function () {
-  var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(limit, _ref4) {
-    var firstCommittedAtSeconds = _ref4.firstCommittedAtSeconds,
-        commitsWithBuilds = _ref4.commitsWithBuilds,
-        commitsWithoutBuilds = _ref4.commitsWithoutBuilds;
-    var command, commits, boundaryCommits, nextCommits;
-    return _regenerator2.default.wrap(function _callee4$(_context4) {
+var nextCommits = function () {
+  var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(limit, _ref5) {
+    var firstCommittedAtSeconds = _ref5.firstCommittedAtSeconds,
+        commitsWithBuilds = _ref5.commitsWithBuilds,
+        commitsWithoutBuilds = _ref5.commitsWithoutBuilds;
+    var command, commits;
+    return _regenerator2.default.wrap(function _callee5$(_context5) {
       while (1) {
-        switch (_context4.prev = _context4.next) {
+        switch (_context5.prev = _context5.next) {
           case 0:
             // We want the next limit commits that aren't "covered" by `commitsWithBuilds`
             // This will print out all commits in `commitsWithoutBuilds` (except if they are covered),
             // so we ask enough that we'll definitely get `limit` unknown commits
-            command = 'git rev-list HEAD --boundary       ' + (firstCommittedAtSeconds ? '--since ' + firstCommittedAtSeconds : '') + '       -n ' + (limit + commitsWithoutBuilds.length) + ' --not ' + commitsForCLI(commitsWithBuilds);
+            command = 'git rev-list HEAD       ' + (firstCommittedAtSeconds ? '--since ' + firstCommittedAtSeconds : '') + '       -n ' + (limit + commitsWithoutBuilds.length) + ' --not ' + commitsForCLI(commitsWithBuilds);
 
             debug('running ' + command);
-            _context4.next = 4;
+            _context5.next = 4;
             return execGitCommand(command);
 
           case 4:
-            _context4.t0 = function (c) {
+            _context5.t0 = function (c) {
               return !!c;
             };
 
-            commits = _context4.sent.split('\n').filter(_context4.t0);
+            commits = _context5.sent.split('\n').filter(_context5.t0);
 
             debug('command output: ' + commits);
 
-            // Boundary commits are listed with a `-` in front of the hash
-            boundaryCommits = commits.filter(function (c) {
-              return c[0] === '-';
-            }).map(function (c) {
-              return c.slice(1);
-            })
-            // We want the commitsWithBuilds on the boundary. There may be others on the boundary.
-            .filter(function (c) {
-              return commitsWithBuilds.includes(c);
-            });
-            nextCommits = commits
-            // Both boundary and non boundary commits are candidates for builds
-            .map(function (c) {
-              return c[0] === '-' ? c.slice(1) : c;
-            })
+            return _context5.abrupt('return', commits
             // No sense in checking commits we already know about
             .filter(function (c) {
               return !commitsWithBuilds.includes(c);
             }).filter(function (c) {
               return !commitsWithoutBuilds.includes(c);
-            }).slice(0, limit);
-            return _context4.abrupt('return', {
-              nextCommits: nextCommits,
-              boundaryCommits: boundaryCommits
-            });
+            }).slice(0, limit));
 
-          case 10:
-          case 'end':
-            return _context4.stop();
-        }
-      }
-    }, _callee4, this);
-  }));
-
-  return function nextCommitsAndBoundaries(_x2, _x3) {
-    return _ref5.apply(this, arguments);
-  };
-}();
-
-// Exponentially iterate `limit` up to infinity to find baselines
-
-
-var step = function () {
-  var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(client, limit, _ref6) {
-    var headCommit = _ref6.headCommit,
-        firstCommittedAtSeconds = _ref6.firstCommittedAtSeconds,
-        commitsWithBuilds = _ref6.commitsWithBuilds,
-        commitsWithoutBuilds = _ref6.commitsWithoutBuilds;
-
-    var _ref8, nextCommits, boundaryCommits, _ref9, newCommitsWithBuilds, newCommitsWithoutBuilds;
-
-    return _regenerator2.default.wrap(function _callee5$(_context5) {
-      while (1) {
-        switch (_context5.prev = _context5.next) {
-          case 0:
-            debug('step: checking ' + limit + ' up to ' + firstCommittedAtSeconds);
-            debug('step: commitsWithBuilds: ' + commitsWithBuilds);
-            debug('step: commitsWithoutBuilds: ' + commitsWithoutBuilds);
-
-            _context5.next = 5;
-            return nextCommitsAndBoundaries(limit, {
-              firstCommittedAtSeconds: firstCommittedAtSeconds,
-              commitsWithBuilds: commitsWithBuilds,
-              commitsWithoutBuilds: commitsWithoutBuilds
-            });
-
-          case 5:
-            _ref8 = _context5.sent;
-            nextCommits = _ref8.nextCommits;
-            boundaryCommits = _ref8.boundaryCommits;
-
-
-            debug('step: nextCommits: ' + nextCommits);
-            debug('step: boundaryCommits: ' + boundaryCommits);
-
-            // No more commits uncovered by boundaryCommits!
-
-            if (!(nextCommits.length === 0)) {
-              _context5.next = 13;
-              break;
-            }
-
-            debug('step: no nextCommits; we are done');
-            return _context5.abrupt('return', boundaryCommits);
-
-          case 13:
-            _context5.next = 15;
-            return client.runQuery(TesterHasBuildsWithCommitsQuery, {
-              commits: nextCommits
-            });
-
-          case 15:
-            _ref9 = _context5.sent;
-            newCommitsWithBuilds = _ref9.app.hasBuildsWithCommits;
-
-            debug('step: newCommitsWithBuilds: ' + newCommitsWithBuilds);
-
-            // Special case -- if there is an existing build for the current HEAD,
-            // we can short circuit any more work; also this is important because
-            // `git rev-list --boundary` doesn't treat HEAD as a boundary
-
-            if (!newCommitsWithBuilds.find(function (c) {
-              return c === headCommit;
-            })) {
-              _context5.next = 21;
-              break;
-            }
-
-            debug('step: HEAD has a build; short circuiting');
-            return _context5.abrupt('return', [headCommit]);
-
-          case 21:
-            newCommitsWithoutBuilds = nextCommits.filter(function (commit) {
-              return !newCommitsWithBuilds.find(function (c) {
-                return c === commit;
-              });
-            });
-            return _context5.abrupt('return', step(client, limit * 2, {
-              firstCommittedAtSeconds: firstCommittedAtSeconds,
-              commitsWithBuilds: [].concat((0, _toConsumableArray3.default)(commitsWithBuilds), (0, _toConsumableArray3.default)(newCommitsWithBuilds)),
-              commitsWithoutBuilds: [].concat((0, _toConsumableArray3.default)(commitsWithoutBuilds), (0, _toConsumableArray3.default)(newCommitsWithoutBuilds))
-            }));
-
-          case 23:
+          case 8:
           case 'end':
             return _context5.stop();
         }
@@ -1757,52 +1697,56 @@ var step = function () {
     }, _callee5, this);
   }));
 
-  return function step(_x4, _x5, _x6) {
-    return _ref7.apply(this, arguments);
+  return function nextCommits(_x3, _x4) {
+    return _ref6.apply(this, arguments);
   };
 }();
 
-// eslint-disable-next-line import/prefer-default-export
+// Which of the listed commits are "maximally descendent":
+// ie c in commits such that there are no descendents of c in commits.
 
 
-var getBaselineCommits = exports.getBaselineCommits = function () {
-  var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(client) {
-    var _ref11, firstBuild, _ref12, commit;
-
+var maximallyDescendentCommits = function () {
+  var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(commits) {
+    var parentCommits, command, maxCommits;
     return _regenerator2.default.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            _context6.next = 2;
-            return client.runQuery(TesterFirstCommittedAtQuery);
-
-          case 2:
-            _ref11 = _context6.sent;
-            firstBuild = _ref11.app.firstBuild;
-
-            if (firstBuild) {
-              _context6.next = 7;
+            if (!(commits.length === 0)) {
+              _context6.next = 2;
               break;
             }
 
-            debug('App has no builds, returning []');
-            return _context6.abrupt('return', []);
+            return _context6.abrupt('return', commits);
+
+          case 2:
+
+            // <commit>^@ expands to all parents of commit
+            parentCommits = commits.map(function (c) {
+              return c + '^@';
+            });
+            // List the tree from <commits> not including the tree from <parentCommits>
+            // This just filters any commits that are ancestors of other commits
+
+            command = 'git rev-list ' + commitsForCLI(commits) + ' --not ' + commitsForCLI(parentCommits);
+
+            debug('running ' + command);
+            _context6.next = 7;
+            return execGitCommand(command);
 
           case 7:
-            _context6.next = 9;
-            return getCommit();
+            _context6.t0 = function (c) {
+              return !!c;
+            };
 
-          case 9:
-            _ref12 = _context6.sent;
-            commit = _ref12.commit;
-            return _context6.abrupt('return', step(client, FETCH_N_INITIAL_BUILD_COMMITS, {
-              headCommit: commit,
-              firstCommittedAtSeconds: firstBuild.committedAt && firstBuild.committedAt / 1000,
-              commitsWithBuilds: [],
-              commitsWithoutBuilds: []
-            }));
+            maxCommits = _context6.sent.split('\n').filter(_context6.t0);
 
-          case 12:
+            debug('command output: ' + maxCommits);
+
+            return _context6.abrupt('return', maxCommits);
+
+          case 11:
           case 'end':
             return _context6.stop();
         }
@@ -1810,8 +1754,197 @@ var getBaselineCommits = exports.getBaselineCommits = function () {
     }, _callee6, this);
   }));
 
-  return function getBaselineCommits(_x7) {
-    return _ref10.apply(this, arguments);
+  return function maximallyDescendentCommits(_x5) {
+    return _ref7.apply(this, arguments);
+  };
+}();
+
+// Exponentially iterate `limit` up to infinity to find a "covering" set of commits with builds
+
+
+var step = function () {
+  var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(client, limit, _ref8) {
+    var firstCommittedAtSeconds = _ref8.firstCommittedAtSeconds,
+        commitsWithBuilds = _ref8.commitsWithBuilds,
+        commitsWithoutBuilds = _ref8.commitsWithoutBuilds;
+
+    var candidateCommits, _ref10, newCommitsWithBuilds, newCommitsWithoutBuilds;
+
+    return _regenerator2.default.wrap(function _callee7$(_context7) {
+      while (1) {
+        switch (_context7.prev = _context7.next) {
+          case 0:
+            debug('step: checking ' + limit + ' up to ' + firstCommittedAtSeconds);
+            debug('step: commitsWithBuilds: ' + commitsWithBuilds);
+            debug('step: commitsWithoutBuilds: ' + commitsWithoutBuilds);
+
+            _context7.next = 5;
+            return nextCommits(limit, {
+              firstCommittedAtSeconds: firstCommittedAtSeconds,
+              commitsWithBuilds: commitsWithBuilds,
+              commitsWithoutBuilds: commitsWithoutBuilds
+            });
+
+          case 5:
+            candidateCommits = _context7.sent;
+
+
+            debug('step: candidateCommits: ' + candidateCommits);
+
+            // No more commits uncovered commitsWithBuilds!
+
+            if (!(candidateCommits.length === 0)) {
+              _context7.next = 10;
+              break;
+            }
+
+            debug('step: no candidateCommits; we are done');
+            return _context7.abrupt('return', commitsWithBuilds);
+
+          case 10:
+            _context7.next = 12;
+            return client.runQuery(TesterHasBuildsWithCommitsQuery, {
+              commits: candidateCommits
+            });
+
+          case 12:
+            _ref10 = _context7.sent;
+            newCommitsWithBuilds = _ref10.app.hasBuildsWithCommits;
+
+            debug('step: newCommitsWithBuilds: ' + newCommitsWithBuilds);
+
+            newCommitsWithoutBuilds = candidateCommits.filter(function (commit) {
+              return !newCommitsWithBuilds.find(function (c) {
+                return c === commit;
+              });
+            });
+            return _context7.abrupt('return', step(client, limit * 2, {
+              firstCommittedAtSeconds: firstCommittedAtSeconds,
+              commitsWithBuilds: [].concat((0, _toConsumableArray3.default)(commitsWithBuilds), (0, _toConsumableArray3.default)(newCommitsWithBuilds)),
+              commitsWithoutBuilds: [].concat((0, _toConsumableArray3.default)(commitsWithoutBuilds), (0, _toConsumableArray3.default)(newCommitsWithoutBuilds))
+            }));
+
+          case 17:
+          case 'end':
+            return _context7.stop();
+        }
+      }
+    }, _callee7, this);
+  }));
+
+  return function step(_x6, _x7, _x8) {
+    return _ref9.apply(this, arguments);
+  };
+}();
+
+// eslint-disable-next-line import/prefer-default-export
+
+
+var getBaselineCommits = exports.getBaselineCommits = function () {
+  var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(client) {
+    var branch, _ref12, committedAt, _ref13, _ref13$app, firstBuild, lastBuild, initialCommitsWithBuilds, extraBaselineCommits, commitsWithBuilds;
+
+    return _regenerator2.default.wrap(function _callee8$(_context8) {
+      while (1) {
+        switch (_context8.prev = _context8.next) {
+          case 0:
+            _context8.next = 2;
+            return getBranch();
+
+          case 2:
+            branch = _context8.sent;
+            _context8.next = 5;
+            return getCommit();
+
+          case 5:
+            _ref12 = _context8.sent;
+            committedAt = _ref12.committedAt;
+            _context8.next = 9;
+            return client.runQuery(TesterFirstCommittedAtQuery, {
+              branch: branch
+            });
+
+          case 9:
+            _ref13 = _context8.sent;
+            _ref13$app = _ref13.app;
+            firstBuild = _ref13$app.firstBuild;
+            lastBuild = _ref13$app.lastBuild;
+
+            debug('App firstBuild: ' + firstBuild + ', lastBuild: ' + lastBuild);
+
+            if (firstBuild) {
+              _context8.next = 17;
+              break;
+            }
+
+            debug('App has no builds, returning []');
+            return _context8.abrupt('return', []);
+
+          case 17:
+            initialCommitsWithBuilds = [];
+            extraBaselineCommits = [];
+
+            // Don't do any special branching logic for builds on `HEAD`, this is fairly meaningless
+            // (CI systems that have been pushed tags can not set a branch)
+
+            if (!(branch !== 'HEAD' && lastBuild && lastBuild.committedAt <= committedAt)) {
+              _context8.next = 28;
+              break;
+            }
+
+            _context8.next = 22;
+            return commitExists(lastBuild.commit);
+
+          case 22:
+            if (!_context8.sent) {
+              _context8.next = 26;
+              break;
+            }
+
+            initialCommitsWithBuilds.push(lastBuild.commit);
+            _context8.next = 28;
+            break;
+
+          case 26:
+            debug('Last build commit not in index, blindly appending to baselines');
+            extraBaselineCommits.push(lastBuild.commit);
+
+          case 28:
+            _context8.next = 30;
+            return step(client, FETCH_N_INITIAL_BUILD_COMMITS, {
+              firstCommittedAtSeconds: firstBuild.committedAt && firstBuild.committedAt / 1000,
+              commitsWithBuilds: initialCommitsWithBuilds,
+              commitsWithoutBuilds: []
+            });
+
+          case 30:
+            commitsWithBuilds = _context8.sent;
+
+
+            debug('Final commitsWithBuilds: ' + commitsWithBuilds);
+
+            // For any pair A,B of builds, there is no point in using B if it is an ancestor of A.
+            _context8.t0 = [];
+            _context8.t1 = extraBaselineCommits;
+            _context8.t2 = _toConsumableArray3.default;
+            _context8.next = 37;
+            return maximallyDescendentCommits(commitsWithBuilds);
+
+          case 37:
+            _context8.t3 = _context8.sent;
+            _context8.t4 = (0, _context8.t2)(_context8.t3);
+            return _context8.abrupt('return', _context8.t0.concat.call(_context8.t0, _context8.t1, _context8.t4));
+
+          case 40:
+          case 'end':
+            return _context8.stop();
+        }
+      }
+    }, _callee8, this);
+  }));
+
+  return function getBaselineCommits(_x9) {
+    return _ref11.apply(this, arguments);
   };
 }();
 
@@ -1831,7 +1964,7 @@ var debug = (0, _debug2.default)('react-chromatic:tester:git');
 
 var FETCH_N_INITIAL_BUILD_COMMITS = exports.FETCH_N_INITIAL_BUILD_COMMITS = 20;
 
-var TesterFirstCommittedAtQuery = '\n  query TesterFirstCommittedAtQuery {\n    app {\n      firstBuild {\n        committedAt\n      }\n    }\n  }\n';
+var TesterFirstCommittedAtQuery = '\n  query TesterFirstCommittedAtQuery($branch: String!) {\n    app {\n      firstBuild(sortByCommittedAt: true) {\n        committedAt\n      }\n      lastBuild(branch: $branch, sortByCommittedAt: true) {\n        commit\n        committedAt\n      }\n    }\n  }\n';
 
 var TesterHasBuildsWithCommitsQuery = '\n  query TesterHasBuildsWithCommitsQuery($commits: [String!]!) {\n    app {\n      hasBuildsWithCommits(commits: $commits)\n    }\n  }\n';
 
@@ -1842,19 +1975,19 @@ function commitsForCLI(commits) {
 }
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports) {
 
 module.exports = require("babel-runtime/helpers/slicedToArray");
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports) {
 
-module.exports = {"name":"react-chromatic","version":"0.8.2-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"../../node_modules/.bin/babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"../../node_modules/.bin/webpack","build":"../../node_modules/.bin/npm-run-all --serial -l build:**","prepare":"npm run build","dev":"../../node_modules/.bin/npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","tmp":"^0.0.33","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
+module.exports = {"name":"react-chromatic","version":"0.8.2-beta.0","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"../../node_modules/.bin/babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"../../node_modules/.bin/webpack","build":"../../node_modules/.bin/npm-run-all --serial -l build:**","prepare":"npm run build","dev":"../../node_modules/.bin/npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","env-ci":"^1.5.0","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","tmp":"^0.0.33","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
