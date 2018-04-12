@@ -1547,7 +1547,7 @@ var getCommit = exports.getCommit = function () {
 
 var getBranch = exports.getBranch = function () {
   var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
-    var branch;
+    var branch, envCiBranch;
     return _regenerator2.default.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -1559,16 +1559,26 @@ var getBranch = exports.getBranch = function () {
             branch = _context3.sent;
 
             if (!(branch === 'HEAD')) {
-              _context3.next = 5;
+              _context3.next = 8;
               break;
             }
 
-            return _context3.abrupt('return', (0, _envCi2.default)().branch || process.env.BRANCH || branch);
+            envCiBranch = (0, _envCi2.default)().branch;
 
-          case 5:
+            if (!(envCiBranch !== 'HEAD')) {
+              _context3.next = 7;
+              break;
+            }
+
+            return _context3.abrupt('return', envCiBranch);
+
+          case 7:
+            return _context3.abrupt('return', process.env.BRANCH || branch);
+
+          case 8:
             return _context3.abrupt('return', branch);
 
-          case 6:
+          case 9:
           case 'end':
             return _context3.stop();
         }
