@@ -312,73 +312,69 @@ exports.default = function () {
             client = new _GraphQLClient2.default({ uri: uri });
             _process$env = process.env, TRAVIS_EVENT_TYPE = _process$env.TRAVIS_EVENT_TYPE, TRAVIS_PULL_REQUEST_SLUG = _process$env.TRAVIS_PULL_REQUEST_SLUG, TRAVIS_REPO_SLUG = _process$env.TRAVIS_REPO_SLUG;
 
-            if (!(TRAVIS_EVENT_TYPE === 'pull_request' && TRAVIS_PULL_REQUEST_SLUG === TRAVIS_REPO_SLUG)) {
-              _context2.next = 6;
-              break;
+            if (TRAVIS_EVENT_TYPE === 'pull_request' && TRAVIS_PULL_REQUEST_SLUG === TRAVIS_REPO_SLUG) {
+              // eslint-disable-next-line no-console
+              console.warn('WARNING: Running Chromatic on a Travis PR build from an internal branch.\n\nIt is recommended to run Chromatic on the push builds from Travis where possible.\nWe advise turning on push builds and disabling Chromatic for internal PR builds.\nRead more: http://docs.chromaticqa.com/setup_ci#travis\n');
             }
 
-            console.log('Didn\'t run Chromatic as this is a Travis PR build for an internal PR.\n\nPlease check the corresponding Travis push build. If you have not enabled push builds, please do so.\nhttp://docs.chromaticqa.com/setup_ci#travis\n');
-            return _context2.abrupt('return', 0);
-
-          case 6:
             if (appCode) {
-              _context2.next = 8;
+              _context2.next = 6;
               break;
             }
 
             throw new Error('You must provide an app code  -- visit https://www.chromaticqa.com to get your code.' + '\nPass your app code with the `CHROMATIC_APP_CODE` environment variable or the `--app-code` flag.');
 
-          case 8:
+          case 6:
             if (!((!scriptName && !noStart || !port) && !url)) {
-              _context2.next = 10;
+              _context2.next = 8;
               break;
             }
 
             throw new Error('You must provide a npm script name (`--script-name`) and port (`--port`) so we can start your app');
 
-          case 10:
-            _context2.prev = 10;
-            _context2.next = 13;
+          case 8:
+            _context2.prev = 8;
+            _context2.next = 11;
             return client.runQuery(TesterCreateAppTokenMutation, {
               appCode: appCode
             });
 
-          case 13:
+          case 11:
             _ref5 = _context2.sent;
             jwtToken = _ref5.createAppToken;
 
             client.setJwtToken(jwtToken);
-            _context2.next = 23;
+            _context2.next = 21;
             break;
 
-          case 18:
-            _context2.prev = 18;
-            _context2.t0 = _context2['catch'](10);
+          case 16:
+            _context2.prev = 16;
+            _context2.t0 = _context2['catch'](8);
 
             if (!(_context2.t0[0] && _context2.t0[0].message && _context2.t0[0].message.match('No app with code'))) {
-              _context2.next = 22;
+              _context2.next = 20;
               break;
             }
 
             throw new Error('Incorrect app code \'' + appCode + '\' -- visit https://www.chromaticqa.com to get your code');
 
-          case 22:
+          case 20:
             throw _context2.t0;
 
-          case 23:
-            _context2.next = 25;
+          case 21:
+            _context2.next = 23;
             return (0, _git.getCommit)();
 
-          case 25:
+          case 23:
             _ref6 = _context2.sent;
             commit = _ref6.commit;
             committedAt = _ref6.committedAt;
             committerEmail = _ref6.committerEmail;
             committerName = _ref6.committerName;
-            _context2.next = 32;
+            _context2.next = 30;
             return (0, _git.getBranch)();
 
-          case 32:
+          case 30:
             branch = _context2.sent;
             isTravisPrBuild = process.env.TRAVIS_EVENT_TYPE === 'pull_request';
 
@@ -391,18 +387,23 @@ exports.default = function () {
               branch = process.env.TRAVIS_PULL_REQUEST_BRANCH;
             }
 
-            // On certain CI systems, a branch is not checked out (instead a detached head) is used for the commit.
+            // On certain CI systems, a branch is not checked out
+            // (instead a detached head is used for the commit).
             if (branch === 'HEAD') {
+              branch = (0, _envCi2.default)().branch;
+
               // $BRANCH is for netlify: https://www.netlify.com/docs/continuous-deployment/
-              branch = (0, _envCi2.default)().branch || process.env.BRANCH || branch;
+              if (branch === 'HEAD') {
+                branch = process.env.BRANCH || branch;
+              }
             }
 
             debug('git info: ' + (0, _stringify2.default)({ commit: commit, committedAt: committedAt, branch: branch }));
 
-            _context2.next = 39;
+            _context2.next = 37;
             return (0, _git.getBaselineCommits)(client);
 
-          case 39:
+          case 37:
             baselineCommits = _context2.sent;
 
             debug('Found baselineCommits: ' + baselineCommits);
@@ -412,56 +413,56 @@ exports.default = function () {
             child = void 0;
 
             if (!(!noStart && !url)) {
-              _context2.next = 52;
+              _context2.next = 50;
               break;
             }
 
             log('Starting app with `npm run ' + scriptName + '`');
-            _context2.next = 48;
+            _context2.next = 46;
             return (0, _startApp2.default)({ scriptName: scriptName, url: appUrl });
 
-          case 48:
+          case 46:
             child = _context2.sent;
 
             log('Started app on port ' + port);
-            _context2.next = 57;
+            _context2.next = 55;
             break;
 
-          case 52:
-            _context2.next = 54;
+          case 50:
+            _context2.next = 52;
             return (0, _startApp.checkResponse)(appUrl);
 
-          case 54:
+          case 52:
             if (_context2.sent) {
-              _context2.next = 56;
+              _context2.next = 54;
               break;
             }
 
             throw new Error('No server responding at ' + appUrl + ' -- make sure you\'ve started it.');
 
-          case 56:
+          case 54:
             log('Detected app on port ' + port);
 
-          case 57:
+          case 55:
             isolatorUrl = appUrl;
             tunnel = void 0;
 
             if (!(createTunnel && !url)) {
-              _context2.next = 66;
+              _context2.next = 64;
               break;
             }
 
             log('Opening tunnel to Chromatic capture servers');
-            _context2.next = 63;
+            _context2.next = 61;
             return (0, _tunnel2.default)({ tunnelUrl: tunnelUrl, port: port });
 
-          case 63:
+          case 61:
             tunnel = _context2.sent;
 
             debug('Opened tunnel to ' + tunnel.url);
             isolatorUrl = '' + tunnel.url + appPathWithSlash;
 
-          case 66:
+          case 64:
 
             debug('Connecting to ' + isolatorUrl);
             log('Uploading and verifying build (this may take a few minutes depending on your connection)');
@@ -471,20 +472,20 @@ exports.default = function () {
             };
 
             if (!only) {
-              _context2.next = 75;
+              _context2.next = 73;
               break;
             }
 
             match = only.match(/(.*):([^:]*)/);
 
             if (match) {
-              _context2.next = 73;
+              _context2.next = 71;
               break;
             }
 
             throw new Error('--only argument must provided in the from "componentName:specName"');
 
-          case 73:
+          case 71:
             log('Running only spec \'' + match[2] + '\' of component \'' + match[1] + '\'');
 
             predicate = function predicate(_ref7) {
@@ -494,22 +495,22 @@ exports.default = function () {
               return name === match[2] && (componentName || otherComponentName) === match[1];
             };
 
-          case 75:
-            _context2.next = 77;
+          case 73:
+            _context2.next = 75;
             return (0, _runtimes2.default)(isolatorUrl, { verbose: verbose });
 
-          case 77:
+          case 75:
             _context2.t1 = predicate;
             runtimeSpecs = _context2.sent.filter(_context2.t1);
 
             if (!(runtimeSpecs.length === 0)) {
-              _context2.next = 81;
+              _context2.next = 79;
               break;
             }
 
             throw new Error('Cannot run a build with no specs. Please add some specs!');
 
-          case 81:
+          case 79:
 
             log('Found ' + runtimeSpecs.length + ' specs');
 
@@ -520,8 +521,8 @@ exports.default = function () {
             debug('Detected package version:' + _package.version);
 
             exitCode = 5;
-            _context2.prev = 86;
-            _context2.next = 89;
+            _context2.prev = 84;
+            _context2.next = 87;
             return client.runQuery(TesterCreateBuildMutation, {
               input: {
                 autoAcceptChanges: autoAcceptChanges,
@@ -539,7 +540,7 @@ exports.default = function () {
               isolatorUrl: isolatorUrl
             });
 
-          case 89:
+          case 87:
             _ref8 = _context2.sent;
             _ref8$createBuild = _ref8.createBuild;
             number = _ref8$createBuild.number;
@@ -550,102 +551,102 @@ exports.default = function () {
 
             log('Started Build ' + number + ' ' + ('(' + pluralize(componentCount, 'component') + ', ' + pluralize(specCount, 'spec') + ').\n\n' + onlineHint + '.'));
 
-            _context2.next = 99;
+            _context2.next = 97;
             return waitForBuild(client, {
               buildNumber: number
             });
 
-          case 99:
+          case 97:
             _ref9 = _context2.sent;
             status = _ref9.status;
             buildAutoAcceptChanges = _ref9.autoAcceptChanges;
             changeCount = _ref9.changeCount;
             errorCount = _ref9.errorCount;
             _context2.t2 = status;
-            _context2.next = _context2.t2 === 'BUILD_PASSED' ? 107 : _context2.t2 === 'BUILD_ACCEPTED' ? 110 : _context2.t2 === 'BUILD_PENDING' ? 110 : _context2.t2 === 'BUILD_DENIED' ? 110 : _context2.t2 === 'BUILD_FAILED' ? 114 : _context2.t2 === 'BUILD_TIMED_OUT' ? 117 : _context2.t2 === 'BUILD_ERROR' ? 120 : 123;
+            _context2.next = _context2.t2 === 'BUILD_PASSED' ? 105 : _context2.t2 === 'BUILD_ACCEPTED' ? 108 : _context2.t2 === 'BUILD_PENDING' ? 108 : _context2.t2 === 'BUILD_DENIED' ? 108 : _context2.t2 === 'BUILD_FAILED' ? 112 : _context2.t2 === 'BUILD_TIMED_OUT' ? 115 : _context2.t2 === 'BUILD_ERROR' ? 118 : 121;
             break;
 
-          case 107:
+          case 105:
             log('Build ' + number + ' passed! ' + onlineHint + '.');
             exitCode = 0;
-            return _context2.abrupt('break', 124);
+            return _context2.abrupt('break', 122);
 
-          case 110:
+          case 108:
             log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
             exitCode = exitZeroOnChanges || buildAutoAcceptChanges ? 0 : 1;
             if (exitCode !== 0) {
               log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case.\n  Alternatively, pass --auto-accept-changes if you want changed builds to pass on this branch.\n  Read more: http://docs.chromaticqa.com/test');
             }
-            return _context2.abrupt('break', 124);
+            return _context2.abrupt('break', 122);
 
-          case 114:
+          case 112:
             log('Build ' + number + ' has ' + pluralize(errorCount, 'error') + '. ' + onlineHint + '.');
             exitCode = 2;
-            return _context2.abrupt('break', 124);
+            return _context2.abrupt('break', 122);
 
-          case 117:
+          case 115:
             log('Build ' + number + ' has timed out. Ensure your machine is connected to the internet and please try again.');
             exitCode = 3;
-            return _context2.abrupt('break', 124);
+            return _context2.abrupt('break', 122);
 
-          case 120:
+          case 118:
             log('Build ' + number + ' has failed to run. Our apologies. Please try again.');
             exitCode = 4;
-            return _context2.abrupt('break', 124);
+            return _context2.abrupt('break', 122);
 
-          case 123:
+          case 121:
             throw new Error('Unexpected build status: ' + status);
 
-          case 124:
-            _context2.next = 134;
+          case 122:
+            _context2.next = 132;
             break;
 
-          case 126:
-            _context2.prev = 126;
-            _context2.t3 = _context2['catch'](86);
+          case 124:
+            _context2.prev = 124;
+            _context2.t3 = _context2['catch'](84);
 
             if (!(_context2.t3.length && _context2.t3[0] && _context2.t3[0].message.match(/Cannot run a build with no specs./))) {
-              _context2.next = 133;
+              _context2.next = 131;
               break;
             }
 
             log(_context2.t3[0].message);
             exitCode = 255;
-            _context2.next = 134;
+            _context2.next = 132;
             break;
 
-          case 133:
+          case 131:
             throw _context2.t3;
 
-          case 134:
-            _context2.prev = 134;
+          case 132:
+            _context2.prev = 132;
 
             if (tunnel) {
               tunnel.close();
             }
 
             if (!child) {
-              _context2.next = 139;
+              _context2.next = 137;
               break;
             }
 
-            _context2.next = 139;
+            _context2.next = 137;
             return (0, _denodeify2.default)(_treeKill2.default)(child.pid, 'SIGHUP');
 
-          case 139:
-            return _context2.finish(134);
+          case 137:
+            return _context2.finish(132);
 
-          case 140:
+          case 138:
             if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
-              _context2.next = 147;
+              _context2.next = 145;
               break;
             }
 
             scriptCommand = ('chromatic test ' + originalArgv.slice(2).join(' ')).replace(/--app-code[= ]\S+/, '');
-            _context2.next = 144;
+            _context2.next = 142;
             return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
 
-          case 144:
+          case 142:
             confirmed = _context2.sent;
 
             if (confirmed) {
@@ -660,15 +661,15 @@ exports.default = function () {
             // eslint-disable-next-line no-console
             console.log('\nMake sure you set the `CHROMATIC_APP_CODE` environment variable when running builds (in particular on your CI server).');
 
-          case 147:
+          case 145:
             return _context2.abrupt('return', exitCode);
 
-          case 148:
+          case 146:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[10, 18], [86, 126, 134, 140]]);
+    }, _callee2, this, [[8, 16], [84, 124, 132, 138]]);
   }));
 
   function runTest(_x3) {
