@@ -392,9 +392,9 @@ exports.default = function () {
             if (branch === 'HEAD') {
               branch = (0, _envCi2.default)().branch;
 
-              // $BRANCH is for netlify: https://www.netlify.com/docs/continuous-deployment/
+              // $HEAD is for netlify: https://www.netlify.com/docs/continuous-deployment/
               if (branch === 'HEAD') {
-                branch = process.env.BRANCH || branch;
+                branch = process.env.HEAD || branch;
               }
             }
 
