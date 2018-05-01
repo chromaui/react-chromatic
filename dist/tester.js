@@ -382,40 +382,28 @@ exports.default = function () {
             // merged from, rather than the resulting "psuedo" merge commit that doesn't stick around in the
             // history of the project (so approvals will get lost). We also have to ensure we use the right branch.
 
-            if (!isTravisPrBuild) {
-              _context2.next = 37;
-              break;
+            if (isTravisPrBuild) {
+              commit = process.env.TRAVIS_PULL_REQUEST_SHA;
+              branch = process.env.TRAVIS_PULL_REQUEST_BRANCH;
             }
-
-            commit = process.env.TRAVIS_PULL_REQUEST_SHA;
-            branch = process.env.TRAVIS_PULL_REQUEST_BRANCH;
-
-            if (!(!commit || !branch)) {
-              _context2.next = 37;
-              break;
-            }
-
-            throw new Error('`TRAVIS_EVENT_TYPE` environment variable set to \'pull_request\', \nbut `TRAVIS_PULL_REQUEST_SHA` and `TRAVIS_PULL_REQUEST_BRANCH` are not both set.\n\nRead more here: https://docs.chromaticqa.com/setup_ci#travis');
-
-          case 37:
 
             // On certain CI systems, a branch is not checked out
             // (instead a detached head is used for the commit).
-            if (branch === 'HEAD' || !branch) {
+            if (branch === 'HEAD') {
               branch = (0, _envCi2.default)().branch;
 
               // $HEAD is for netlify: https://www.netlify.com/docs/continuous-deployment/
-              if (branch === 'HEAD' || !branch) {
-                branch = process.env.HEAD || branch || 'HEAD';
+              if (branch === 'HEAD') {
+                branch = process.env.HEAD || branch;
               }
             }
 
             debug('git info: ' + (0, _stringify2.default)({ commit: commit, committedAt: committedAt, branch: branch }));
 
-            _context2.next = 41;
+            _context2.next = 37;
             return (0, _git.getBaselineCommits)(client);
 
-          case 41:
+          case 37:
             baselineCommits = _context2.sent;
 
             debug('Found baselineCommits: ' + baselineCommits);
@@ -425,56 +413,56 @@ exports.default = function () {
             child = void 0;
 
             if (!(!noStart && !url)) {
-              _context2.next = 54;
+              _context2.next = 50;
               break;
             }
 
             log('Starting app with `npm run ' + scriptName + '`');
-            _context2.next = 50;
+            _context2.next = 46;
             return (0, _startApp2.default)({ scriptName: scriptName, url: appUrl });
 
-          case 50:
+          case 46:
             child = _context2.sent;
 
             log('Started app on port ' + port);
-            _context2.next = 59;
+            _context2.next = 55;
             break;
 
-          case 54:
-            _context2.next = 56;
+          case 50:
+            _context2.next = 52;
             return (0, _startApp.checkResponse)(appUrl);
 
-          case 56:
+          case 52:
             if (_context2.sent) {
-              _context2.next = 58;
+              _context2.next = 54;
               break;
             }
 
             throw new Error('No server responding at ' + appUrl + ' -- make sure you\'ve started it.');
 
-          case 58:
+          case 54:
             log('Detected app on port ' + port);
 
-          case 59:
+          case 55:
             isolatorUrl = appUrl;
             tunnel = void 0;
 
             if (!(createTunnel && !url)) {
-              _context2.next = 68;
+              _context2.next = 64;
               break;
             }
 
             log('Opening tunnel to Chromatic capture servers');
-            _context2.next = 65;
+            _context2.next = 61;
             return (0, _tunnel2.default)({ tunnelUrl: tunnelUrl, port: port });
 
-          case 65:
+          case 61:
             tunnel = _context2.sent;
 
             debug('Opened tunnel to ' + tunnel.url);
             isolatorUrl = '' + tunnel.url + appPathWithSlash;
 
-          case 68:
+          case 64:
 
             debug('Connecting to ' + isolatorUrl);
             log('Uploading and verifying build (this may take a few minutes depending on your connection)');
@@ -484,20 +472,20 @@ exports.default = function () {
             };
 
             if (!only) {
-              _context2.next = 77;
+              _context2.next = 73;
               break;
             }
 
             match = only.match(/(.*):([^:]*)/);
 
             if (match) {
-              _context2.next = 75;
+              _context2.next = 71;
               break;
             }
 
             throw new Error('--only argument must provided in the from "componentName:specName"');
 
-          case 75:
+          case 71:
             log('Running only spec \'' + match[2] + '\' of component \'' + match[1] + '\'');
 
             predicate = function predicate(_ref7) {
@@ -507,22 +495,22 @@ exports.default = function () {
               return name === match[2] && (componentName || otherComponentName) === match[1];
             };
 
-          case 77:
-            _context2.next = 79;
+          case 73:
+            _context2.next = 75;
             return (0, _runtimes2.default)(isolatorUrl, { verbose: verbose });
 
-          case 79:
+          case 75:
             _context2.t1 = predicate;
             runtimeSpecs = _context2.sent.filter(_context2.t1);
 
             if (!(runtimeSpecs.length === 0)) {
-              _context2.next = 83;
+              _context2.next = 79;
               break;
             }
 
             throw new Error('Cannot run a build with no specs. Please add some specs!');
 
-          case 83:
+          case 79:
 
             log('Found ' + runtimeSpecs.length + ' specs');
 
@@ -533,8 +521,8 @@ exports.default = function () {
             debug('Detected package version:' + _package.version);
 
             exitCode = 5;
-            _context2.prev = 88;
-            _context2.next = 91;
+            _context2.prev = 84;
+            _context2.next = 87;
             return client.runQuery(TesterCreateBuildMutation, {
               input: {
                 autoAcceptChanges: autoAcceptChanges,
@@ -552,7 +540,7 @@ exports.default = function () {
               isolatorUrl: isolatorUrl
             });
 
-          case 91:
+          case 87:
             _ref8 = _context2.sent;
             _ref8$createBuild = _ref8.createBuild;
             number = _ref8$createBuild.number;
@@ -563,102 +551,102 @@ exports.default = function () {
 
             log('Started Build ' + number + ' ' + ('(' + pluralize(componentCount, 'component') + ', ' + pluralize(specCount, 'spec') + ').\n\n' + onlineHint + '.'));
 
-            _context2.next = 101;
+            _context2.next = 97;
             return waitForBuild(client, {
               buildNumber: number
             });
 
-          case 101:
+          case 97:
             _ref9 = _context2.sent;
             status = _ref9.status;
             buildAutoAcceptChanges = _ref9.autoAcceptChanges;
             changeCount = _ref9.changeCount;
             errorCount = _ref9.errorCount;
             _context2.t2 = status;
-            _context2.next = _context2.t2 === 'BUILD_PASSED' ? 109 : _context2.t2 === 'BUILD_ACCEPTED' ? 112 : _context2.t2 === 'BUILD_PENDING' ? 112 : _context2.t2 === 'BUILD_DENIED' ? 112 : _context2.t2 === 'BUILD_FAILED' ? 116 : _context2.t2 === 'BUILD_TIMED_OUT' ? 119 : _context2.t2 === 'BUILD_ERROR' ? 122 : 125;
+            _context2.next = _context2.t2 === 'BUILD_PASSED' ? 105 : _context2.t2 === 'BUILD_ACCEPTED' ? 108 : _context2.t2 === 'BUILD_PENDING' ? 108 : _context2.t2 === 'BUILD_DENIED' ? 108 : _context2.t2 === 'BUILD_FAILED' ? 112 : _context2.t2 === 'BUILD_TIMED_OUT' ? 115 : _context2.t2 === 'BUILD_ERROR' ? 118 : 121;
             break;
 
-          case 109:
+          case 105:
             log('Build ' + number + ' passed! ' + onlineHint + '.');
             exitCode = 0;
-            return _context2.abrupt('break', 126);
+            return _context2.abrupt('break', 122);
 
-          case 112:
+          case 108:
             log('Build ' + number + ' has ' + pluralize(changeCount, 'change') + '. ' + onlineHint + '.');
             exitCode = exitZeroOnChanges || buildAutoAcceptChanges ? 0 : 1;
             if (exitCode !== 0) {
               log('Pass --exit-zero-on-changes if you want this command to exit successfully in this case.\n  Alternatively, pass --auto-accept-changes if you want changed builds to pass on this branch.\n  Read more: http://docs.chromaticqa.com/test');
             }
-            return _context2.abrupt('break', 126);
+            return _context2.abrupt('break', 122);
 
-          case 116:
+          case 112:
             log('Build ' + number + ' has ' + pluralize(errorCount, 'error') + '. ' + onlineHint + '.');
             exitCode = 2;
-            return _context2.abrupt('break', 126);
+            return _context2.abrupt('break', 122);
 
-          case 119:
+          case 115:
             log('Build ' + number + ' has timed out. Ensure your machine is connected to the internet and please try again.');
             exitCode = 3;
-            return _context2.abrupt('break', 126);
+            return _context2.abrupt('break', 122);
 
-          case 122:
+          case 118:
             log('Build ' + number + ' has failed to run. Our apologies. Please try again.');
             exitCode = 4;
-            return _context2.abrupt('break', 126);
+            return _context2.abrupt('break', 122);
 
-          case 125:
+          case 121:
             throw new Error('Unexpected build status: ' + status);
 
-          case 126:
-            _context2.next = 136;
+          case 122:
+            _context2.next = 132;
             break;
 
-          case 128:
-            _context2.prev = 128;
-            _context2.t3 = _context2['catch'](88);
+          case 124:
+            _context2.prev = 124;
+            _context2.t3 = _context2['catch'](84);
 
             if (!(_context2.t3.length && _context2.t3[0] && _context2.t3[0].message.match(/Cannot run a build with no specs./))) {
-              _context2.next = 135;
+              _context2.next = 131;
               break;
             }
 
             log(_context2.t3[0].message);
             exitCode = 255;
-            _context2.next = 136;
+            _context2.next = 132;
             break;
 
-          case 135:
+          case 131:
             throw _context2.t3;
 
-          case 136:
-            _context2.prev = 136;
+          case 132:
+            _context2.prev = 132;
 
             if (tunnel) {
               tunnel.close();
             }
 
             if (!child) {
-              _context2.next = 141;
+              _context2.next = 137;
               break;
             }
 
-            _context2.next = 141;
+            _context2.next = 137;
             return (0, _denodeify2.default)(_treeKill2.default)(child.pid, 'SIGHUP');
 
-          case 141:
-            return _context2.finish(136);
+          case 137:
+            return _context2.finish(132);
 
-          case 142:
+          case 138:
             if (!(!(0, _packageJson.checkPackageJson)() && originalArgv)) {
-              _context2.next = 149;
+              _context2.next = 145;
               break;
             }
 
             scriptCommand = ('chromatic test ' + originalArgv.slice(2).join(' ')).replace(/--app-code[= ]\S+/, '');
-            _context2.next = 146;
+            _context2.next = 142;
             return (0, _nodeAsk.confirm)("\nYou have not added Chromatic's test script to your `package.json`. Would you like me to do it for you?");
 
-          case 146:
+          case 142:
             confirmed = _context2.sent;
 
             if (confirmed) {
@@ -673,15 +661,15 @@ exports.default = function () {
             // eslint-disable-next-line no-console
             console.log('\nMake sure you set the `CHROMATIC_APP_CODE` environment variable when running builds (in particular on your CI server).');
 
-          case 149:
+          case 145:
             return _context2.abrupt('return', exitCode);
 
-          case 150:
+          case 146:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[8, 16], [88, 128, 136, 142]]);
+    }, _callee2, this, [[8, 16], [84, 124, 132, 138]]);
   }));
 
   function runTest(_x3) {
@@ -1997,7 +1985,7 @@ module.exports = require("babel-runtime/helpers/slicedToArray");
 /* 30 */
 /***/ (function(module, exports) {
 
-module.exports = {"name":"react-chromatic","version":"0.8.4-dev","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"../../node_modules/.bin/babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"../../node_modules/.bin/webpack","build":"../../node_modules/.bin/npm-run-all --serial -l build:**","prepare":"npm run build","dev":"../../node_modules/.bin/npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","env-ci":"^1.5.0","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","tmp":"^0.0.33","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
+module.exports = {"name":"react-chromatic","version":"0.8.2-beta.0","description":"Visual Testing for React Components","browser":"./dist/client.js","main":"./dist/assets/null-server.js","scripts":{"prebuild":"rm -rf ./dist","build:bin":"../../node_modules/.bin/babel -s -d ./dist ./src -D --only 'assets,bin'","build:webpack":"../../node_modules/.bin/webpack","build":"../../node_modules/.bin/npm-run-all --serial -l build:**","prepare":"npm run build","dev":"../../node_modules/.bin/npm-run-all --parallel -l 'build:** -- --watch'"},"bin":{"chromatic":"./dist/bin/chromatic.js"},"dependencies":{"apollo-fetch":"^0.6.0","babel-runtime":"^6.26.0","commander":"^2.9.0","debug":"^3.0.1","denodeify":"^1.2.1","ejson":"^2.1.2","env-ci":"^1.5.0","es6-error":"^4.0.2","isomorphic-fetch":"^2.2.1","jsdom":"^11.5.1","jsonfile":"^4.0.0","localtunnel":"^1.8.3","node-ask":"^1.0.1","tree-kill":"^1.1.0"},"peerDependencies":{"react":"15.x || 16.x","react-dom":"15.x || 16.x"},"devDependencies":{"babel-cli":"^6.26.0","npm-run-all":"^4.0.2","prettier-eslint":"^7.1.0","tmp":"^0.0.33","webpack":"^3.10.0","webpack-node-externals":"^1.6.0"}}
 
 /***/ }),
 /* 31 */
