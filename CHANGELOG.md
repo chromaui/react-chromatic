@@ -1,13 +1,3 @@
-# 0.8.3 - 2017-04-26
-
-* Fix a bug where sometimes the package did not detect the checked out branch.
-
-# 0.8.2 - 2017-04-18
-
-* Better support for rebasing branches - we now always treat the last build on this branch as a baseline, even if strictly it is not a git ancestor of the current commit. This helps deal with the situation where you rebase a branch off master, and still want to use the previously approved snapshots.
-
-* Improved support for CI systems, especially _Netlify_ and _Travis PR builds_. Travis PR builds are a special case, read more about how to handle them in Chromatic here: https://docs.chromaticqa.com/setup_ci#travis
-
 # 0.8.1 - 2017-03-28
 
 * Fix a small bug in the git algorithm for old Chromatic projects.
