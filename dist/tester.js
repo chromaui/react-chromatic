@@ -832,6 +832,12 @@ function addShimsToJSDOM(dom) {
       }
     }
   });
+
+  Object.defineProperty(dom.window.navigator, 'mimeTypes', {
+    value: function value() {
+      return [];
+    }
+  });
 } /* eslint-disable no-console, class-methods-use-this */
 
 exports.default = function () {
