@@ -1,3 +1,37 @@
+# 0.8.4 - 2017-06-07
+
+* Fix an issue for stories that use `navigator.mimeTypes`
+
+# 0.8.3 - 2017-04-26
+
+* Fix a bug where sometimes the package did not detect the checked out branch.
+
+# 0.8.2 - 2017-04-18
+
+* Better support for rebasing branches - we now always treat the last build on this branch as a baseline, even if strictly it is not a git ancestor of the current commit. This helps deal with the situation where you rebase a branch off master, and still want to use the previously approved snapshots.
+
+* Improved support for CI systems, especially _Netlify_ and _Travis PR builds_. Travis PR builds are a special case, read more about how to handle them in Chromatic here: https://docs.chromaticqa.com/setup_ci#travis
+
+# 0.8.1 - 2017-03-28
+
+* Fix a small bug in the git algorithm for old Chromatic projects.
+
+# 0.8.0 - 2017-03-28
+
+* Reworked the git baseline detection algorithm to use a different technique that should be more reliable across many different modes of usage.
+
+* Gather stories from Storybook 3.4 without requiring direct installation.
+
+* Added `--auto-accept-changes` to avoid approvals on certain branches
+
+* Added `--only` flag to run a single story
+
+# 0.7.11 - 2017-03-15
+
+* Handle the case where the last few Chromatic builds were run against commits which are no longer in the repository (due to rebasing or squashing). This could cause the tool to crash or fail to find a baseline for a build.
+
+* Add a `--url` argument to allow running tests against arbitrary running apps.
+
 # 0.7.10 - 2017-02-22
 
 * Small API change for querying build change counts.

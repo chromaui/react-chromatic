@@ -1,6 +1,6 @@
 {
   "name": "react-chromatic",
-  "version": "0.7.11-beta.1",
+  "version": "0.8.5-dev",
   "description": "Visual Testing for React Components",
   "browser": "./dist/client.js",
   "main": "./dist/assets/null-server.js",
@@ -21,6 +21,7 @@
     "debug": "^3.0.1",
     "denodeify": "^1.2.1",
     "ejson": "^2.1.2",
+    "env-ci": "^1.5.0",
     "es6-error": "^4.0.2",
     "isomorphic-fetch": "^2.2.1",
     "jsdom": "^11.5.1",
@@ -37,6 +38,7 @@
     "babel-cli": "^6.26.0",
     "npm-run-all": "^4.0.2",
     "prettier-eslint": "^7.1.0",
+    "tmp": "^0.0.33",
     "webpack": "^3.10.0",
     "webpack-node-externals": "^1.6.0"
   }
