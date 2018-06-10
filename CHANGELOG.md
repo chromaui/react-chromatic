@@ -1,3 +1,7 @@
+# 0.8.4 - 2017-06-07
+
+* Fix an issue for stories that use `navigator.mimeTypes`
+
 # 0.8.3 - 2017-04-26
 
 * Fix a bug where sometimes the package did not detect the checked out branch.
